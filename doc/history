@@ -98,3 +98,7 @@ v0.1.2 (25.11.2003)
 + enhanced buffer wait stats (including tuning tips)
 + added hints/comments to TS/File IO stats, wait events, Top-N SQL statements,
   enqueue activity, RBS stats and Library Cache stats
+
+v0.1.3
+-------------------
++ added hints/comments to Instance Efficiency section

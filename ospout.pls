@@ -111,36 +111,101 @@
   print('<HR>');
 
   -- Instance Efficiency Percentages
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="efficiency">Instance Efficiency Percentages (Target: 100%)</A></TH></TR>'||CHR(10)||
-            ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Efficiency (%)</TH></TR>';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="efficiency">Instance Efficiency Percentages (Target: 100%)</A></TH></TR>'||CHR(10)||
+            ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Efficiency (%)</TH>'||
+	    '<TH CLASS="th_sub">Comment</TH></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD><DIV STYLE="width:13em">Buffer Nowait</DIV></TD><TD ALIGN="right">'||
+            to_char(round(100*(1-BFWT/GETS),2),'990.00');
+  print(L_LINE);
+  L_LINE := '</TD><TD><DIV ALIGN="justify">If this ratio is low, check the '||
+            '<A HREF="#bufwait">Buffer Wait Stats</A> section for more detail '||
+	    'on which type of block is being contended for.</DIV></TD></TR>';
   print(L_LINE);
   IF RENT = 0
   THEN S1 := '&nbsp;';
   ELSE S1 := to_char(round(100*(1-BFWT/GETS),2),'990.00');
   END IF;
-  L_LINE := ' <TR><TD>Buffer Nowait</TD><TD ALIGN="right">'||
-            to_char(round(100*(1-BFWT/GETS),2),'990.00')||'</TD></TR>'||
-            ' <TR><TD>Redo Nowait</TD><TD ALIGN="right">'||
-            S1||'</TD></TR>';
+  L_LINE := ' <TR><TD>Redo Nowait</TD><TD ALIGN="right">'||S1||
+            '</TD><TD><DIV ALIGN="justify">A value close to 100% indicates minimal '||
+	    'time spent waiting for redo logs ';
+  print(L_LINE);
+  L_LINE := 'to become available, either because the logs are not filling up '||
+            'very often or because the database is able to switch to a new log '||
+	    'quickly whenever the current log fills up.</DIV></TD></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD>Buffer Hit</TD><TD ALIGN="right">'||
+            to_char(round(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),2),'990.00');
+  print(L_LINE);
+  L_LINE := '</TD><TD><DIV ALIGN="justify">A low buffer hit ratio does not necessarily '||
+            'mean the cache is too small: it may very well be that potentially '||
+	    'valid full-table-scans are artificially ';
+  print(L_LINE);
+  L_LINE := 'reducing what is otherwise a good ratio. A too-small buffer cache '||
+            'can sometimes be identified by the appearance of write complete waits '||
+	    'event indicating hot blocks ';
+  print(L_LINE);
+  L_LINE := '(i.e. blocks still being modified) are aging out of the cache while '||
+            'they are still needed; check the <A HREF="#waitevents">Wait Events</A> '||
+	    'list for evidence of this event.</DIV></TD></TR>';
   print(L_LINE);
   IF (SRTM+SRTD) = 0
   THEN S1 := '&nbsp;';
   ELSE S1 := to_char(round(100*SRTM/(SRTD+SRTM),2),'990.00');
   END IF;
-  L_LINE := ' <TR><TD>Buffer Hit</TD><TD ALIGN="right">'||
-            to_char(round(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),2),'990.00')||'</TD></TR>'||
-            ' <TR><TD>In-Memory Sort</TD><TD ALIGN="right">'||
-            S1||'</TD></TR>';
+  L_LINE := ' <TR><TD>In-Memory Sort</TD><TD ALIGN="right">'||S1||
+            '</TD><TD><DIV ALIGN="justify">A too low ratio indicates too many '||
+	    'disk sorts appearing. One possible ';
+  print(L_LINE);
+  L_LINE := 'solution could be increasing the sort area/SGA size.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TD>Library Hit</TD><TD ALIGN="right">'||
-            to_char(round(100*LHTR,2),'990.00')||'</TD></TR>'||
-            ' <TR><TD>Soft Parse</TD><TD ALIGN="right">'||
-            to_char(round(100*(1-HPRS/PRSE),2),'990.00')||'</TD></TR>';
+            to_char(round(100*LHTR,2),'990.00');
+  print(L_LINE);
+  L_LINE := '</TD><TD><DIV ALIGN="justify">A low library hit ratio could imply that '||
+            'SQL is prematurely aging out of a too-small shared pool, or that '||
+	    'non-shareable SQL is being used. ';
+  print(L_LINE);
+  L_LINE := 'If the soft parse ratio is also low, check whether there is a '||
+            'parsing issue.</DIV></TD></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD>Soft Parse</TD><TD ALIGN="right">'||
+            to_char(round(100*(1-HPRS/PRSE),2),'990.00')||'</TD><TD><DIV ALIGN="justify">'||
+	    'A soft parse occurs when a session attempts to execute ';
+  print(L_LINE);
+  L_LINE := 'a SQL statement and a usable version of the statement is already '||
+            'in the shared pool, so the statement can be executed immediately. '||
+	    'The hard parse is the opposite and an expensive operation. ';
+  print(L_LINE);
+  L_LINE := 'When the soft parse ratio falls much below 80%, investigate '||
+            'whether you can share SQL by using bind variables or force cursor '||
+	    'sharing by using the <CODE>init.ora</CODE> ';
+  print(L_LINE);
+  L_LINE := 'parameter <CODE>cursor_sharing</CODE> (new in Oracle8i Release '||
+            '8.1.6). But before drawing any conclusions, compare the soft parse '||
+	    'ratio against the actual hard and soft ';
+  print(L_LINE);
+  L_LINE := 'parse rates shown in the <A HREF="#loads">Loads Profile</A>. If '||
+            'the rates are low, parsing may not be a significiant issue in your '||
+	    'system. Furthermore, investigate the ';
+  print(L_LINE);
+  L_LINE := 'number of <I>Parse CPU to Parse Elapsed</I> below. If this '||
+	    'value is low, you may rather have a latch problem.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TD>Execute to Parse</TD><TD ALIGN="right">'||
-            to_char(round(100*(1-PRSE/EXE),2),'990.00')||'</TD></TR>'||
+            to_char(round(100*(1-PRSE/EXE),2),'990.00')||'</TD><TD>&nbsp;</TD></TR>'||
             ' <TR><TD>Latch Hit</TD><TD ALIGN="right">'||
-            to_char(round(100*(1-LHR),2),'990.00')||'</TD></TR>';
+            to_char(round(100*(1-LHR),2),'990.00');
+  print(L_LINE);
+  L_LINE := '</TD><TD ALIGN="justify">A low value for this ratio indicates a '||
+            'latching problem, whereas a high value is generally good. However, '||
+	    'a high latch hit ratio can artificially mask a low ';
+  print(L_LINE);
+  L_LINE := 'get rate on a specific latch. Cross-check this value with the '||
+            '<A HREF="#top5wait">Top 5 Wait Events</A> to see if latch free is '||
+	    'in the list, and refer to the ';
+  print(L_LINE);
+  L_LINE := '<A HREF="#latches">Latch</A> sections of this report.</TD></TR>';
   print(L_LINE);
   IF PRSELA = 0
   THEN S1 := '&nbsp;';
@@ -151,9 +216,9 @@
   ELSE S2 := to_char(round(100*(1-(PRSCPU/TCPU)),2),'990.00');
   END IF;
   L_LINE := ' <TR><TD>Parse CPU to Parse Elapsed</TD><TD ALIGN="right">'||
-            S1||'</TD></TR>'||
+            S1||'</TD><TD>See <I>Soft Parse</I> above.</TD></TR>'||
             ' <TR><TD>Non-Parse CPU</TD><TD ALIGN="right">'||
-            S2||'</TD></TR>';
+            S2||'</TD><TD>&nbsp;</TD></TR>';
   print(L_LINE);
   L_LINE := TABLE_CLOSE;
   print(L_LINE);
