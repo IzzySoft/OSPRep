@@ -573,6 +573,24 @@ DECLARE
        AND e.instance_number = instnum
      ORDER BY snid;
 
+  CURSOR C_BuffW (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT e.class class,
+           to_char(e.wait_count - nvl(b.wait_count,0),'999,999') icnt,
+	   to_char((e.time - nvl(b.time,0))/100,'999,990.00') itim,
+	   to_char((e.time - nvl(b.time,0)) /
+	   (e.wait_count - nvl(b.wait_count,0)) * 10,'999,990.00') iavg
+      FROM stats\$waitstat b, stats\$waitstat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.class   = e.class
+       AND b.wait_count < e.wait_count
+     ORDER BY itim desc, icnt desc;
+
 
 BEGIN
   -- Configuration
@@ -615,7 +633,7 @@ BEGIN
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]'||
             ' [ <A HREF="#bufpool">Buffer Pool</A> ] [ <A HREF="#recover">Instance Recovery</A> ]'||
-	    '</TD></TR>';
+	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1165,7 +1183,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Instance Recovery
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="#bufpool">Instance Recovery Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="#recover">Instance Recovery Statistics</A></TH></TR>'||
             ' <TR><TD COLSPAN="9" ALIGN="center">B: Begin SnapShot, E: End SnapShot</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Target MTTR (s)</TH>'||
@@ -1185,6 +1203,24 @@ BEGIN
     L_LINE := R_Reco.trb||'</TD><TD ALIGN="right">'||R_Reco.lfrb||
               '</TD><TD ALIGN="right">'||R_Reco.lctrb||'</TD><TD ALIGN="right">'||
 	      R_Reco.lcirb||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- Buffer Waits
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#bufwait">Buffer Wait Statistics</A></TH></TR>'||
+            ' <TR><TD COLSPAN="4" ALIGN="center">Ordered by Wait Time desc, Waits desc</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Class</TH><TH CLASS="th_sub">Waits</TH>'||
+            '<TH CLASS="th_sub">Tot Wait Time (s)</TH>'||
+	    '<TH CLASS="th_sub">Avg Wait Time (s)</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_Buff IN C_BuffW(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.class||'</TD><TD ALIGN="right">'||
+              R_Buff.icnt||'</TD><TD ALIGN="right">'||R_Buff.itim||
+	      '</TD><TD ALIGN="right">'||R_Buff.iavg||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
