@@ -2,7 +2,7 @@
 # $Id$
 #
 # =============================================================================
-# Simple Database Analysis Report      (c) 2003 by IzzySoft (devel@izzysoft.de)
+# Simple Database Analysis Report (c) 2003-2004 by IzzySoft (devel@izzysoft.de)
 # -----------------------------------------------------------------------------
 # This script creates the help files based on your configuration file. You need
 # to run it for the first time installation and whenever certain variables in

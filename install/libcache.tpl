@@ -11,7 +11,7 @@
   variables or by the <CODE>cursor_sharing=FORCE</CODE> statement in your
   <CODE>init.ora</CODE>.</P>
  <P>An important statistic to look at is the number or <I>RELOADS</I>. If there
-  are significant number of <I>RELOADS</I>, then reusuable information is being
+  are significant number of <I>RELOADS</I>, then reusable information is being
   aged out of the SGA, and hence having to be reloaded and rebuilt. This
   indicates the shared pool may need attention (which may include resizing,
   changing large pool, pinning objects etc).</P>
