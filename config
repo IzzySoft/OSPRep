@@ -51,31 +51,31 @@ MK_ALLWAITS=0
 MK_BGWAITS=0
 # Include Instance Activity? [0|1]
 MK_INSTACT=0
+# Include the PGA Aggret & Memory Stats segment? [0|1]
+MK_PGAA=1
+MK_PGAM=1
+# Include the Enqueue Activity segment? [0|1]
+MK_ENQ=1
 # Include Undo Segment Summary and Statistics? [0|1]
 MK_USS=1
 MK_USSTAT=0
+# Include Rollback Segment Stats & Storage? [0|1]
+MK_RSSTAT=0
+MK_RSSTOR=0
 # Include Latch Activity? [0|1]
 MK_LACT=0
 # Include Latch Miss Sources (only needed and understood by Oracle staff) [0|1]
 # If MK_LACT=0 it will never be included.
 MK_LMS=0
-# Include init.ora parameter changes? [0|1]
-MK_IORA=1
+# Create the statistics for DictionaryCache and LibraryCache? [0|1]
+MK_DC=1
+MK_LC=1
 # Include SGA Summary and BreakDown stats? [0|1]
 # If MK_SGASUM=0, SGABREAK is excluded automatically
 MK_SGASUM=1
 MK_SGABREAK=0
-# Create the statistics for DictionaryCache and LibraryCache? [0|1]
-MK_DC=1
-MK_LC=1
-# Include Rollback Segment Stats & Storage? [0|1]
-MK_RSSTAT=0
-MK_RSSTOR=0
-# Include the Enqueue Activity segment? [0|1]
-MK_ENQ=1
-# Include the PGA Aggret & Memory Stats segment? [0|1]
-MK_PGAA=1
-MK_PGAM=1
+# Include init.ora parameter changes? [0|1]
+MK_IORA=1
 
 # -------------------------------------------------------------[ Go4Colors ]---
 # WR_* stands for WarnRatio, AR_* for AlertRatio. The next letters indicate the

@@ -81,10 +81,11 @@
  <tr><td class="text">
   <table align="center" width="95%">
    <tr><th class="th_sub2">Variable</th><th class="th_sub2">Explanation</th></tr>
-   <tr><td class="td_name"><code>TOP_N_WAITS</code></td>
+   <tr><td class="td_name" COLSPAN="2"><div align="center">SQL</div></td></tr>
+   <tr><td class="td_name"><code>TOP_N_SQL</code></td>
        <td class="text" rowspan="2">How many items to list up in the "Top N"
            blocks of the report for Wait objects and SQL statements</td></tr>
-   <tr><td class="td_name"><code>TOP_N_SQL</code></td></tr>
+   <tr><td class="td_name"><code>TOP_N_WAITS</code></td></tr>
    <tr><td class="td_name"><code>EXC_PERF_FOR</code></td>
        <td class="text">This can be used to exclude objects of given users from
            some statistics. For example, it makes no sense to print long
@@ -109,6 +110,7 @@
            the parameters <code>-b</code> (for the "Begin" snapshot) and
            <code>-e</code> (for the "End" snapshot).</td></tr>
    <tr><td class="td_name"><code>END_ID</code></td></tr>
+   <tr><td class="td_name" COLSPAN="2"><div align="center">Features</div></td></tr>
    <tr><td class="td_name"><code>MK_ALLWAITS</code></td>
        <td class="text">Whether to display the "All Wait Events" block. The "Top N
            Wait Events" will allways be displayed, regardless of this setting.</td></tr>
@@ -121,12 +123,24 @@
        <td class="text">The "Instance Activity" segment of the report can be boring
            sometimes, so you may suppress it here and just activate it if you
            really need it ;-)</td></tr>
+   <tr><td class="td_name"><code>MK_PGAA</code></td>
+       <td class="text" rowspan="2">Whether to include the "PGA Aggregat" and
+           "PGA Memory" segments of the report.</td></tr>
+   <tr><td class="td_name"><code>MK_PGAM</code></td></tr>
+   <tr><td class="td_name"><code>MK_ENQ</code></td>
+       <td class="text">The "Enqueue Activity" segment of the report contains
+           information on for which queue types have been waits encountered</td></tr>
    <tr><td class="td_name"><code>MK_USS</code></td>
        <td class="text" ROWSPAN="2">Except for special occasions, the "Undo Segment Statistics"
            (<code>MK_USSTAT</code>) will not be needed (especially when using
            automatic undo management). The "Undo Segment Summary" table can also
            be turned off, if not needed, with the <code>MK_USS=0</code> statement.</td></tr>
    <tr><td class="td_name"><code>MK_USSTAT</code></td></td>
+   <tr><td class="td_name"><code>MK_RSSTAT</code></td>
+       <td class="text" rowspan="2">Whether to create the "RBS Stats" and
+           "RBS Storage" segments of the report. These Rollback statistics are
+           quite useless if your database uses automatic Undo management.</td></tr>
+   <tr><td class="td_name"><code>MK_RSSTOR</code></td></tr>
    <tr><td class="td_name"><code>MK_LACT</code></td>
        <td class="text">"Latch Activity" will only be needed for closer investigation,
            so this option is turned off by the default configuration. When you
@@ -139,35 +153,24 @@
            leave it off. Besides: if you already turned the "Latch Activity"
            (<code>MK_LACT</code>) off, the "Latch Miss Sources" will be
            suppressed anyway.</td></tr>
-   <tr><td class="td_name"><code>MK_IORA</code></td>
-       <td class="text">Whether the "Initialization Parameters" segment should be
-           included with the report. This block lists up all initialization
-           parameters as used with the <code>init.ora</code> file, and the changes
-           made between the first and the last snapshot (e.g. with the
-           <code>ALTER SYSTEM</code> command).</td></tr>
+   <tr><td class="td_name"><code>MK_DC</code></td>
+       <td class="text" rowspan="2">Whether to create the "Dictionary Cache" and
+           "Library Cache" segments of the report, containing statistics and
+           ratios on usage of these areas.</td></tr>
+   <tr><td class="td_name"><code>MK_LC</code></td></tr>
    <tr><td class="td_name"><code>MK_SGASUM</code></td>
        <td class="text" rowspan="2">This is for the "SGA Memory Summary" and
            "SGA Breakdown Difference" segments. If you set <code>MK_SGASUM=0</code>,
            the setting for <code>MK_SGABREAK</code> will be ignored and handled
            as if it was set to 0 as well.</td></tr>
    <tr><td class="td_name"><code>MK_SGABREAK</code></td></tr>
-   <tr><td class="td_name"><code>MK_DC</code></td>
-       <td class="text" rowspan="2">Whether to create the "Dictionary Cache" and
-           "Library Cache" segments of the report, containing statistics and
-           ratios on usage of these areas.</td></tr>
-   <tr><td class="td_name"><code>MK_LC</code></td></tr>
-   <tr><td class="td_name"><code>MK_RSSTAT</code></td>
-       <td class="text" rowspan="2">Whether to create the "RBS Stats" and
-           "RBS Storage" segments of the report. These Rollback statistics are
-           quite useless if your database uses automatic Undo management.</td></tr>
-   <tr><td class="td_name"><code>MK_RSSTOR</code></td></tr>
-   <tr><td class="td_name"><code>MK_ENQ</code></td>
-       <td class="text">The "Enqueue Activity" segment of the report contains
-           information on for which queue types have been waits encountered</td></tr>
-   <tr><td class="td_name"><code>MK_PGAA</code></td>
-       <td class="text" rowspan="2">Whether to include the "PGA Aggregat" and
-           "PGA Memory" segments of the report.</td></tr>
-   <tr><td class="td_name"><code>MK_PGAM</code></td></tr>
+   <tr><td class="td_name"><code>MK_IORA</code></td>
+       <td class="text">Whether the "Initialization Parameters" segment should be
+           included with the report. This block lists up all initialization
+           parameters as used with the <code>init.ora</code> file, and the changes
+           made between the first and the last snapshot (e.g. with the
+           <code>ALTER SYSTEM</code> command).</td></tr>
+   <tr><td class="td_name" COLSPAN="2"><div align="center">Go4Colors</div></td></tr>
    <tr><td class="td_name"><code>WR_*</code></td>
        <td class="text" rowspan="2">These are the values used for warnings (<code>WR_*</code>)
            and alerts (<code>AR_*</code>) in the <a href="results.html#go4colors">Go4Colors</a>

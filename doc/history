@@ -233,3 +233,5 @@ v0.2.6
 + Modularization: Dictionary- and Library Cache Statistics, RBS Stats and RBS
   Storage, Undo Segment Summary, Enqueue Activities, PGA Aggregat and PGA Memory
   can now be switched off (see config)
+* sorted the entries in the "features" block of the config file to represent
+  the order the segments appear in the report (same for the HTML documentation)
