@@ -13,7 +13,7 @@
 #                                                              Itzchak Rehberg
 #
 #
-version='0.0.4'
+version='0.0.5'
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
   echo
@@ -508,6 +508,42 @@ DECLARE
              (e.phywrts - nvl(b.phywrts,0) ) ) > 0
      ORDER BY tsname,filename;
 
+  CURSOR C_BuffP (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, bs IN NUMBER) IS
+    SELECT replace(e.block_size/1024||'k',bs/1024||'k',substr(e.name,1,1)) name,
+           e.set_msize numbufs,
+	   to_char(decode(  e.db_block_gets   - nvl(b.db_block_gets,0)
+	                  + e.consistent_gets - nvl(b.consistent_gets,0),
+		     0, to_number(NULL),
+		     (100* (1- (  (e.physical_reads  - nvl(b.physical_reads,0))
+		                / (  e.db_block_gets   - nvl(b.db_block_gets,0)
+				   + e.consistent_gets - nvl(b.consistent_gets,0))
+			       ) ) ) ),'990.9' ) hitratio,
+	   to_char(  e.db_block_gets   - nvl(b.db_block_gets,0)
+	           + e.consistent_gets - nvl(b.consistent_gets,0),
+		   '99,999,999,999') gets,
+	   to_char(e.physical_reads - nvl(b.physical_reads,0),
+	           '99,999,999,999') phread,
+	   to_char(e.physical_writes - nvl(b.physical_writes,0),
+	           '999,999,999') phwrite,
+	   to_char(e.free_buffer_wait - nvl(b.free_buffer_wait,0),
+	           '999,999') fbwait,
+	   to_char(e.write_complete_wait - nvl(b.write_complete_wait,0),
+	           '999,999') wcwait,
+	   to_char(e.buffer_busy_wait - nvl(b.buffer_busy_wait,0),
+	           '9,999,999') bbwait
+      FROM stats\$buffer_pool_statistics b, stats\$buffer_pool_statistics e
+     WHERE b.snap_id(+)  = bid
+       AND e.snap_id     = eid
+       AND b.dbid(+)     = db_id
+       AND e.dbid        = db_id
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.instance_number(+) = e.instance_number
+       AND b.id(+)       = e.id
+     ORDER BY e.name;
+		  
+
+
 BEGIN
   -- Configuration
   BID := $START_ID; EID := $END_ID;
@@ -547,7 +583,8 @@ BEGIN
 	    ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]'||
 	    ' [ <A HREF="#instact">Instance Activity</A> ]';
   dbms_output.put_line(L_LINE);
-  L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]</TD></TR>';
+  L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]'||
+            ' [ <A HREF="#bufpool">Buffer Pool</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1061,6 +1098,35 @@ BEGIN
     L_LINE := R_TSIO.bpr||'</TD><TD ALIGN="right">'||R_TSIO.writes||
               '</TD><TD ALIGN="right">'||R_TSIO.wps||'</TD><TD ALIGN="right">'||
 	      R_TSIO.waits||'</TD><TD ALIGN="right">'||R_TSIO.avgbw||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- File IO Summary
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="#bufpool">Buffer Pool Statistics</A></TH></TR>'||
+            ' <TR><TD COLSPAN="9" ALIGN="center">Standard Block Size Pools ';
+  dbms_output.put_line(L_LINE);
+  L_LINE := 'D:Default, K:Keep, R:Recycle<BR>Default Pools for other block '||
+	    'sizes: 2k, 4k, 8k, 16k, 32k</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Pool</TH><TH CLASS="th_sub"># of Buffers</TH>'||
+            '<TH CLASS="th_sub">Cache Hit %</TH><TH CLASS="th_sub">Buffer Gets</TH>'||
+	    '<TH CLASS="th_sub">PhyReads</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE:= '<TH CLASS="th_sub">PhyWrites</TH><TH CLASS="th_sub">FreeBuf Waits</TH>'||
+           '<TH CLASS="th_sub">Wrt complete Waits</TH><TH CLASS="th_sub">Buffer Busy Waits</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_Buff IN C_BuffP(DBID,INST_NUM,BID,EID,BS) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.name||'</TD><TD ALIGN="right">'||
+              R_Buff.numbufs||'</TD><TD ALIGN="right">'||
+              R_Buff.hitratio||'</TD><TD ALIGN="right">'||R_Buff.gets||
+	      '</TD><TD ALIGN="right">'||R_Buff.phread||'</TD><TD ALIGN="right">';
+    dbms_output.put_line(L_LINE);
+    L_LINE := R_Buff.phwrite||'</TD><TD ALIGN="right">'||R_Buff.fbwait||
+              '</TD><TD ALIGN="right">'||R_Buff.wcwait||'</TD><TD ALIGN="right">'||
+	      R_Buff.bbwait||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;

@@ -17,7 +17,7 @@ v0.0.3 (05.11.2003)
 + added BG Wait Events
 + added Top n SQL by Gets
 
-v0.0.4 (xx.11.2003)
+v0.0.4 (06.11.2003)
 * a little code cleanup
 + added Top n SQL by Reads
 + added Top n SQL by Exec (and made "n" a config var)
@@ -25,3 +25,6 @@ v0.0.4 (xx.11.2003)
 + added Instance Activity Stats
 + added TableSpace IO Summary Stats
 + added FileIO Summary Stats
+
+v0.0.5 (xx.11.2003)
++ added Buffer Pool Stats
