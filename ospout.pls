@@ -368,6 +368,7 @@
     END LOOP;
     L_LINE := '</TD></TR>';
     print(L_LINE);
+    get_plan(BID,EID,R_SQL.hashval);
   END LOOP;
   L_LINE := TABLE_CLOSE;
   print(L_LINE);
@@ -403,6 +404,7 @@
     END LOOP;
     L_LINE := '</TD></TR>';
     print(L_LINE);
+    get_plan(BID,EID,R_SQL.hashval);
   END LOOP;
   L_LINE := TABLE_CLOSE;
   print(L_LINE);
@@ -434,6 +436,7 @@
     END LOOP;
     L_LINE := '</TD></TR>';
     print(L_LINE);
+    get_plan(BID,EID,R_SQL.hashval);
   END LOOP;
   L_LINE := TABLE_CLOSE;
   print(L_LINE);
@@ -463,6 +466,7 @@
     END LOOP;
     L_LINE := '</TD></TR>';
     print(L_LINE);
+    get_plan(BID,EID,R_SQL.hashval);
   END LOOP;
   L_LINE := TABLE_CLOSE;
   print(L_LINE);

@@ -103,3 +103,4 @@ v0.1.3
 -------------------
 + added hints/comments to Instance Efficiency section
 + more comments/hints on latches
++ added execution plan to Top-N-SQL
