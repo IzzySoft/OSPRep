@@ -963,6 +963,13 @@ DECLARE
 	    or     e.ismodified      != 'FALSE'
 	    or nvl(e.value,0)        != nvl(b.value,0) );
 
+  PROCEDURE print(line IN VARCHAR2) IS
+    BEGIN
+      dbms_output.put_line(line);
+    EXCEPTION
+      WHEN OTHERS THEN
+        dbms_output.put_line('*!* Problem in print() *!*');
+    END;
 
 BEGIN
   -- Configuration
@@ -1006,47 +1013,47 @@ BEGIN
   L_LINE := '<HTML><HEAD>'||CHR(10)||
             ' <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15"/>'||
             CHR(10)||' <TITLE>'||R_TITLE||'</TITLE>';
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   L_LINE := ' <LINK REL="stylesheet" TYPE="text/css" HREF="$CSS">'||CHR(10)||
             '</HEAD><BODY>'||CHR(10)||'<H2>'||R_TITLE||'</H2>'||CHR(10);
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
 
   -- Navigation
   L_LINE := TABLE_OPEN||'<TR><TD ALIGN="center"><FONT SIZE=-2>[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
             '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> '||
             '] [ <A HREF="#efficiency">Efficiency</A> ]';
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   L_LINE :=   ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#top5wait">Top 5 Wait</A>'||
             ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#bgwaitevents">Background Waits</A> ]';
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||
 	    ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]'||
 	    ' [ <A HREF="#instact">Instance Activity</A> ]';
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]'||
             ' [ <A HREF="#bufpool">Buffer Pool</A> ] [ <A HREF="#recover">Instance Recovery</A> ]'||
 	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]';
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ] [ <A HREF="#enq">Enqueue Activity</A> ]'||
             ' [ <A HREF="#rbs">RBS</A> ] [ <A HREF="#undo">Undo Segs</A> ]'||
 	    ' [ <A HREF="#latches">Latches</A> ]';
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]'||
             ' [ <A HREF="#resourcelimits">Resource Limits</A> ]'||
 	    ' [ <A HREF="#initora">Init Params</A> ]</TD></TR>';
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   L_LINE := TABLE_CLOSE;
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
 
   -- Initial information about this instance
   SELECT to_char(SYSDATE,'DD.MM.YYYY HH24:MI') INTO S4 FROM DUAL;
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2">Common Instance Information</TH></TR>'||CHR(10)||
             ' <TR><TD class="td_name">Hostname:</TD><TD>'||HOST_NAME||'</TD></TR>'||CHR(10)||
             ' <TR><TD class="td_name">Instance:</TD><TD>'||INST_NAME||'</TD></TR>';
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   L_LINE := ' <TR><TD class="td_name">Version:</TD><TD>'||VERSN||'</TD></TR>'||CHR(10)||
             ' <TR><TD class="td_name">Cluster:</TD><TD>'||PARA||'</TD></TR>'||CHR(10);
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   SELECT SUM(members*bytes) INTO I1 FROM v\$log;
   SELECT SUM(bytes) INTO I2 from v\$datafile;
   I3 := (I1+I2)/1048576;
@@ -1055,10 +1062,10 @@ BEGIN
     INTO S2,S3 FROM v\$instance;
   L_LINE := ' <TR><TD class="td_name">FileSize (Data+Log)</TD><TD>'||S1||' MB</TD></TR>'||CHR(10)||
             ' <TR><TD class="td_name">Startup / Uptime</TD><TD>'||S2||' / '||S3||' d</TD></TR>';
-  dbms_output.put_line(L_LINE);
+  print(L_LINE);
   L_LINE := ' <TR><TD class="td_name">Report generated:</TD><TD>'||S4||'</TD></TR>'||CHR(10)||
             TABLE_CLOSE;
-  dbms_output.put_line(L_LINE);
-  dbms_output.put_line('<HR>');
+  print(L_LINE);
+  print('<HR>');
 
 ENDSQL
