@@ -8,6 +8,9 @@
 # exist in the perfstat users schema
 # =============================================================================
 
+EXCLUDING=`echo $EXCLUDE_OWNERS|sed "s/'//g"`
+EXCLUDING=`echo $EXCLUDING|sed "s/,/, /g"`
+
 cat>>$SQLSET<<ENDSQL
 PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
  CURSOR cur IS
@@ -28,15 +31,15 @@ PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN 
     L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="waitobjects">Top '||
               TOP_N_WAITS||' Objects waited for</TH></TR>';
     print(L_LINE);
-    L_LINE := ' <TR><TD COLSPAN="5"><DIV ALIGN="center">Ordered by Waited desc, Entries desc</DIV>'||
-              '<DIV ALIGN="justify">Since Oracle stores the waited time only as ';
+    L_LINE := ' <TR><TD COLSPAN="5"><DIV ALIGN="center">Ordered by Waited desc, Entries desc<BR>'||
+              'Excluding objects for: $EXCLUDING</DIV>';
     print(L_LINE);
-    L_LINE := 'integer values (full seconds), the summed up waited time is not that '||
-              'correct - since even 100 times 0.4 secs would show up as 0. The '||
-	      'column Entries sums up ';
+    L_LINE := '<DIV ALIGN="justify">Since Oracle stores the waited time only as '||
+              'integer values (full seconds), the summed up waited time is not that '||
+              'correct - since even 100 times 0.4 secs ';
     print(L_LINE);
-    L_LINE := 'how often the object was found in the wait events list for this '||
-              'event.</TD></TR>';
+    L_LINE := 'would show up as 0. The column Entries sums up how often the '||
+              'object was found in the wait events list for this event.</TD></TR>';
     print(L_LINE);
     L_LINE := ' <TR><TH CLASS="th_sub">Object</TH><TH CLASS="th_sub">Type</TH>'||
               '<TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waited (s)</TH>'||
