@@ -11,6 +11,7 @@
 cat>>$SQLSET<<ENDSQL
 DECLARE
   MK_RLIMS BOOLEAN;
+  MK_TOPWAITS NUMBER;
   MK_ALLWAITS NUMBER;
   MK_BGWAITS NUMBER;
   MK_WAITOBJ NUMBER;
@@ -156,25 +157,6 @@ DECLARE
        AND e.instance_number=instnum
        AND b.dbid=db_id
        AND e.dbid=db_id;
-
-  CURSOR C_Top5 (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, twt IN NUMBER) IS
-    SELECT event, waits, time, pctwtt
-      FROM ( SELECT e.event event,
-                    to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
-		    to_char((e.time_waited_micro - nvl(b.time_waited_micro,0))/1000000,'9,999,990.00') time,
-		    decode(twt,0,'0.00',
-		      to_char(100*((e.time_waited_micro - NVL(b.time_waited_micro,0))/twt),'9,990.00')) pctwtt
-	       FROM stats\$system_event b, stats\$system_event e
-	      WHERE b.snap_id(+) = bid
-	        AND e.snap_id    = eid
-		AND b.dbid(+)    = db_id
-		AND e.dbid       = db_id
-		AND b.instance_number(+) = instnum
-		AND e.instance_number    = instnum
-		AND b.event(+)   = e.event
-		AND e.event NOT IN ( SELECT event FROM stats\$idle_event )
-	      ORDER BY time desc, waits desc )
-     WHERE rownum <= 5;
 
   CURSOR C_SQLByGets (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, gets IN NUMBER) IS
     SELECT bufgets,execs,getsperexec,pcttotal,cputime,elapsed,hashval
@@ -529,6 +511,9 @@ fi
 if [ -n "$BGWAITHEAD" ]; then
   cat $BGWAITHEAD>>$SQLSET
 fi
+if [ -n "$TWAITHEAD" ]; then
+  cat $TWAITHEAD>>$SQLSET;
+fi
 if [ -n "$IOHEAD" ]; then
   cat $IOHEAD>>$SQLSET
 fi
@@ -575,6 +560,7 @@ BEGIN
   OSPVER := '$version';
   TOP_N_SQL := $TOP_N_SQL;
   TOP_N_WAITS := $TOP_N_WAITS;
+  MK_TOPWAITS := :MK_TOPWAITS;
   MK_ALLWAITS := :MK_ALLWAITS;
   MK_BGWAITS  := :MK_BGWAITS;
   MK_WAITOBJ  := :MK_WAITOBJ;
@@ -690,8 +676,10 @@ BEGIN
             '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> ]';
   print(L_LINE);
   L_LINE :=  ' [ <A HREF="#efficiency">Efficiency</A> ]'||
-             ' [ <A HREF="#sharedpool">Shared Pool</A> ]'||
-	     ' [ <A HREF="#top5wait">Top 5 Wait</A> ] ';
+             ' [ <A HREF="#sharedpool">Shared Pool</A> ]';
+  IF MK_TOPWAITS = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#top5wait">Top 5 Wait</A> ] ';
+  END IF;
   IF MK_ALLWAITS = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#waitevents">Wait Events</A> ]';
   END IF;

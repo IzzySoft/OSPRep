@@ -45,6 +45,8 @@ START_ID=0
 END_ID=0
 
 # --------------------------------------------------------------[ Features ]---
+# Include the Top N Wait Events segment? [0|1]
+MK_TOPWAITS=1
 # Include All Waits? [0|1]
 MK_ALLWAITS=0
 # Include Background Waits? [0|1]

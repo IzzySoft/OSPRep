@@ -111,14 +111,15 @@
            <code>-e</code> (for the "End" snapshot).</td></tr>
    <tr><td class="td_name"><code>END_ID</code></td></tr>
    <tr><td class="td_name" COLSPAN="2"><div align="center">Features</div></td></tr>
+   <tr><td class="td_name"><code>MK_TOPWAITS</code></td>
+       <td class="text">Whether to display the "Top N Wait Events" block.</td></tr>
    <tr><td class="td_name"><code>MK_ALLWAITS</code></td>
-       <td class="text">Whether to display the "All Wait Events" block. The "Top N
-           Wait Events" will allways be displayed, regardless of this setting.</td></tr>
-   <tr><td class="td_name"><code>MK_BGWAITS</code></td>
-       <td class="text">Whether to include the "Background Waits" segment. In
-           normal cases, you will not need the "All Wait Events" and "Background Waits"
-           segments (that's why they are turned off by the default configuration),
-           but they may be useful for closer investigations.</td></tr>
+       <td class="text" ROWSPAN="2">Whether to display the "All Wait Events" and/or
+           "Background Waits" segment. In normal cases, you will not need the "All
+           Wait Events" and "Background Waits" segments (that's why they are
+           turned off by the default configuration), but they may be useful for
+           closer investigations.</td></tr>
+   <tr><td class="td_name"><code>MK_BGWAITS</code></td></tr>
    <tr><td class="td_name"><code>MK_WAITOBJ</code></td>
        <td class="text">Whether to list up the Top N Wait objects (see
            <code>TOP_N_WAITS</code> above). This is only possible if you installed
