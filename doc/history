@@ -70,3 +70,10 @@ v0.0.8 (11.11.2003)
 v0.1.0 (12.11.2003)
 + added example output
 + added some docu
+
+v0.1.1 (xx.11.2003)
++ optimization: wrote wrapper for dbms_output.put_line
+* moved some hardcoded font formatting to stylesheet
+* some code cleanup
+! fixed Optim W/A Execs in PGA stats (statement from Oracle Statspack
+  didn't work correctly - replaced by own statement)
