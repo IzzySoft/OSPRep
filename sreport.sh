@@ -30,6 +30,7 @@ if [ -z "$1" ]; then
   echo "     -b <BEGIN_ID (Snapshot)>"
   echo "     -e <END_ID (Snapshot)>"
   echo "     -p <Password>"
+  echo "     -r <ReportDirectory>"
   echo "     -s <ORACLE_SID/Connection String for Target DB>"
   echo "     -u <username>"
   echo "  Example: generate report for oradb up to snapshot ID 1800:"
@@ -40,7 +41,8 @@ if [ -z "$1" ]; then
 fi
 
 # =================================================[ Configuration Section ]===
-BINDIR=${0%/*}
+#BINDIR=${0%/*}
+BINDIR=`pwd`
 CONFIG=$BINDIR/config
 ARGS=$*
 PLUGINDIR=$BINDIR/plugins
@@ -55,6 +57,7 @@ while [ "$1" != "" ] ; do
     -e) shift; PEND_ID=$1;;
     -b) shift; PSTART_ID=$1;;
     -c) shift; CONFIG=$1;;
+    -r) shift; REPORTDIR=$1;;
   esac
   shift
 done
@@ -75,6 +78,9 @@ if [ -n "$username" ]; then
 fi
 if [ -n "$passwd" ]; then
   password=$passwd
+fi
+if [ -n "$REPORTDIR" ]; then
+  REPDIR=$REPORTDIR
 fi
 
 # --------------------------------[ Get the Oracle version of the DataBase ]---
@@ -107,7 +113,7 @@ fi
 if [ $MK_TOPWAITS -eq 1 ]; then
   TWAITHEAD=$PLUGINDIR/twait_head.pls
   TWAITBODY=$PLUGINDIR/twait_body.pls
-fi;
+fi
 if [ $MK_BGWAITS -eq 1 ]; then
   BGWAITHEAD=$PLUGINDIR/bgwait_head.pls
   BGWAITBODY=$PLUGINDIR/bgwait_body.pls

@@ -8,6 +8,12 @@
 # cat it directly to SQL*Plus. Instead we append it to our opening SQL Set.
 # ============================================================================
 
+if [ $DBVER -lt 90 ]; then
+  RLIM_CURSOR=`cat $PLUGINDIR/rlim_cur_8i.pls`
+else
+  RLIM_CURSOR=`cat $PLUGINDIR/rlim_cur_9.pls`
+fi
+
 cat>>$SQLSET<<ENDSQL
 DECLARE
   EXCLUDE_OWNERS VARCHAR2(255);
@@ -158,19 +164,7 @@ DECLARE
        AND b.startup_time=e.startup_time
        AND b.snap_time < e.snap_time;
 
-  CURSOR C_RLim IS
-    SELECT resource_name rname,
-           to_char(current_utilization,'999,999,990') curu,
-           to_char(max_utilization,'999,999,990') maxu,
-           to_char(initial_allocation,'999,999,990') inita,
-           to_char(limit_value,'999,999,990') lim
-      FROM stats\$resource_limit
-     WHERE snap_id = EID
-       AND dbid    = DB_ID
-       AND instance_number = INST_NUM
-       AND (   nvl(current_utilization,0)/limit_value > .8
-            or nvl(max_utilization,0)/limit_value > .8 )
-     ORDER BY rname;
+$RLIM_CURSOR
 
   PROCEDURE print(line IN VARCHAR2) IS
     BEGIN
@@ -188,11 +182,15 @@ DECLARE
   FUNCTION have_rlims RETURN BOOLEAN IS
     CI NUMBER; statement VARCHAR2(500);
     BEGIN
-      statement := 'SELECT COUNT(resource_name) FROM stats\$resource_limit '||
-                   ' WHERE snap_id = EID AND dbid = DB_ID '||
-		   '   AND instance_number = INST_NUM '||
-		   '   AND (   nvl(current_utilization,0)/limit_value > .8 '||
-                   '        or nvl(max_utilization,0)/limit_value > .8 )';
+      IF DBVER < 9 THEN
+        statement := 'SELECT 0 from dual';
+      ELSE
+        statement := 'SELECT COUNT(resource_name) FROM stats\$resource_limit '||
+                     ' WHERE snap_id = EID AND dbid = DB_ID '||
+                     '   AND instance_number = INST_NUM '||
+		     '   AND (   nvl(current_utilization,0)/limit_value > .8 '||
+                     '        or nvl(max_utilization,0)/limit_value > .8 )';
+      END IF;
       EXECUTE IMMEDIATE statement INTO CI;
       IF CI > 0 THEN
         RETURN TRUE;

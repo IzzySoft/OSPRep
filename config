@@ -67,14 +67,15 @@ MK_EP=1
 # Include the common DataFile Stats? [0|1]
 MK_DFSTAT=1
 # Include the TS and File I/O Stats? [0|1]
+# For Oracle 8i set these to "0" to prevent errors
 MK_TSIO=1
 MK_FIO=1
 # Include Segment Statistics (Level 7, Oracle 9.2+)? [0|1]
-MK_SEG_LR=0
+MK_SEG_LR=1
 MK_SEG_PR=1
 MK_SEG_BUSY=1
 MK_SEG_LOCK=1
-MK_SEG_ITL=0
+MK_SEG_ITL=1
 # Include Instance Activity? [0|1]
 MK_INSTACT=0
 # Include Instance Recovery Stats? [0|1]

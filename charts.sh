@@ -40,7 +40,8 @@ if [ -z "$1" ]; then
 fi
 
 # =================================================[ Configuration Section ]===
-BINDIR=${0%/*}
+#BINDIR=${0%/*}
+BINDIR=`pwd`
 CONFIG=$BINDIR/config
 ARGS=$*
 # ------------------------------------------[ process command line options ]---

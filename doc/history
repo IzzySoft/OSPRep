@@ -287,4 +287,10 @@ v0.3.1 (26.07.2004)
 + added some Snapshot Level 7 (segment statistic) information to the report
   (Oracle 9.2 and higher): Top X Logical Reads | Physical Reads | Buffer Busy
   Waits | Row Lock Waits | ITL Waits per segment
-! fixed a problem in the print routine - now it works also with strings > 255 chars
+! fixed a problem in the print routine that sometimes caused the message
+  "*!* Problem in print() *!*" to appear instead of the data ;)
+
+v0.3.2
+-------------------
++ script now accepts the "-r" command line parameter to override the report dir
++ OSPRep should now also work with Oracle 8i (reports are welcome!)
