@@ -25,8 +25,8 @@
   PROCEDURE enqact IS
     CURSOR C_Enq IS
       SELECT e.eq_type name,
-             to_char(e.total_req# - nvl(b.total_req#,0),'99,999,999') reqs,
-             to_char(e.succ_req#  - nvl(b.succ_req#,0),'99,999,999') sreq,
+             to_char(e.total_req# - nvl(b.total_req#,0),'999,999,999,999') reqs,
+             to_char(e.succ_req#  - nvl(b.succ_req#,0),'999,999,999,999') sreq,
 	     to_char(e.failed_req# - nvl(b.failed_req#,0),'99,999,999') freq,
              to_char(100*((e.failed_req# - nvl(b.failed_req#,0))/
                    (e.total_req# - nvl(b.total_req#,0))),'990.00') pctfail,
@@ -47,7 +47,7 @@
          AND e.instance_number    = INST_NUM
          AND b.instance_number(+) = e.instance_number
          AND b.eq_type(+) = e.eq_type
-         AND e.total_wait# - nvl(b.total_wait#,0) > 0
+         AND e.total_wait# - nvl(b.total_wait#,0) <> 0
        ORDER BY waits desc, reqs desc;
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="enq">Enqueue Activity</A>'||

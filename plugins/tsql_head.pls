@@ -102,7 +102,7 @@
   -- Get CPU parse of all sessions
   PROCEDURE get_parsecpupct (oval OUT VARCHAR2) IS
     BEGIN
-     SELECT to_char((100*a.total/b.total),'990.00')||'%' INTO oval FROM
+     SELECT to_char((100*a.total/b.total),'999,999,990.00')||'%' INTO oval FROM
        ( SELECT (e.value - b.value) total
            FROM stats$sysstat b, stats$sysstat e
           WHERE b.snap_id = BID
@@ -145,7 +145,7 @@
 				 (e.executions - nvl(b.executions,0))),
 				 '999,999,990.0') getsperexec,
 	      to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/gets,
-			  '990.0') pcttotal,
+			  '999,999,990.0') pcttotal,
 	      (e.cpu_time - nvl(b.cpu_time,0))/1000 cputime,
 	      (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
               nvl((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
@@ -221,7 +221,7 @@
 				 (e.executions - nvl(b.executions,0))),
 				 '999,999,990.0') readsperexec,
 	      to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/phyr,
-			  '990.0') pcttotal,
+			  '999,999,990.0') pcttotal,
 	      (e.cpu_time - nvl(b.cpu_time,0))/1000 cputime,
 	      (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
               nvl((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,

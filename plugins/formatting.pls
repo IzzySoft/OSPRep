@@ -1,8 +1,14 @@
-  FUNCTION format_fsize(fs IN NUMBER) RETURN VARCHAR2 IS
-    string VARCHAR2(50);
+  FUNCTION format_fsize(fs IN OUT NUMBER) RETURN VARCHAR2 IS
+    string VARCHAR2(50); signed NUMBER;
     BEGIN
       IF fs IS NULL THEN
         RETURN '&nbsp;';
+      END IF;
+      IF fs < 0 THEN
+        signed := 1;
+	fs := (-1) * fs;
+      ELSE
+        signed := 0;
       END IF;
       IF fs/1024 > 999 THEN
         IF fs/1024/1024 > 999 THEN
@@ -17,16 +23,24 @@
       ELSE
         string := to_char(round(fs/1024,1),'990.0')||' K';
       END IF;
+      IF signed = 1 THEN
+        string := '- '||string;
+      END IF;
       RETURN string;
     EXCEPTION
       WHEN OTHERS THEN RETURN SQLERRM;
     END;
 
-  FUNCTION format_stime(st IN NUMBER,sdiv IN NUMBER) RETURN VARCHAR2 IS
-    string VARCHAR2(50); mt NUMBER;
+  FUNCTION format_stime(st IN OUT NUMBER,sdiv IN NUMBER) RETURN VARCHAR2 IS
+    string VARCHAR2(50); mt NUMBER; signed NUMBER;
     BEGIN
       IF st IS NULL THEN
         RETURN '&nbsp;';
+      ELSIF st < 0 THEN
+        signed := 1;
+	st := (-1) * st;
+      ELSE
+        signed := 0;
       END IF;
       IF sdiv = 10 THEN
         string := '.'||trim(to_char(mod(st,sdiv),'0'));
@@ -55,11 +69,14 @@
           string := trim(to_char(mod(mt,24),'90'))||':'||string; -- h
           mt := round(mt/24);
           IF mt > 365 THEN
-            RETURN round(mt/365)||'y '||to_char(mod(mt,365))||'d '||string;
+            string := round(mt/365)||'y '||to_char(mod(mt,365))||'d '||string;
           ELSIF mt > 1 THEN
-            RETURN mt||'d '||string;
+            string := mt||'d '||string;
           END IF;
         END IF;
+      END IF;
+      IF signed = 1 THEN
+        string := '- '||string;
       END IF;
       RETURN string;
     EXCEPTION

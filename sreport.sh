@@ -12,7 +12,7 @@
 # well as recommendations for additions are always welcome.
 #                                                              Itzchak Rehberg
 # =============================================================================
-#
+. ./version
 # =======================================================[ Header / Syntax ]===
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
