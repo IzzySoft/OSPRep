@@ -137,6 +137,18 @@
            leave it off. Besides: if you already turned the "Latch Activity"
            (<code>MK_LACT</code>) off, the "Latch Miss Sources" will be
            suppressed anyway.</td></tr>
+   <tr><td class="td_name"><code>MK_IORA</code></td>
+       <td class="text">Whether the "Initialization Parameters" segment should be
+           included with the report. This block lists up all initialization
+           parameters as used with the <code>init.ora</code> file, and the changes
+           made between the first and the last snapshot (e.g. with the
+           <code>ALTER SYSTEM</code> command).</td></tr>
+   <tr><td class="td_name"><code>MK_SGASUM</code></td>
+       <td class="text" rowspan="2">This is for the "SGA Memory Summary" and
+           "SGA Breakdown Difference" segments. If you set <code>MK_SGASUM=0</code>,
+           the setting for <code>MK_SGABREAK</code> will be ignored and handled
+           as if it was set to 0 as well.</td></tr>
+   <tr><td class="td_name"><code>MK_SGABREAK</code></td></tr>
    <tr><td class="td_name"><code>WR_*</code></td>
        <td class="text" rowspan="2">These are the values used for warnings (<code>WR_*</code>)
            and alerts (<code>AR_*</code>) in the <a href="results.html#go4colors">Go4Colors</a>
