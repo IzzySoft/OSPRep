@@ -84,6 +84,7 @@ document.close();
  <OPTION VALUE="libmiss">Library Cache HitMisses</OPTION>
  <OPTION VALUE="rpp">Library Cache ReloadsPerPin</OPTION>
  <OPTION VALUE="ghr">Library Cache GetHitRatio</OPTION>
+ <OPTION VALUE="rcr">Row Cache Ratio</OPTION>
  <OPTION VALUE="cfr">Chained Fetch Ratio</OPTION>
  <OPTION VALUE="logon">Logons</OPTION>
  <OPTION VALUE="opencur">Open Cursors</OPTION>

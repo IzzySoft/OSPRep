@@ -227,6 +227,23 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
+  PROCEDURE get_rowcacheratio(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+    CURSOR C_RowR IS
+      SELECT arrname||'['||snap_id||'] = '||round(100*sum(getmisses)/sum(gets),3)||';' line
+        FROM stats\$rowcache_summary
+       WHERE instance_number=instnum
+	 AND dbid=db_id
+	 AND snap_id BETWEEN bid AND eid
+       GROUP BY snap_id;
+    BEGIN
+      print(CHR(10)||'var '||arrname||' = new Array();');
+      FOR rec IN C_RowR LOOP
+        print(rec.line);
+      END LOOP;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN NULL;
+    END;
+
 
 BEGIN
   OSPVER := '$version';
@@ -286,6 +303,7 @@ BEGIN
   get_sysstat(DBID,INST_NUM,BID,EID,'opened cursors current','opencur');
   get_librpp(DBID,INST_NUM,BID,EID,'rpp');
   get_libghr(DBID,INST_NUM,BID,EID,'ghr');
+  get_rowcacheratio(DBID,INST_NUM,BID,EID,'rcr');
 
 END;
 /

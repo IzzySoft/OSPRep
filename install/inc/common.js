@@ -72,6 +72,9 @@ function drawStat(stat) {
     case "ghr"  : parent.dstat = parent.ghr;
                   parent.dname = "Pct Library Cache GetHitRatio";
 		  break;
+    case "rcr"  : parent.dstat = parent.rcr;
+                  parent.dname = "Pct Row Cache Ratio";
+		  break;
   }
   location.reload();
 }
