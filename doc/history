@@ -225,3 +225,10 @@ v0.2.5 (02.03.2004)
 * made the Delta and CumAvg charts more accurate
 + more modularization: init.ora parameters and SGA Stats can now be switched
   off (see config)
+
+v0.2.6
+-------------------
+! Navigation links for SGA and init.ora Stats have been set even if these stats
+  were turned off via the config
++ Modularization: Dictionary- and Library Cache Statistics can now be switched
+  off (see config)

@@ -20,6 +20,8 @@ DECLARE
   MK_IORA NUMBER;
   MK_SGASUM NUMBER;
   MK_SGABREAK NUMBER;
+  MK_DC NUMBER;
+  MK_LC NUMBER;
   WR_IE_BUFFNW NUMBER;
   AR_IE_BUFFNW NUMBER;
   WR_IE_REDONW NUMBER;
@@ -760,65 +762,6 @@ DECLARE
          AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
        GROUP BY undotsn;
 
-  CURSOR C_CAD (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT lower(b.parameter) param,
-           to_char(e.gets - b.gets,'9,999,999,990') gets,
-	   nvl(to_char(decode(e.gets, b.gets, NULL,
-	                (e.getmisses - b.getmisses) *100 /
-			(e.gets - b.gets)),'990.00'),'&nbsp') getm,
-	   to_char(e.scans - b.scans,'9,990') scans,
-	   nvl(to_char(decode(e.scans, b.scans, NULL,
-	                (e.scanmisses - b.scanmisses) *100 /
-			(e.scans - b.scans)),'990.00'),'&nbsp;') scanm,
-	   to_char(e.modifications - b.modifications,'999,999,990') mods,
-	   to_char(e.usage,'9,999,990') usage,
-	   nvl(to_char(decode(nvl(e.total_usage,0),0,0,
-	                 e.usage *100/e.total_usage),'990.00'),'&nbsp') sgapct
-      FROM stats\$rowcache_summary b, stats\$rowcache_summary e
-     WHERE b.snap_id = bid
-       AND e.snap_id = eid
-       AND b.dbid    = db_id
-       AND e.dbid    = db_id
-       AND b.dbid    = e.dbid
-       AND b.instance_number = instnum
-       AND e.instance_number = instnum
-       AND b.instance_number = e.instance_number
-       AND b.parameter       = e.parameter
-       AND e.gets - b.gets   > 0
-     ORDER BY param;
-
-  CURSOR C_CAM (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT b.namespace namespace,
-           to_char(e.gets - b.gets,'999,999,990') gets,
-	   nvl(to_char(decode(e.gets,b.gets,NULL,
-	                100 - (e.gethits - b.gethits) * 100 /
-			(e.gets - b.gets)),'990.00'),'&nbsp;') getm,
-           decode(e.gets,b.gets,NULL,
-	                100 - (e.gethits - b.gethits) * 100 /
-			(e.gets - b.gets)) ngetm,
-	   to_char(e.pins - b.pins,'9,999,999,990') pins,
-	   nvl(to_char(decode(e.pins,b.pins,NULL,
-	                100 - (e.pinhits - b.pinhits) *100 /
-			(e.pins - b.pins)),'990.00'),'&nbsp;') pinm,
-	   to_char(e.reloads - b.reloads,'9,999,990') reloads,
-	   to_char(e.invalidations - b.invalidations,'999,999,990') inv,
-	   decode(e.gets,b.gets,NULL,
-	          (e.reloads - b.reloads) / (e.gets - b.gets)) rpg,
-	   decode(e.gets,b.gets,NULL,
-	          (e.invalidations - b.invalidations) / (e.gets - b.gets)) ipg
-      FROM stats\$librarycache b, stats\$librarycache e
-     WHERE b.snap_id = bid
-       AND e.snap_id = eid
-       AND b.dbid    = db_id
-       AND e.dbid    = db_id
-       AND b.dbid    = e.dbid
-       AND b.instance_number = instnum
-       AND e.instance_number = instnum
-       AND b.instance_number = e.instance_number
-       AND b.namespace       = e.namespace
-       AND e.gets - b.gets   > 0
-     ORDER BY namespace;
-
   CURSOR C_RLim (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT resource_name rname,
            to_char(current_utilization,'999,999,990') curu,
@@ -1054,6 +997,9 @@ if [ -n "$LACTHEAD" ]; then
     cat $LMSHEAD>>$SQLSET
   fi
 fi
+if [ -n "$CACHEHEAD" ]; then
+  cat $CACHEHEAD>>$SQLSET
+fi
 if [ -n "$SGAHEAD" ]; then
   cat $SGAHEAD>>$SQLSET
 fi
@@ -1075,6 +1021,8 @@ BEGIN
   MK_IORA     := :MK_IORA;
   MK_SGASUM   := :MK_SGASUM;
   MK_SGABREAK := :MK_SGABREAK;
+  MK_DC       := :MK_DC;
+  MK_LC       := :MK_LC;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
   WR_IE_REDONW := :WR_IE_REDONW;
@@ -1202,7 +1150,11 @@ BEGIN
     L_LINE := L_LINE||' [ <A HREF="#latches">Latches</A> ]';
   END IF;
   print(L_LINE);
-  L_LINE := ' [ <A HREF="#caches">Caches</A> ]';
+  IF MK_DC + MK_LC > 0 THEN
+    L_LINE := ' [ <A HREF="#caches">Caches</A> ]';
+  ELSE
+    L_LINE := '';
+  END IF;
   IF MK_SGASUM = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#sga">SGA</A> ]';
   END IF;

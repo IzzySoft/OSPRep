@@ -64,6 +64,9 @@ MK_IORA=1
 # If MK_SGASUM=0, SGABREAK is excluded automatically
 MK_SGASUM=1
 MK_SGABREAK=0
+# Create the statistics for DictionaryCache and LibraryCache? [0|1]
+MK_DC=1
+MK_LC=1
 
 # -------------------------------------------------------------[ Go4Colors ]---
 # WR_* stands for WarnRatio, AR_* for AlertRatio. The next letters indicate the
