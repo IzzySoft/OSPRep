@@ -13,6 +13,7 @@ DECLARE
   MK_ALLWAITS NUMBER;
   MK_BGWAITS NUMBER;
   MK_INSTACT NUMBER;
+  MK_USSTAT NUMBER;
   L_LINE VARCHAR2(4000);
   R_TITLE VARCHAR(200);
   TABLE_OPEN VARCHAR(100); -- Table Attributes
@@ -673,44 +674,23 @@ DECLARE
        AND e.usn     = b.usn
      ORDER BY e.usn;
 
-  CURSOR C_USS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
-    SELECT undotsn,
-           to_char(sum(undoblks),'99,999,999') undob,
-	   to_char(sum(txncount),'9,999,999,999,999') txcnt,
-	   to_char(max(maxquerylen),'999,999,999') maxq,
-	   to_char(max(maxconcurrency),'999,999') maxc,
-	   to_char(sum(ssolderrcnt),'99,999') snol,
-	   to_char(sum(nospaceerrcnt),'99,999') nosp,
-	   sum(unxpstealcnt)||'/'||sum(unxpblkrelcnt)||'/'||
-	   sum(unxpblkreucnt)||' / '||sum(expstealcnt)||'/'||
-	   sum(expblkrelcnt)||'/'||sum(expblkreucnt) blkst
-      FROM stats\$undostat
-     WHERE dbid = db_id
-       AND instance_number = instnum
-       AND end_time > to_date(btime, 'DD.MM.YYYY HH24:MI:SS')
-       AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
-     GROUP BY undotsn;
-
-  CURSOR C_UST (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
-    SELECT undotsn, endt,undob,txcnt,maxq,maxc,snol,nosp,blkst
-    FROM ( SELECT undotsn,
-                to_char(end_time,'DD.MM.YYYY HH24:MI') endt,
-                to_char(undoblks,'99,999,999') undob,
-                to_char(txncount,'99,999,999') txcnt,
-	        to_char(maxquerylen,'999,999,999') maxq,
-	        to_char(maxconcurrency,'999,999') maxc,
-	        to_char(ssolderrcnt,'99,999') snol,
-	        to_char(nospaceerrcnt,'99,999') nosp,
-	        unxpstealcnt||'/'||unxpblkrelcnt||'/'||
-	        unxpblkreucnt||' / '||expstealcnt||'/'||
-	        expblkrelcnt||'/'||expblkreucnt blkst
-           FROM stats\$undostat
-          WHERE dbid = db_id
-            AND instance_number = instnum
-            AND end_time > to_date(btime, 'DD.MM.YYYY HH24:MI:SS')
-            AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
-       ORDER BY begin_time desc )
-   WHERE rownum < 25;
+    CURSOR C_USS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
+      SELECT undotsn,
+             to_char(sum(undoblks),'99,999,999') undob,
+	     to_char(sum(txncount),'9,999,999,999,999') txcnt,
+	     to_char(max(maxquerylen),'999,999,999') maxq,
+	     to_char(max(maxconcurrency),'999,999') maxc,
+	     to_char(sum(ssolderrcnt),'99,999') snol,
+	     to_char(sum(nospaceerrcnt),'99,999') nosp,
+	     sum(unxpstealcnt)||'/'||sum(unxpblkrelcnt)||'/'||
+	     sum(unxpblkreucnt)||' / '||sum(expstealcnt)||'/'||
+	     sum(expblkrelcnt)||'/'||sum(expblkreucnt) blkst
+        FROM stats\$undostat
+       WHERE dbid = db_id
+         AND instance_number = instnum
+         AND end_time > to_date(btime, 'DD.MM.YYYY HH24:MI:SS')
+         AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
+       GROUP BY undotsn;
 
   CURSOR C_LAA (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT b.name name,
@@ -1045,6 +1025,9 @@ fi
 if [ -n "$INSTACTHEAD" ]; then
   cat $INSTACTHEAD>>$SQLSET
 fi
+if [ -n "$USSTATHEAD" ]; then
+  cat $USSTATHEAD>>$SQLSET
+fi
 
 cat>>$SQLSET<<ENDSQL
 BEGIN
@@ -1055,6 +1038,7 @@ BEGIN
   MK_ALLWAITS := :MK_ALLWAITS;
   MK_BGWAITS := :MK_BGWAITS;
   MK_INSTACT := :MK_INSTACT;
+  MK_USSTAT  := :MK_USSTAT;
   dbms_output.enable(1000000);
   R_TITLE := 'StatsPack Report for $ORACLE_SID';
   TABLE_OPEN := '<TABLE ALIGN="center" BORDER="1">';

@@ -58,6 +58,10 @@ if [ $MK_INSTACT -eq 1 ]; then
   INSTACTHEAD=$PLUGINDIR/instact_head.pls
   INSTACTBODY=$PLUGINDIR/instact_body.pls
 fi
+if [ $MK_USSTAT -eq 1 ]; then
+  USSTATHEAD=$PLUGINDIR/undo_head.pls
+  USSTATBODY=$PLUGINDIR/undo_body.pls
+fi
 
 # ------------------------------------------[ process command line options ]---
 while [ "$1" != "" ] ; do
@@ -165,17 +169,19 @@ Set Echo Off
 variable MK_ALLWAITS NUMBER;
 variable MK_BGWAITS NUMBER;
 variable MK_INSTACT NUMBER;
+variable MK_USSTAT NUMBER;
 BEGIN
   :MK_ALLWAITS := $MK_ALLWAITS;
   :MK_BGWAITS  := $MK_BGWAITS;
   :MK_INSTACT  := $MK_INSTACT;
+  :MK_USSTAT   := $MK_USSTAT;
 END;
 /
 SPOOL $REPDIR/${ORACLE_SID}.html
 ENDSQL
 
 . $BINDIR/ospopen
-#cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls >osp.out
-cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
+#cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $BINDIR/ospout04.pls >osp.out
+cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $BINDIR/ospout04.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
 rm $SQLSET
 rm $TMPOUT

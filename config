@@ -45,6 +45,12 @@ START_ID=0
 END_ID=0
 
 # --------------------------------------------------------------[ Features ]---
+# Include All Waits? [0|1]
+MK_ALLWAITS=0
 # Include Background Waits? [0|1]
 MK_BGWAITS=0
+# Include Instance Activity? [0|1]
+MK_INSTACT=0
+# Include Undo Segment _Statistics_? [0|1]
+MK_USSTAT=0
 # ===================================================================[ EOF ]===
