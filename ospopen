@@ -72,7 +72,7 @@ DECLARE
   AR_LC_RLPRQ NUMBER;
   WR_LC_INVPRQ NUMBER;
   AR_LC_INVPRQ NUMBER;
-  DB_UPTIME NUMBER;
+  DB_UPTIME NUMBER; DB_BLOCKSIZE NUMBER;
   L_LINE VARCHAR2(4000);
   R_TITLE VARCHAR(200);
   TABLE_OPEN VARCHAR(100); -- Table Attributes
@@ -414,6 +414,13 @@ BEGIN
     DBSUBVER  := TO_NUMBER(SUBSTR(VERSN,INSTR(VERSN,'.')+1,INSTR(VERSN,'.',1,2)-1 -INSTR(VERSN,'.')));
     HOST_NAME := R_SnapBind.host_name;
   END LOOP;
+
+  SELECT value INTO DB_BLOCKSIZE
+    FROM stats\$parameter
+   WHERE name='db_block_size'
+     AND snap_id = EID
+     AND instance_number=INST_NUM
+     AND dbid=DBID;
 
   -- HTML Head
   L_LINE := '<HTML><HEAD>'||CHR(10)||

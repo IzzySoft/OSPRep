@@ -1,5 +1,6 @@
 
   PROCEDURE tsio IS
+    RDSIZ VARCHAR2(100); WRTSIZ VARCHAR2(100);
     CURSOR C_TSIO (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER) IS
       SELECT e.tsname tsname,
              to_char(sum(e.phyrds - nvl(b.phyrds,0)),'9,999,999,990') reads,
@@ -7,7 +8,7 @@
 	     to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
 	           0,0,
 	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10),
-		   '9,990.0') avgrd,
+		   '999,990.0') avgrd,
              decode(sum(e.phyrds - nvl(b.phyrds,0)),
 	           0,0,
 	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10) avems,
@@ -28,7 +29,9 @@
 		    sum(e.wait_count - nvl(b.wait_count,0)))*10),
 		   '9,990.0') avgbw,
              sum(e.phywrts - nvl(b.phywrts,0)) +
-	     sum(e.phyrds - nvl(b.phyrds,0)) ios
+	     sum(e.phyrds - nvl(b.phyrds,0)) ios,
+             sum(e.phyblkrd - nvl(b.phyblkrd,0))*DB_BLOCKSIZE/1024/1024 mbread,
+             sum(e.phyblkwrt - nvl(b.phyblkwrt,0))*DB_BLOCKSIZE/1024/1024 mbwrite
         FROM stats$filestatxs e, stats$filestatxs b
        WHERE b.snap_id(+) = bid
          AND e.snap_id    = eid
@@ -49,7 +52,7 @@
 	     to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
 	           0,0,
 	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10),
-		   '9,990.0') avgrd,
+		   '999,990.0') avgrd,
              decode(sum(e.phyrds - nvl(b.phyrds,0)),
 	           0,0,
 	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10) avems,
@@ -70,7 +73,9 @@
 		    sum(e.wait_count - nvl(b.wait_count,0)))*10),
 		   '9,990.0') avgbw,
              sum(e.phywrts - nvl(b.phywrts,0)) +
-	     sum(e.phyrds - nvl(b.phyrds,0)) ios
+	     sum(e.phyrds - nvl(b.phyrds,0)) ios,
+             sum(e.phyblkrd - nvl(b.phyblkrd,0))*DB_BLOCKSIZE/1024/1024 mbread,
+             sum(e.phyblkwrt - nvl(b.phyblkwrt,0))*DB_BLOCKSIZE/1024/1024 mbwrite
         FROM stats$tempstatxs e, stats$tempstatxs b
        WHERE b.snap_id(+) = bid
          AND e.snap_id    = eid
@@ -87,21 +92,40 @@
        GROUP BY e.tsname
        ORDER BY ios desc;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9">TableSpace IO Summary Statistics'||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="11">TableSpace IO Summary Statistics'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
 	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
       print(L_LINE);
-      L_LINE := ' <TR><TD COLSPAN="9" ALIGN="center">Ordered by IOs (Reads + Writes)'||
-                ' desc</TD></TR>';
+      L_LINE := ' <TR><TD COLSPAN="11" ALIGN="center">Ordered by IOs (Reads + Writes)'||
+                ' desc<BR>ReadSize/WriteSize report the physical IO Size</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Reads</TH>'||
                 '<TH CLASS="th_sub">AvgReads/s</TH><TH CLASS="th_sub">AvgRd (ms)</TH>'||
 	        '<TH CLASS="th_sub">Avg Blks/Rd</TH>';
       print(L_LINE);
       L_LINE:= '<TH CLASS="th_sub">Writes</TH><TH CLASS="th_sub">Avg Wrt/s</TH>'||
+               '<TH CLASS="th_sub">ReadSize</TH><TH CLASS="th_sub">WriteSize</TH>'||
                '<TH CLASS="th_sub">Buffer Waits</TH><TH CLASS="th_sub">Avg Buf Wt (ms)</TH></TR>';
       print(L_LINE);
       FOR R_TSIO IN C_TSIO(DBID,INST_NUM,BID,EID,ELA) LOOP
+        IF R_TSIO.mbread > 1024 THEN
+          IF R_TSIO.mbread/1024 > 1024 THEN
+            RDSIZ := to_char(R_TSIO.mbread/1024/1024,'999,999,990.00')||' T';
+          ELSE
+            RDSIZ := to_char(R_TSIO.mbread/1024,'999,999,990.00')||' G';
+          END IF;
+        ELSE
+          RDSIZ := to_char(R_TSIO.mbread,'999,999,990.00')||' M';
+        END IF;
+        IF R_TSIO.mbwrite > 1024 THEN
+          IF R_TSIO.mbwrite/1024 > 1024 THEN
+            WRTSIZ := to_char(R_TSIO.mbwrite/1024/1024,'999,999,990.00')||' T';
+          ELSE
+            WRTSIZ := to_char(R_TSIO.mbwrite/1024,'999,999,990.00')||' G';
+          END IF;
+        ELSE
+          WRTSIZ := to_char(R_TSIO.mbwrite,'999,999,990.00')||' M';
+        END IF;
         S1 := alert_gt_warn(R_TSIO.bprn,I1*AR_TS_BLKRD/100,I1*WR_TS_BLKRD/100);
         S2 := alert_gt_warn(R_TSIO.avems,AR_TS_RD,WR_TS_RD);
         L_LINE := ' <TR><TD CLASS="td_name">'||R_TSIO.tsname||'</TD><TD ALIGN="right">'||
@@ -110,16 +134,22 @@
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right"'||S1||'>'||R_TSIO.bpr||
                   '</TD><TD ALIGN="right">'||R_TSIO.writes||'</TD><TD ALIGN="right">'||
-	          R_TSIO.wps||'</TD><TD ALIGN="right">'||R_TSIO.waits||
+	          R_TSIO.wps||'</TD><TD ALIGN="right">'||RDSIZ||'</TD>';
+        print(L_LINE);
+        L_LINE := '<TD ALIGN="right">'||WRTSIZ||'</TD>'||
+                  '<TD ALIGN="right">'||R_TSIO.waits||
                   '</TD><TD ALIGN="right">'||R_TSIO.avgbw||'</TD></TR>';
         print(L_LINE);
       END LOOP;
       print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+--      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN
+        print(' <TR><TD COLSPAN="11">SQLERRM</TD></TR>'||TABLE_CLOSE);
     END;
 
   PROCEDURE fio IS
+    RDSIZ VARCHAR2(100); WRTSIZ VARCHAR2(100);
     CURSOR C_FileIO (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER) IS
       SELECT e.tsname tsname,
              e.filename filename,
@@ -129,7 +159,7 @@
 	           0,0,
 	           ((e.readtim - nvl(b.readtim,0)) / 
 		    (e.phyrds - nvl(b.phyrds,0))) * 10),
-		   '9,990.0') avgrd,
+		   '999,990.0') avgrd,
              decode(e.phyrds - nvl(b.phyrds,0),
 	           0,0,
 	           ((e.readtim - nvl(b.readtim,0)) / 
@@ -149,7 +179,9 @@
 	           0,0,
 		   ((e.time - nvl(b.time,0)) /
 		    (e.wait_count - nvl(b.wait_count,0)))*10),
-		   '9,990.0') avgbw
+		   '9,990.0') avgbw,
+             (e.phyblkrd - nvl(b.phyblkrd,0))*DB_BLOCKSIZE/1024/1024 mbread,
+             (e.phyblkwrt - nvl(b.phyblkwrt,0))*DB_BLOCKSIZE/1024/1024 mbwrite
         FROM stats$filestatxs e, stats$filestatxs b
        WHERE b.snap_id(+) = bid
          AND e.snap_id    = eid
@@ -170,7 +202,7 @@
 	     to_char(decode(e.phyrds - nvl(b.phyrds,0),
 	           0,0,
 	           ((e.readtim - nvl(b.readtim,0)) / (e.phyrds - nvl(b.phyrds,0))) * 10),
-		   '9,990.0') avgrd,
+		   '999,990.0') avgrd,
              decode(e.phyrds - nvl(b.phyrds,0),
 	           0,0,
 	           ((e.readtim - nvl(b.readtim,0)) / 
@@ -190,7 +222,9 @@
 	           0,0,
 		   ((e.time - nvl(b.time,0)) /
 		    (e.wait_count - nvl(b.wait_count,0)))*10),
-		   '9,990.0') avgbw
+		   '9,990.0') avgbw,
+             (e.phyblkrd - nvl(b.phyblkrd,0))*DB_BLOCKSIZE/1024/1024 mbread,
+             (e.phyblkwrt - nvl(b.phyblkwrt,0))*DB_BLOCKSIZE/1024/1024 mbwrite
         FROM stats$tempstatxs e, stats$tempstatxs b
        WHERE b.snap_id(+) = bid
          AND e.snap_id    = eid
@@ -206,22 +240,43 @@
                (e.phywrts - nvl(b.phywrts,0) ) ) > 0
        ORDER BY tsname,filename;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10">File IO Summary Statistics'||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="12">File IO Summary Statistics'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
 	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></TH></TR>';
       print(L_LINE);
-      L_LINE := ' <TR><TD COLSPAN="10" ALIGN="center">Ordered by TableSpace, File'||
-                '</TD></TR>';
+      L_LINE := ' <TR><TD COLSPAN="12" ALIGN="center">Ordered by TableSpace, File'||
+                '<BR>ReadSize/WriteSize report the physical IO Size</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Filename</TH>'||
-                '<TH CLASS="th_sub">Reads</TH><TH CLASS="th_sub">AvgReads/s</TH>'||
+                '<TH CLASS="th_sub">Reads</TH><TH CLASS="th_sub">Avg Reads/s</TH>'||
 	        '<TH CLASS="th_sub">AvgRd (ms)</TH>';
       print(L_LINE);
-      L_LINE:= '<TH CLASS="th_sub">Avg Blks/Rd</TH><TH CLASS="th_sub">Writes</TH>'||
-               '<TH CLASS="th_sub">Avg Wrt/s</TH><TH CLASS="th_sub">Buffer Waits</TH>'||
-	       '<TH CLASS="th_sub">Avg Buf Wt (ms)</TH></TR>';
+      L_LINE := '<TH CLASS="th_sub">Avg Blks/Rd</TH><TH CLASS="th_sub">Writes</TH>'||
+                '<TH CLASS="th_sub">Avg Wrt/s</TH><TH CLASS="th_sub">Read Size</TH>'||
+                '<TH CLASS="th_sub">Write Size</TH>';
+      print(L_LINE);
+      L_LINE := '<TH CLASS="th_sub">Buffer Waits</TH>'||
+	        '<TH CLASS="th_sub">Avg Buf Wt (ms)</TH></TR>';
       print(L_LINE);
       FOR R_TSIO IN C_FileIO(DBID,INST_NUM,BID,EID,ELA) LOOP
+        IF R_TSIO.mbread > 1024 THEN
+          IF R_TSIO.mbread/1024 > 1024 THEN
+            RDSIZ := to_char(R_TSIO.mbread/1024/1024,'999,999,990.00')||' T';
+          ELSE
+            RDSIZ := to_char(R_TSIO.mbread/1024,'999,999,990.00')||' G';
+          END IF;
+        ELSE
+          RDSIZ := to_char(R_TSIO.mbread,'999,999,990.00')||' M';
+        END IF;
+        IF R_TSIO.mbwrite > 1024 THEN
+          IF R_TSIO.mbwrite/1024 > 1024 THEN
+            WRTSIZ := to_char(R_TSIO.mbwrite/1024/1024,'999,999,990.00')||' T';
+          ELSE
+            WRTSIZ := to_char(R_TSIO.mbwrite/1024,'999,999,990.00')||' G';
+          END IF;
+        ELSE
+          WRTSIZ := to_char(R_TSIO.mbwrite,'999,999,990.00')||' M';
+        END IF;
         S1 := alert_gt_warn(R_TSIO.bprn,I1*AR_TS_BLKRD/100,I1*WR_TS_BLKRD/100);
         S2 := alert_gt_warn(R_TSIO.avems,AR_TS_RD,WR_TS_RD);
         L_LINE := ' <TR><TD CLASS="td_name">'||R_TSIO.tsname||'</TD><TD CLASS="td_name">'||
@@ -231,11 +286,16 @@
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right"'||S1||'>'||R_TSIO.bpr||'</TD><TD ALIGN="right">'||
                   R_TSIO.writes||'</TD><TD ALIGN="right">'||R_TSIO.wps||
+                  '</TD><TD ALIGN="right">'||RDSIZ||'</TD>';
+        print(L_LINE);
+        L_LINE := '</TD><TD ALIGN="right">'||WRTSIZ||'</TD>'||
 	          '</TD><TD ALIGN="right">'||R_TSIO.waits||'</TD><TD ALIGN="right">'||
                   R_TSIO.avgbw||'</TD></TR>';
         print(L_LINE);
       END LOOP;
       print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+--      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN
+        print(' <TR><TD COLSPAN="11">SQLERRM</TD></TR>'||TABLE_CLOSE);
     END;
