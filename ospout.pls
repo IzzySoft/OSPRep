@@ -712,18 +712,42 @@
             ' <TR><TD COLSPAN="7" ALIGN="center">Enqueue Stats gathered prior to 9i '||
 	    'should not be compared with 9i data<BR>Ordered by Waits desc, Requests desc';
   print(L_LINE);
-  L_LINE := '<DIV ALIGN="justify">TX means transaction locks, indicating multiple '||
-            'users try modifying the same row in the database (row-level lock). '||
-	    'TM stands for Table locks and point to the possibility ';
-  print(L_LINE);
-  L_LINE := 'of e.g. foreign key constraints not being indexed. ST notes '||
-            'space-management locks which could be caused by using permanent '||
-	    'tablespaces for sorting (rather than temporary), ';
-  print(L_LINE);
-  L_LINE := 'or by dynamic allocation resulting from inadequate storage clauses. '||
-            'In the latter case, using locally-managed tablespaces may help you '||
-	    'avoiding this problem.</DIV></TD></TR>';
-  print(L_LINE);
+      L_LINE := '<TABLE BORDER="0"><TR><TD CLASS="smallname">CF</TD><TD '||
+                'CLASS="small"><B>Control file schema global enqueue</TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TD CLASS="smallname">CU</TD><TD CLASS="small"><B>Cursor '||
+                'Bind</B></TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TD CLASS="smallname">DX</TD><TD CLASS="small"><B>'||
+                'Distributed Transactions</B></TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TD CLASS="smallname">HW</TD><TD CLASS="small"><B>'||
+                'Space Management</B> operations on a specific segment'||
+		'</TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TD CLASS="smallname">SQ</TD><TD CLASS="small"><B>'||
+                'SeQuences</B> not being cached, having a to small cache size '||
+		'or being aged out of the shared pool. ';
+      print(L_LINE);
+      L_LINE := 'Consider pinning sequences or increasing the '||
+                'shared_pool_size.</TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TD CLASS="smallname">ST</TD><TD CLASS="small"><B>'||
+                'Space management locks</B> could be caused by using permanent '||
+		'tablespaces for sorting (rather than temporary), or ';
+      print(L_LINE);
+      L_LINE := 'by dynamic allocation resulting from inadequate storage clauses. '||
+                'In the latter case, using locally-managed tablespaces may help '||
+		'avoiding this problem.</TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TD CLASS="smallname">TM</TD><TD CLASS="small"><B>'||
+                'Table locks</B> point to the possibility of e.g. foreign key '||
+		'constraints not being indexed</TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TD CLASS="smallname">TX</TD><TD CLASS="small"><B>'||
+                'Transaction locks</B> indicate multiple users try modifying '||
+		'the same row of a table (row-level-lock)</TD></TR></TABLE></DIV></TD></TR>';
+      print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Eq</TH><TH CLASS="th_sub">Requests</TH>'||
             '<TH CLASS="th_sub">Succ Gets</TH><TH CLASS="th_sub">Failed Gets</TH>'||
 	    '<TH CLASS="th_sub">Waits</TH>';
