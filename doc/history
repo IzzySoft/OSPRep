@@ -8,3 +8,4 @@ v0.0.2 (xx.11.2003)
 + collecting statspack report info via statspack.stat_changes
 + added Session and Cursor/Session to SnapShot Info
 + added Cache Sizes and Load Profile
++ added Instance Efficiency Percentages

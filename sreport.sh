@@ -161,7 +161,7 @@ BEGIN
   -- Navigation
   L_LINE := TABLE_OPEN||'<TR><TD><FONT SIZE=-2>[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
             '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> '||
-            '] [ <A HREF="#memory">Memory</A> ]';
+            '] [ <A HREF="#efficiency">Efficiency</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE :=   ' [ <A HREF="#poolsize">Pool Sizes</A> ] [ <A HREF="#sharedpool">Shared Pool</A>'||
             ' ] [ <A HREF="#bufferpool">Buffer Pool</A> ] [ <A HREF="#sysstat">SysStat</A> ]';
@@ -362,6 +362,55 @@ BEGIN
   L_LINE := ' <TR><TD CLASS="td_name">Transactions</TD><TD ALIGN="right">'||
             to_char(round(TRAN/ELA,2),'99,999,999,990.00')||
             '</TD><TD ALIGN="right">&nbsp;</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- Instance Efficiency Percentages
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="#efficiency">Instance Efficiency Percentages (Target: 100%)</A></TH></TR>'||CHR(10)||
+            ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Efficiency (%)</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  IF RENT = 0
+  THEN S1 := '&nbsp;';
+  ELSE S1 := to_char(round(100*(1-BFWT/GETS),2),'990.00');
+  END IF;
+  L_LINE := ' <TR><TD>Buffer Nowait</TD><TD ALIGN="right">'||
+            to_char(round(100*(1-BFWT/GETS),2),'990.00')||'</TD></TR>'||
+            ' <TR><TD>Redo Nowait</TD><TD ALIGN="right">'||
+            S1||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  IF (SRTM+SRTD) = 0
+  THEN S1 := '&nbsp;';
+  ELSE S1 := to_char(round(100*SRTM/(SRTD+SRTM),2),'990.00');
+  END IF;
+  L_LINE := ' <TR><TD>Buffer Hit</TD><TD ALIGN="right">'||
+            to_char(round(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),2),'990.00')||'</TD></TR>'||
+            ' <TR><TD>In-Memory Sort</TD><TD ALIGN="right">'||
+            S1||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD>Library Hit</TD><TD ALIGN="right">'||
+            to_char(round(100*LHTR,2),'990.00')||'</TD></TR>'||
+            ' <TR><TD>Soft Parse</TD><TD ALIGN="right">'||
+            to_char(round(100*(1-HPRS/PRSE),2),'990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD>Execute to Parse</TD><TD ALIGN="right">'||
+            to_char(round(100*(1-PRSE/EXE),2),'990.00')||'</TD></TR>'||
+            ' <TR><TD>Latch Hit</TD><TD ALIGN="right">'||
+            to_char(round(100*(1-LHR),2),'990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  IF PRSELA = 0
+  THEN S1 := '&nbsp;';
+  ELSE S1 := to_char(round(100*PRSCPU/PRSELA,2),'990.00');
+  END IF;
+  IF TCPU = 0
+  THEN S2 := '&nbsp;';
+  ELSE S2 := to_char(round(100*(1-(PRSCPU/TCPU)),2),'990.00');
+  END IF;
+  L_LINE := ' <TR><TD>Parse CPU to Parse Elapsed</TD><TD ALIGN="right">'||
+            S1||'</TD></TR>'||
+            ' <TR><TD>Non-Parse CPU</TD><TD ALIGN="right">'||
+            S2||'</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
