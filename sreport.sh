@@ -43,9 +43,12 @@ password="pyha#"
 # Top settings
 TOP_N_SQL=5
 
-#--- temporary settings:
-START_ID=1
-END_ID=6
+#--- SnapShot Interval. Set values to 0 for automatic evaluation of latest
+#--- continuous interval (i.e. the interval ending with the latest recording
+#--- SnapShot and starting with the first SnapShot having the same database
+#--- startup time)
+START_ID=0
+END_ID=0
 
 # If called from another script, we may have to change to another directory
 # before generating the reports
@@ -80,6 +83,7 @@ DECLARE
   I1 NUMBER;
   I2 NUMBER;
   I3 NUMBER;
+  MAX_SNAP_ID NUMBER; MIN_SNAP_ID NUMBER; STARTUP_TIME DATE;
   BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER; EDRT NUMBER; EET NUMBER;
   EPC NUMBER; BTIME VARCHAR2(20); ETIME VARCHAR2(20);
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
@@ -110,10 +114,21 @@ DECLARE
   PCBA NUMBER; PCCRBA NUMBER;
   -- StatsPack vor Oracle v9.2 END
 
-  CURSOR C_SnapBind1 (db_id IN NUMBER, instnum IN NUMBER) IS
+  CURSOR C_MaxSnap(db_id IN NUMBER, instnum IN NUMBER) IS
+    SELECT MAX(snap_id) maxid FROM stats\$snapshot
+     WHERE dbid = db_id AND instance_number = instnum;
+
+  CURSOR C_MinSnap(db_id IN NUMBER, instnum IN NUMBER, maxsnap IN NUMBER) IS
+    SELECT MIN(snap_id) minid FROM stats\$snapshot
+     WHERE dbid = db_id AND instance_number = instnum
+       AND startup_time = (SELECT startup_time FROM stats\$snapshot
+                            WHERE dbid = db_id AND instance_number = instnum
+			      AND snap_id = maxsnap);
+  
+  CURSOR C_SnapBind (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER) IS
     SELECT parallel,version,host_name
       FROM stats\$database_instance di,stats\$snapshot s
-     WHERE s.snap_id=$START_ID AND s.dbid=db_id AND s.instance_number=instnum
+     WHERE s.snap_id=bid AND s.dbid=db_id AND s.instance_number=instnum
        AND di.dbid=s.dbid AND di.instance_number=s.instance_number
        AND di.startup_time=s.startup_time;
 
@@ -1016,7 +1031,6 @@ DECLARE
 
 BEGIN
   -- Configuration
-  BID := $START_ID; EID := $END_ID;
   dbms_output.enable(1000000);
   R_TITLE := 'StatsPack Report for $ORACLE_SID';
   TABLE_OPEN := '<TABLE ALIGN="center" BORDER="1">';
@@ -1026,10 +1040,22 @@ BEGIN
     INTO DBID,DB_NAME,INST_NUM,INST_NAME
     FROM v\$database d,v\$instance i;
 
-  FOR R_SnapBind1 IN C_SnapBind1(DBID,INST_NUM) LOOP
-    PARA  := R_SnapBind1.parallel;
-    VERSN := R_SnapBind1.version;
-    HOST_NAME := R_SnapBind1.host_name;
+  IF NVL($START_ID,0) = 0
+  THEN
+    FOR R_SnapID IN C_MaxSnap(DBID,INST_NUM) LOOP
+      EID := R_SnapID.maxid;
+    END LOOP;
+    FOR R_SnapID IN C_MinSnap(DBID,INST_NUM,EID) LOOP
+      BID := R_SnapID.minid;
+    END LOOP;
+  ELSE
+    BID := $START_ID; EID := $END_ID;
+  END IF;
+
+  FOR R_SnapBind IN C_SnapBind(DBID,INST_NUM,BID) LOOP
+    PARA  := R_SnapBind.parallel;
+    VERSN := R_SnapBind.version;
+    HOST_NAME := R_SnapBind.host_name;
   END LOOP;
 
   -- HTML Head
