@@ -198,3 +198,4 @@ v0.2.2
   Freebuffers inspected/requested, Chained-Fetch-Ratio (Ratio charts). Delta-
   charts have the same items as cumulative charts.
 * updated the (HTML) documentation
++ added AvgCharts (cumulative: timeouts per snapshot)

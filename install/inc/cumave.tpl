@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Database Delta Statistic Diagrams</title>
+<title>Database Statistic Diagrams</title>
 <LINK REL="stylesheet" TYPE="text/css" HREF="../{css}">
 <link rel=stylesheet type="text/css" href="diagram.css">
 <SCRIPT Language="JavaScript">
@@ -15,36 +15,39 @@
 <TABLE BORDER="0" CELLPADDING="2" CELLSPACING="2" WIDTH="620" ALIGN="center"><TR>
 <SCRIPT Language="JavaScript">
 //<!--
-document.write('<TH>Timeouts on '+parent.sid+'</TH></TR>');
+document.write('<TH>Timeouts per SnapShot (cumulative) on '+parent.sid+'</TH></TR>');
 document.write('<TR><TD ALIGN="center"><DIV CLASS="small">Begin Snapshot: '+parent.bid+' ('+parent.btime+')<BR>');
 document.write('End Snapshot: '+parent.eid+' ('+parent.etime+')</DIV></TD></TR>');
 document.write('<TR><TH CLASS="th_sub" ALIGN="center">'+parent.dname+'</TH></TR></TABLE>');
 
-// Create a graph (Array, Color)
+// Create a graph (Array, StartElem, Color)
 function mkline(arr,col) {
  // parts: connect dots (fill the gaps with calculated delta for x pieces)
  if ( (eid - bid) > 620 ) {
    parts = 1;
-   inc   = Math.ceil((eid - bid)/620);
+   inc   = Math.floor((eid - bid)/620);
  } else {
    parts = Math.ceil(620/(eid - bid));
    inc   = 1;
  }
- for (i=bid,k=bid+1; i<eid; i=i+inc,k=k+inc) {
-   if (isNaN(arr[i]) || isNaN(arr[k])) {
-     k++; i++;
+ for (i=bid,k=bid; i<eid; i=i+inc) {
+   if (isNaN(arr[i])) {
+     k++;
      continue;
    }
+   snapcount = i - dbup_id +1;
    if (i>bid) {
      delta = (arr[k] - arr[i]) / parts;
-     for (f=1;f<=parts;f++) {
-       x = D.ScreenX(i + f/parts);
-       j = D.ScreenY(Math.abs(f*delta));
+     for (f=0;f<parts;f++) {
+       snapcount = snapcount + f/parts;
+       x = D.ScreenX(i - f/parts);
+       j = D.ScreenY( (arr[i] + f*delta) / snapcount );
        new Pixel(x, j, col);
      }
+     k++;
    } else {
      x = D.ScreenX(i);
-     j = D.ScreenY(Math.abs(arr[k] - arr[i]));
+     j = D.ScreenY(arr[i]/snapcount);
      new Pixel(x, j, col);
    }
  }
@@ -52,16 +55,17 @@ function mkline(arr,col) {
 
 function maxDelta(arr) {
  maxval = 0;
- for (i=bid,k=bid+1;i<eid;i++,k++) {
+ for (i=bid;i<eid;i++) {
    if (isNaN(arr[i])) {
-     i++; k++;
+     i++;
      continue;
    }
-   if ( !isNaN(Math.abs(arr[k] - arr[i])) )
-     maxval = Math.max(maxval,Math.abs(arr[k] - arr[i]));
+   if ( !isNaN(arr[i]/(i-dbup_id+1)) )
+     maxval = Math.max(maxval,arr[i]/(i-dbup_id+1));
  }
  if (maxval == 0 || isNaN(maxval)) maxval = 1;
 }
+
 
 document.open();
 var D=new Diagram();

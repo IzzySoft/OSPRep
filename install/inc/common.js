@@ -1,6 +1,6 @@
 bid = parent.bid;
 eid = parent.eid;
-var xyz = .001;
+dbup_id = parent.dbup_id;
 if (maxval == 0) maxval = 1;
 
 // Create Diagram

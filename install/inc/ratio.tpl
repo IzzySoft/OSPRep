@@ -58,9 +58,10 @@ function maxDelta(arr) {
      i++;
      continue;
    }
-   maxval = Math.max(maxval,arr[i]);
+   if ( !isNaN(arr[i]) )
+     maxval = Math.max(maxval,arr[i]);
  }
- if (maxval == 0) maxval = 1;
+ if (maxval == 0 || isNaN(maxval)) maxval = 1;
 }
 
 document.open();

@@ -15,7 +15,7 @@
 <TABLE BORDER="0" CELLPADDING="2" CELLSPACING="2" WIDTH="620" ALIGN="center"><TR>
 <SCRIPT Language="JavaScript">
 //<!--
-document.write('<TH>Cumulative Statistics for '+parent.sid+'</TH></TR>');
+document.write('<TH>Timeouts (cumulative) on '+parent.sid+'</TH></TR>');
 document.write('<TR><TD ALIGN="center"><DIV CLASS="small">Begin Snapshot: '+parent.bid+' ('+parent.btime+')<BR>');
 document.write('End Snapshot: '+parent.eid+' ('+parent.etime+')</DIV></TD></TR>');
 document.write('<TR><TH CLASS="th_sub" ALIGN="center">'+parent.dname+'</TH></TR></TABLE>');
@@ -54,6 +54,7 @@ function mkline(arr,col) {
 document.open();
 var D=new Diagram();
 maxval = parent.dstat[eid];
+if ( isNaN(maxval) || maxval == 0 ) maxval = 1;
 mkdiag();
 mkline(parent.dstat,'#0000FF');
 document.close();
