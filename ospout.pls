@@ -191,8 +191,11 @@
             'number of <I>Parse CPU to Parse Elapsed</I> below.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TD>Execute to Parse</TD><TD ALIGN="right">'||
-            to_char(round(100*(1-PRSE/EXE),2),'990.00')||'</TD><TD>&nbsp;</TD></TR>'||
-            ' <TR><TD>Latch Hit</TD><TD ALIGN="right">'||
+            to_char(round(100*(1-PRSE/EXE),2),'990.00')||
+	    '</TD><TD>A low value here indicates that there is no much '||
+	    're-usable SQL. See <I>Soft Parse</I> for possible actions.</TD></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD>Latch Hit</TD><TD ALIGN="right">'||
             to_char(round(100*(1-LHR),2),'990.00');
   print(L_LINE);
   L_LINE := '</TD><TD ALIGN="justify">A low value for this ratio indicates a '||
