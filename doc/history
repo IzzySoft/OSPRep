@@ -19,9 +19,8 @@ v0.0.3 (05.11.2003)
 
 v0.0.4 (06.11.2003)
 * a little code cleanup
-+ added Top n SQL by Reads
-+ added Top n SQL by Exec (and made "n" a config var)
-+ added Top n SQL by Parse
++ added Top n SQL by Reads / Exec / Parse
++ made "n" (for the Top-N Stats) a config var
 + added Instance Activity Stats
 + added TableSpace IO Summary Stats
 + added FileIO Summary Stats
@@ -30,4 +29,9 @@ v0.0.5 (xx.11.2003)
 + added Buffer Pool Stats
 + added Instance Recovery Statistics
 + added Buffer Wait Statistics
-+ added PGA Aggreg Target Mem Stats
++ added PGA Stats
++ added Enqueue Activity
++ added RBS Stats
++ added Undo Stats
++ added Latch Stats
++ added Cache Stats
