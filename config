@@ -13,7 +13,7 @@
 # directory to store temporary files in
 TMPDIR=/tmp
 # in which directory should the report ($ORACLE_SID.html) be placed
-REPDIR=/var/www/html/statspack
+REPDIR=/var/www/html/oracle/statspack
 # StyleSheet to use
 CSS=../main.css
 
@@ -22,12 +22,16 @@ CSS=../main.css
 export ORACLE_SID=$1
 # login information
 user=perfstat
-password="perfstat"
+password="pyha#"
 
 # -------------------------------------------------------------------[ SQL ]---
 # Top settings: Display Top N Statements
 TOP_N_SQL=5
 TOP_N_WAITS=10
+
+# Exclusion of performance stats for these object owners (where possible).
+# Comment this statement out if you want to exclude nobody. Case sensitive!
+EXC_PERF_FOR="SYS SYSTEM"
 
 #--- SnapShot Interval. Set values to 0 for automatic evaluation of latest
 #--- continuous interval (i.e. the interval ending with the latest recording
