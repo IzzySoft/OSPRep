@@ -159,7 +159,7 @@ v0.1.8 (19.01.2004)
   options from the "config" file (e.g. user, passwd) at the command line
   (thanx to Manuel Soriano for this suggestion incl. code sent for OraRep)
 
-v0.1.9
+v0.1.9 (22.01.2004)
 -------------------
 ! file names could get messed up when different SID/Connect string was specified
   on commandline with parameter "-s"
