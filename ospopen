@@ -405,13 +405,17 @@ BEGIN
   END IF;
   IF NVL($START_ID,0) = 0
   THEN
-    IF NVL($MAX_CHART_INTERVAL,0) = 0 THEN
-      FOR R_SnapID IN C_MinSnap LOOP
-        BID := R_SnapID.minid;
-      END LOOP;
-    ELSE
-      SELECT (snap_time - $MAX_CHART_INTERVAL) INTO TDATE FROM stats\$snapshot WHERE snap_id=EID;
+    FOR R_SnapID IN C_MinSnap LOOP
+      I1 := R_SnapID.minid;
+    END LOOP;
+    IF NVL($MAX_REP_INTERVAL,0) != 0 THEN
+      SELECT (snap_time - $MAX_REP_INTERVAL) INTO TDATE FROM stats\$snapshot WHERE snap_id=EID;
       SELECT MAX(snap_id) INTO BID FROM stats\$snapshot WHERE snap_time<TDATE;
+      IF BID < I1 THEN
+        BID := I1;
+      END IF;
+    ELSE
+      BID := I1;
     END IF;
   ELSE
     BID := $START_ID;

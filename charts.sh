@@ -453,11 +453,14 @@ BEGIN
   END LOOP;
   IF NVL($START_ID,0) = 0
   THEN
-    IF NVL($MAX_CHART_INTERVAL,0) = 0 THEN
-      BID := DBUP_ID;
-    ELSE
+    IF NVL($MAX_CHART_INTERVAL,0) != 0 THEN
       SELECT (snap_time - $MAX_CHART_INTERVAL) INTO TDATE FROM stats\$snapshot WHERE snap_id=EID;
       SELECT MAX(snap_id) INTO BID FROM stats\$snapshot WHERE snap_time<TDATE;
+      IF BID < DBUP_ID THEN
+        BID := DBUP_ID;
+      END IF;
+    ELSE
+      BID := DBUP_ID;
     END IF;
   ELSE
     IF $START_ID < DBUP_ID THEN
