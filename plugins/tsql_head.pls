@@ -49,10 +49,10 @@
       THEN
         CW := 20;
         print('<TR><TD>&nbsp;</TD><TD COLSPAN="6">');
-        print(TABLE_OPEN||'<TR><TH CLASS="th_sub">Operation</TH><TH CLASS="th_sub">'||
-              'Object</TH><TH CLASS="th_sub">');
-        print('Optimizer</TH><TH CLASS="th_sub">Cost</TH><TH CLASS="th_sub">'||
-              'CPUCost</TH><TH CLASS="th_sub">IOCost</TH><TH CLASS="th_sub">'||
+        print(TABLE_OPEN||'<TR><TH CLASS="th_sub2">Operation</TH><TH CLASS="th_sub2">'||
+              'Object</TH><TH CLASS="th_sub2">');
+        print('Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">'||
+              'CPUCost</TH><TH CLASS="th_sub2">IOCost</TH><TH CLASS="th_sub2">'||
               'Size</TH></TR>');
         FOR rplan IN C_PGet(HASHID) LOOP
           IF NVL(rplan.bytes,0) < 1024
@@ -83,13 +83,13 @@
 	  ELSE
 	    S1 := '';
 	  END IF;
-          print('<TR'||S1||'><TD><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
-                '</CODE></DIV></TD><TD>'||rplan.object_owner||'.'||rplan.object_name||
-                '</TD><TD>'||NVL(rplan.optimizer,'&nbsp;'));
-          print('</TD><TD ALIGN="right">'||rplan.vcost||'</TD><TD ALIGN="right">'||
+          print('<TR'||S1||'><TD CLASS="inner"><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
+                '</CODE></DIV></TD><TD CLASS="inner">'||rplan.object_owner||'.'||rplan.object_name||
+                '</TD><TD CLASS="inner">'||NVL(rplan.optimizer,'&nbsp;'));
+          print('</TD><TD ALIGN="right" CLASS="inner">'||rplan.vcost||'</TD><TD ALIGN="right" CLASS="inner">'||
                 NVL(TO_CHAR(rplan.cpu_cost,'999,990'),'&nbsp;')||
-                '</TD><TD ALIGN="right">'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
-                '</TD><TD ALIGN="right"><DIV STYLE="width:'||CI||'em">'||OSIZE||'</DIV></TD></TR>');
+                '</TD><TD ALIGN="right" CLASS="inner">'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
+                '</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:'||CI||'em">'||OSIZE||'</DIV></TD></TR>');
         END LOOP;
         print('</TABLE></TD></TR>');
       END IF;
