@@ -1,4 +1,41 @@
 
+  PROCEDURE spstat IS
+    CURSOR C_SPSQL (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+      SELECT (100*(1-b.single_use_sql/b.total_sql)) AS b_single_sql,
+             (100*(1-e.single_use_sql/e.total_sql)) AS e_single_sql,
+             (100*(1-b.single_use_sql_mem/b.total_sql_mem)) AS b_single_mem,
+	     (100*(1-e.single_use_sql_mem/e.total_sql_mem)) AS e_single_mem
+        FROM stats$sql_statistics b, stats$sql_statistics e
+       WHERE b.snap_id=bid
+         AND e.snap_id=eid
+         AND b.instance_number=instnum
+         AND e.instance_number=instnum
+         AND b.dbid=db_id
+         AND e.dbid=db_id;
+    BEGIN
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="sharedpool">Shared Pool Statistics</A></TH></TR>'||CHR(10)||
+                ' <TR><TH CLASS="th_sub">Name</TH><TH CLASS="th_sub">Begin</TH>'||
+	        '<TH CLASS="th_sub">End</TH></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TD CLASS="td_name">Memory Usage %</TD><TD>'||
+                to_char(round(100*(1-BFRM/BSPM),2),'990.00')||'</TD><TD>'||
+	        to_char(round(100*(1-EFRM/ESPM),2),'990.00')||'</TD></TR>';
+      print(L_LINE);
+      FOR R_SPSQL IN C_SPSQL(DBID,INST_NUM,BID,EID) LOOP
+        L_LINE := ' <TR><TD CLASS="td_name">% SQL with executions &gt; 1</TD><TD>'||
+                  to_char(round(R_SPSQL.b_single_sql,2),'990.00')||'</TD><TD>'||
+	          to_char(round(R_SPSQL.e_single_sql,2),'990.00')||'</TD></TR>';
+        print(L_LINE);
+        L_LINE := ' <TR><TD CLASS="td_name">% Memory for SQL with executions &gt; 1</TD><TD>'||
+                  to_char(round(R_SPSQL.b_single_mem,2),'990.00')||'</TD><TD>'||
+	          to_char(round(R_SPSQL.e_single_mem,2),'990.00')||'</TD></TR>';
+        print(L_LINE);
+      END LOOP;
+      print(TABLE_CLOSE);
+    EXCEPTION
+      WHEN OTHERS THEN NULL;
+    END;
+
   PROCEDURE buffp IS
     CURSOR C_BuffP (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, bs IN NUMBER) IS
       SELECT replace(e.block_size/1024||'k',bs/1024||'k',substr(e.name,1,1)) name,

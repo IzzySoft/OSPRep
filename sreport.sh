@@ -123,7 +123,7 @@ if [ $MK_LACT -eq 1 ]; then
     LMSBODY=$PLUGINDIR/lms_body.pls
   fi
 fi
-if [ "${MK_BUFFP}${MK_BUFFW}" != "00" ]; then
+if [ "${MK_SPSTAT}${MK_BUFFP}${MK_BUFFW}" != "000" ]; then
   BUFFHEAD=$PLUGINDIR/buff_head.pls
   BUFFBODY=$PLUGINDIR/buff_body.pls
 fi
@@ -255,6 +255,7 @@ variable MK_RSSTOR NUMBER;
 variable MK_ENQ NUMBER;
 variable MK_PGAA NUMBER;
 variable MK_PGAM NUMBER;
+variable MK_SPSTAT NUMBER;
 variable MK_BUFFP NUMBER;
 variable MK_BUFFW NUMBER;
 variable MK_RECO NUMBER;
@@ -312,6 +313,7 @@ BEGIN
   :MK_ENQ      := $MK_ENQ;
   :MK_PGAA     := $MK_PGAA;
   :MK_PGAM     := $MK_PGAM;
+  :MK_SPSTAT   := $MK_SPSTAT;
   :MK_BUFFP    := $MK_BUFFP;
   :MK_BUFFW    := $MK_BUFFW;
   :MK_RECO     := $MK_RECO;

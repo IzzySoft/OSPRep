@@ -225,26 +225,3 @@
   print(L_LINE);
   print('<HR>');
 
-  -- Shared Pool Stats
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="sharedpool">Shared Pool Statistics</A></TH></TR>'||CHR(10)||
-            ' <TR><TH CLASS="th_sub">Name</TH><TH CLASS="th_sub">Begin</TH>'||
-	    '<TH CLASS="th_sub">End</TH></TR>';
-  print(L_LINE);
-  L_LINE := ' <TR><TD CLASS="td_name">Memory Usage %</TD><TD>'||
-            to_char(round(100*(1-BFRM/BSPM),2),'990.00')||'</TD><TD>'||
-	    to_char(round(100*(1-EFRM/ESPM),2),'990.00')||'</TD></TR>';
-  print(L_LINE);
-  FOR R_SPSQL IN C_SPSQL(DBID,INST_NUM,BID,EID) LOOP
-    L_LINE := ' <TR><TD CLASS="td_name">% SQL with executions &gt; 1</TD><TD>'||
-              to_char(round(R_SPSQL.b_single_sql,2),'990.00')||'</TD><TD>'||
-	      to_char(round(R_SPSQL.e_single_sql,2),'990.00')||'</TD></TR>';
-    print(L_LINE);
-    L_LINE := ' <TR><TD CLASS="td_name">% Memory for SQL with executions &gt; 1</TD><TD>'||
-              to_char(round(R_SPSQL.b_single_mem,2),'990.00')||'</TD><TD>'||
-	      to_char(round(R_SPSQL.e_single_mem,2),'990.00')||'</TD></TR>';
-    print(L_LINE);
-  END LOOP;
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
-  print('<HR>');
-
