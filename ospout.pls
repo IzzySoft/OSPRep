@@ -677,12 +677,18 @@
 
   -- RBS Stats
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#rbs">Rollback Segments Stats</A></TH></TR>'||
-            ' <TR><TD COLSPAN="7" ALIGN="center">A high value for "Pct Waits" '||
-	    'suggests more rollback segments may be required<BR>RBS stats may ';
+            ' <TR><TD COLSPAN="7" ALIGN="justify">A high value for "Pct Waits" '||
+	    'suggests more rollback segments may be required. ';
   print(L_LINE);
-  L_LINE := 'not be accurate between begin and end snaps when using Auto Undo '||
-            'Management, as RBS may be dynamically created and dropped as needed</TD></TR>';
+  L_LINE := 'A large number of transaction table waits also results in high values '||
+            'of "buffer busy waits" for undo segment header blocks; cross-reference '||
+	    'with the <A HREF="#bufwait">Buffer Wait Statistics</A> ';
   print(L_LINE);
+  L_LINE := 'to confirm this correlation.<DIV ALIGN="center">RBS stats may not '||
+            'be accurate between begin and end snaps when using Auto Undo '||
+            'Management, as RBS may be dynamically ';
+  print(L_LINE);
+  L_LINE := 'created and dropped as needed</TD></TR>';
   L_LINE := ' <TR><TH CLASS="th_sub">RBS#</TH><TH CLASS="th_sub">Trans Table Gets</TH>'||
             '<TH CLASS="th_sub">Pct Waits</TH><TH CLASS="th_sub">Undo Bytes Written</TH>'||
 	    '<TH CLASS="th_sub">Wraps</TH>';
