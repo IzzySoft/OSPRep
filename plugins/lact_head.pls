@@ -57,7 +57,7 @@
     -- Latch Activity
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="latches">Latch Activity</A>'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
-		')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" ALIGN="middle" ALT="Help"></A></TH></TR>';
+		')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">"Get Requests", "Get Miss"'||
 	        ' and "Avg Slps/Miss" are statistics for willing-to-wait '||
@@ -88,7 +88,7 @@
     -- Latch Sleep Breakdown
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7">Latch Sleep Breakdown'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
-		')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" ALIGN="middle" ALT="Help"></A></TH></TR>';
+		')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">Ordered by Misses desc</TD></TR>';
       print(L_LINE);

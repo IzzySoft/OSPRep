@@ -94,7 +94,7 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="11">TableSpace IO Summary Statistics'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
-	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" ALIGN="middle" ALT="Help"></A></TH></TR>';
+	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="11" ALIGN="center">Ordered by IOs (Reads + Writes)'||
                 ' desc<BR>ReadSize/WriteSize report the physical IO Size</TD></TR>';
@@ -224,7 +224,7 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="12">File IO Summary Statistics'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
-	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" ALIGN="middle" ALT="Help"></A></TH></TR>';
+	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="12" ALIGN="center">Ordered by TableSpace, File'||
                 '<BR>ReadSize/WriteSize report the physical IO Size</TD></TR>';

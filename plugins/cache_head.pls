@@ -60,7 +60,7 @@
   PROCEDURE libcache IS
     CURSOR C_CAM IS
       SELECT b.namespace namespace,
-             to_char(e.gets - b.gets,'999,999,990') gets,
+             to_char(e.gets - b.gets,'999,999,999,990') gets,
              nvl(to_char(decode(e.gets,b.gets,NULL,
 	                  100 - (e.gethits - b.gethits) * 100 /
 	                  (e.gets - b.gets)),'990.00'),'&nbsp;') getm,
@@ -92,7 +92,7 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7">Library Cache'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'libcache'||CHR(39)||
-	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" ALIGN="middle" ALT="Help"></A></TH></TR>';
+	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">"Pct Misses" should '||
                 'be very low (&lt; 10%), "Reloads" should not be significantly high.</TD></TR>';

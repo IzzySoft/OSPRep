@@ -2,7 +2,7 @@
   PROCEDURE undosum IS
     CURSOR C_USS IS
       SELECT undotsn,
-             to_char(sum(undoblks),'99,999,999') undob,
+             to_char(sum(undoblks),'999,999,999,999') undob,
 	     to_char(sum(txncount),'9,999,999,999,999') txcnt,
 	     max(maxquerylen) maxq,
 	     to_char(max(maxconcurrency),'999,999') maxc,
@@ -20,8 +20,8 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8">Undo Segment Summary'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'undoseg'||CHR(39)||
-	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" '||
-	        'ALIGN="middle" ALT="Help"></A></TH></TR>';
+	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" '||
+	        'ALIGN="top" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="8" ALIGN="center">Undo Segment block stats<BR>'||
                 'uS - unexpired Stolen, uR - unexpired Released, uU - unexpired reUsed<BR>';
@@ -74,8 +74,8 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8">Undo Segment Statistics'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'undoseg'||CHR(39)||
-	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" '||
-	        'ALIGN="middle" ALT="Help"></A></TH></TR>';
+	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" '||
+	        'ALIGN="top" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="8" ALIGN="center">Ordered by Time desc</TD></TR>';
       print(L_LINE);
