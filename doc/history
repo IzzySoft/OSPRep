@@ -284,3 +284,5 @@ v0.3.1
 + added "Checkpoint Incomplete" to cumulative charts (Cumul, CumAvg, Delta)
 + snapshot intervals can now dynamically be evaluated as "the last n days up
   to END_ID" (new config keywords MAX_REP_INTERVAL and MAX_CHART_INTERVAL)
++ added some Snapshot Level 7 (segment statistic) information to the report
+  (Oracle 9.2 and higher)

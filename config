@@ -28,6 +28,7 @@ password="pyha#"
 # Top settings: Display Top N Statements [Number]
 TOP_N_SQL=5
 TOP_N_WAITS=10
+TOP_N_SEGSTAT=10
 
 # Exclusion of performance stats for these object owners (where possible).
 # Comment this statement out if you want to exclude nobody. Case sensitive!
@@ -68,6 +69,12 @@ MK_DFSTAT=1
 # Include the TS and File I/O Stats? [0|1]
 MK_TSIO=1
 MK_FIO=1
+# Include Segment Statistics (Level 7, Oracle 9.2+)? [0|1]
+MK_SEG_LR=1
+MK_SEG_PR=1
+MK_SEG_BUSY=0
+MK_SEG_LOCK=0
+MK_SEG_ITL=0
 # Include Instance Activity? [0|1]
 MK_INSTACT=0
 # Include Instance Recovery Stats? [0|1]

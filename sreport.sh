@@ -76,6 +76,29 @@ if [ -n "$passwd" ]; then
   password=$passwd
 fi
 
+# --------------------------------[ Get the Oracle version of the DataBase ]---
+SQLSET=$TMPDIR/osprep_sqlset_$ORACLE_SID.$$
+TMPOUT=$TMPDIR/osprep_tmpout_$ORACLE_SID.$$
+GWDUMMY=$TMPDIR/osprep_gwdummy_$ORACLE_SID.$$
+DFDUMMY=$TMPDIR/osprep_dfdummy_$ORACLE_SID.$$
+
+cat >$SQLSET<<ENDSQL
+CONNECT $user/$password@$ORACLE_CONNECT
+Set TERMOUT OFF
+Set SCAN OFF
+Set SERVEROUTPUT On Size 1000000
+Set LINESIZE 300
+Set TRIMSPOOL On 
+Set FEEDBACK OFF
+Set Echo Off
+Set PAGESIZE 0
+SPOOL $TMPOUT
+ENDSQL
+
+cat $SQLSET $PLUGINDIR/getver.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
+DBVER=`cat $TMPOUT`
+SPFILE=$PLUGINDIR/sp$DBVER.pls
+
 # ---------------------------------------------------[ Prepare the PlugIns ]---
 if [ $MK_INSTEFF -eq 1 ]; then
   INSTEFF=$PLUGINDIR/insteff.pls
@@ -154,31 +177,20 @@ if [ $MK_IORA -eq 1 ]; then
   IORAHEAD=$PLUGINDIR/iora_head.pls
   IORABODY=$PLUGINDIR/iora_body.pls
 fi
-
-. $BINDIR/version
-SQLSET=$TMPDIR/osprep_sqlset_$ORACLE_SID.$$
-TMPOUT=$TMPDIR/osprep_tmpout_$ORACLE_SID.$$
-GWDUMMY=$TMPDIR/osprep_gwdummy_$ORACLE_SID.$$
-DFDUMMY=$TMPDIR/osprep_dfdummy_$ORACLE_SID.$$
+if [ $DBVER -gt 91 ]; then
+  if [ "${MK_SEG_LR}${MK_SEG_PR}${MK_SEG_BUSY}${MK_SEG_LOCK}${MK_SEG_ITL}" != "00000" ]; then
+    SEGSTATHEAD=$PLUGINDIR/segstat_head.pls
+    SEGSTATBODY=$PLUGINDIR/segstat_body.pls
+    MK_SEGSTAT=1
+  else
+    MK_SEGSTAT=0
+  fi
+else
+  MK_SEGSTAT=0
+fi
 
 # ==========================================[ Start the Run of the Scripts ]===
-# --------------------------------[ Get the Oracle version of the DataBase ]---
-cat >$SQLSET<<ENDSQL
-CONNECT $user/$password@$ORACLE_CONNECT
-Set TERMOUT OFF
-Set SCAN OFF
-Set SERVEROUTPUT On Size 1000000
-Set LINESIZE 300
-Set TRIMSPOOL On 
-Set FEEDBACK OFF
-Set Echo Off
-Set PAGESIZE 0
-SPOOL $TMPOUT
-ENDSQL
-
-cat $SQLSET $PLUGINDIR/getver.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
-DBVER=`cat $TMPOUT`
-SPFILE=$PLUGINDIR/sp$DBVER.pls
+. $BINDIR/version
 
 # ----------------------------------[ Check for the AddOns and set them up ]---
 cat $SQLSET $PLUGINDIR/checkwt.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
@@ -269,6 +281,12 @@ variable MK_TSIO NUMBER;
 variable MK_FIO NUMBER;
 variable MK_TOPSQL NUMBER;
 variable MK_EP NUMBER;
+variable MK_SEG_LR NUMBER;
+variable MK_SEG_PR NUMBER;
+variable MK_SEG_BUSY NUMBER;
+variable MK_SEG_LOCK NUMBER;
+variable MK_SEG_ITL NUMBER;
+variable MK_SEGSTAT NUMBER;
 variable WR_IE_BUFFNW NUMBER;
 variable AR_IE_BUFFNW NUMBER;
 variable WR_IE_REDONW NUMBER;
@@ -331,6 +349,12 @@ BEGIN
   :MK_FIO      := $MK_FIO;
   :MK_TOPSQL   := $MK_TOPSQL;
   :MK_EP       := $MK_EP;
+  :MK_SEG_LR   := $MK_SEG_LR;
+  :MK_SEG_PR   := $MK_SEG_PR;
+  :MK_SEG_BUSY := $MK_SEG_BUSY;
+  :MK_SEG_LOCK := $MK_SEG_LOCK;
+  :MK_SEG_ITL  := $MK_SEG_ITL;
+  :MK_SEGSTAT  := $MK_SEGSTAT;
   :WR_IE_BUFFNW  := $WR_IE_BUFFNW;
   :AR_IE_BUFFNW  := $AR_IE_BUFFNW;
   :WR_IE_REDONW  := $WR_IE_REDONW;
@@ -368,6 +392,6 @@ SPOOL $REPDIR/${ORACLE_SID}.html
 ENDSQL
 
 . $BINDIR/ospopen
-#cat $SQLSET $SPFILE $BINDIR/ospout.pls $INSTEFF $INSTACTBODY $TWAITBODY $ALLWAITBODY $BGWAITBODY $WAITOBJ $TSQLBODY $DFSFILE $IOBODY $RECOBODY $BUFFBODY $PGABODY $ENQBODY $USSTATBODY $RBSBODY $LACTBODY $LMSBODY $CACHEBODY $SGABODY $PLUGINDIR/rlims.pls $IORABODY $FOOTER >osp.out
-cat $SQLSET $SPFILE $BINDIR/ospout.pls $INSTEFF $INSTACTBODY $TWAITBODY $ALLWAITBODY $BGWAITBODY $WAITOBJ $TSQLBODY $DFSFILE $IOBODY $RECOBODY $BUFFBODY $PGABODY $ENQBODY $USSTATBODY $RBSBODY $LACTBODY $LMSBODY $CACHEBODY $SGABODY $PLUGINDIR/rlims.pls $IORABODY $FOOTER | $ORACLE_HOME/bin/sqlplus -s /NOLOG
+#cat $SQLSET $SPFILE $BINDIR/ospout.pls $INSTEFF $INSTACTBODY $TWAITBODY $ALLWAITBODY $BGWAITBODY $WAITOBJ $TSQLBODY $DFSFILE $IOBODY $SEGSTATBODY $RECOBODY $BUFFBODY $PGABODY $ENQBODY $USSTATBODY $RBSBODY $LACTBODY $LMSBODY $CACHEBODY $SGABODY $PLUGINDIR/rlims.pls $IORABODY $FOOTER >osp.out
+cat $SQLSET $SPFILE $BINDIR/ospout.pls $INSTEFF $INSTACTBODY $TWAITBODY $ALLWAITBODY $BGWAITBODY $WAITOBJ $TSQLBODY $DFSFILE $IOBODY $SEGSTATBODY $RECOBODY $BUFFBODY $PGABODY $ENQBODY $USSTATBODY $RBSBODY $LACTBODY $LMSBODY $CACHEBODY $SGABODY $PLUGINDIR/rlims.pls $IORABODY $FOOTER | $ORACLE_HOME/bin/sqlplus -s /NOLOG
 rm -f $SQLSET $TMPOUT $GWDUMMY $DFDUMMY
