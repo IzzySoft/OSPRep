@@ -23,5 +23,10 @@ done
 cp help.gif $REPDIR/help/
 chmod o+r $REPDIR/help/help.gif
 
-cp inc/* $REPDIR/inc
+cd inc
+cp *.js $REPDIR/inc
+cp *.css $REPDIR/inc
+for i in *.tpl; do
+  sed $SEDC $i > $REPDIR/inc/${i%%.*}.html
+done
 chmod o+r $REPDIR/inc/*
