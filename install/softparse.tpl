@@ -1,6 +1,7 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD>
- <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15"/>
- <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'/>
+ <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">
+ <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'>
  <TITLE>OraHelp: Soft Parse</TITLE>
 </HEAD><BODY>
 
@@ -11,7 +12,7 @@
   expensive operation. When the soft parse ratio falls much below 80%,
   investigate whether you can share SQL by using bind variables or force cursor
   sharing by using the <CODE>init.ora</CODE> parameter <CODE>cursor_sharing</CODE>
-  (new in Oracle8i Release 8.1.6). Available values are:
+  (new in Oracle8i Release 8.1.6). Available values are:</P>
   <TABLE ALIGN="center" BORDER="1" WIDTH="95%" STYLE="margin:5px">
    <TR><TH CLASS="th_sub">Value</TH><TH CLASS="th_sub">Comment</TH></TR>
    <TR><TD CLASS="td_name">exact</TD>
@@ -30,7 +31,7 @@
 	   the optimizer cannot predict precise selectivity you should think
 	   twice before using this)</TD></TR>
   </TABLE>
-  Since this parameter is dynamic, you may use <CODE>ALTER SYSTEM</CODE> to
+ <P>Since this parameter is dynamic, you may use <CODE>ALTER SYSTEM</CODE> to
   change its value without restarting the instance.</P>
  <P>But before drawing any conclusions, compare the soft parse ratio against
   the actual hard and soft parse rates shown in the Loads Profile. If the rates
@@ -38,5 +39,12 @@
   investigate the number of Parse CPU to Parse Elapsed below. If this value is
   low, you may rather have a latch problem.</P>
 </TD></TR></TABLE>
+
+<SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
+  if ( opener != null && opener.version != '' && opener.version != null )
+    version = 'v'+opener.version;
+  else version = '';
+  document.write('<DIV ALIGN="center" STYLE="margin-top:3px"><IMG SRC="..\/w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" ALIGN="middle">OSPRep '+version+' &copy; 2003-2004 by <A STYLE="text-decoration:none" HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg<\/A> &amp; <A STYLE="text-decoration:none" HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft<\/A><\/SPAN><IMG SRC="..\/islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"><\/DIV>');
+//--></SCRIPT>
 
 </BODY></HTML>

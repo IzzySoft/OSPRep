@@ -1,6 +1,7 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD>
- <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15"/>
- <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'/>
+ <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">
+ <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'>
  <TITLE>OraHelp: Enqueue</TITLE>
 </HEAD><BODY>
 
@@ -20,8 +21,8 @@
  <H3>What actions can be taken?</H3>
  <P>You could check whether you have child tables with unindexed foreign key
   constraints, issuing the following statement either as <CODE>SYS</CODE> or
-  <CODE>SYSTEM</CODE> user:
-  <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
+  <CODE>SYSTEM</CODE> user:</P>
+  <TABLE ALIGN="center" STYLE="border:0" SUMMARY="Sample Code"><TR><TD>
     <DIV CLASS="code" STYLE="width:35em">
     SELECT con.owner, con.table_name, co.column_name,<BR>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;con.constraint_name, i.index_name<BR>
@@ -39,7 +40,7 @@
     &nbsp;&nbsp;&nbsp;AND co.column_name=i.column_name(+)<BR>
     &nbsp;&nbsp;&nbsp;AND i.index_name IS NULL;</DIV>
   </TD></TR></TABLE>
-  If there are any rows returned, you should create appropriate indexes for
+ <P>If there are any rows returned, you should create appropriate indexes for
   the columns reported that may then be used for the constraints. Be aware
   that, if a foreign key constraint consists of multiple columns of a table,
   all these columns must be included in ONE index in order for the index to
@@ -50,15 +51,15 @@
   maybe, a large number of sequences), increasing the
   <CODE>ENQUEUE_RESOURCES</CODE> parameter in the <CODE>init.ora</CODE> may
   help reduce these waits as well. To check the current values, execute the
-  following statement as <CODE>SYS</CODE> or <CODE>SYSTEM</CODE>:
-  <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
+  following statement as <CODE>SYS</CODE> or <CODE>SYSTEM</CODE>:</P>
+  <TABLE ALIGN="center" STYLE="border:0" SUMMARY="Sample Code"><TR><TD>
     <DIV CLASS="code" STYLE="width:28em">
     SELECT *<BR>
     &nbsp;&nbsp;FROM v$resource_limit<BR>
     &nbsp;WHERE resource_name='enqueue_resources'
     </DIV>
   </TD></TR></TABLE>
-  Most important for your decision are the values of the columns
+ <P>Most important for your decision are the values of the columns
   <CODE>max_utilization</CODE>, <CODE>limit_value</CODE> and
   <CODE>initial_allocation</CODE>. If the first does not exceed either of the
   other two, there's nothing to do for you at this place: according to the
@@ -67,5 +68,12 @@
   needed, as long as this does not exceed the <CODE>limit_value</CODE>.</P>
 
 </TD></TR></TABLE>
+
+<SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
+  if ( opener != null && opener.version != '' && opener.version != null )
+    version = 'v'+opener.version;
+  else version = '';
+  document.write('<DIV ALIGN="center" STYLE="margin-top:3px"><IMG SRC="..\/w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" ALIGN="middle">OSPRep '+version+' &copy; 2003-2004 by <A STYLE="text-decoration:none" HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg<\/A> &amp; <A STYLE="text-decoration:none" HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft<\/A><\/SPAN><IMG SRC="..\/islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"><\/DIV>');
+//--></SCRIPT>
 
 </BODY></HTML>

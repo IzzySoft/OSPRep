@@ -1,6 +1,7 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD>
- <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15"/>
- <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'/>
+ <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">
+ <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'>
  <TITLE>OraHelp: Latch Free</TITLE>
 </HEAD><BODY>
 
@@ -40,7 +41,7 @@
  </UL>
  <P>In the <CODE>V$SESSION_WAIT</CODE> view, you find the address of the latch
   in column P1, the latch number in P2 and the number of times process has
-  already slept in waiting for the latch in P3:
+  already slept in waiting for the latch in P3:</P>
   <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
   <DIV CLASS="code" STYLE="width:27em">
   SELECT n.name, SUM(w.p3) Sleeps<BR>
@@ -94,7 +95,7 @@
   parsing and a number of types of unnecessary parsing:</P>
  <P><B>Unshared SQL</B><BR>
   This method identifies similar SQL statements that could be shared if
-  literals were replaced with bind variables. The idea is to either:<UL>
+  literals were replaced with bind variables. The idea is to either:</P><UL>
   <LI>Manually inspect SQL statements that have only one execution to see
       whether they are similar:
       <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
@@ -115,22 +116,22 @@
       &nbsp;WHERE executions = 1<BR>
       &nbsp;GROUP BY SUBSTR(sql_text, 1, 60)<BR>
       HAVING COUNT(*) > 1;</DIV>
-      </TD></TR></TABLE></LI></UL></P>
+      </TD></TR></TABLE></LI></UL>
  <P><B>Reparsed Sharable SQL</B><BR>
-  Check the V$SQLAREA view. Enter the following query:
+  Check the V$SQLAREA view. Enter the following query:</P>
   <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
   <DIV CLASS="code" STYLE="width:28em">
   SELECT sql_text, parse_calls, executions<BR>
   &nbsp;&nbsp;FROM v$sqlarea<BR>
   &nbsp;ORDER BY parse_calls;</DIV>
   </TD></TR></TABLE>
-  When the <CODE>PARSE_CALLS</CODE> value is close to the <CODE>EXECUTIONS</CODE>
+ <P>When the <CODE>PARSE_CALLS</CODE> value is close to the <CODE>EXECUTIONS</CODE>
   value for a given statement, you might be continually reparsing that
   statement. Tune the statements with the higher numbers of parse calls.</P>
  <P><B>By Session</B><BR>
   Identify unnecessary parse calls by identifying the session in which they
   occur. It might be that particular batch programs or certain types of
-  applications do most of the reparsing. To do this, run the following query:
+  applications do most of the reparsing. To do this, run the following query:</P>
   <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
   <DIV CLASS="code" STYLE="width:32em">
   column sid format 99999<BR>
@@ -142,7 +143,7 @@
   &nbsp;&nbsp;&nbsp;AND ss.value > 0<BR>
   &nbsp;ORDER BY value, sid;</DIV>
   </TD></TR></TABLE>
-  The result is a list of all sessions and the amount of reparsing they do. For
+ <P>The result is a list of all sessions and the amount of reparsing they do. For
   each system identifier (SID), go to <CODE>V$SESSION</CODE> to find the name
   of the program that causes the reparsing.</P>
  <H3>Cache buffer LRU chain</H3>
@@ -172,14 +173,14 @@
   value in the ADDR column joined with the <CODE>V$BH</CODE> view to identify
   the blocks protected by this latch. For example, given the address
   (<CODE>V$LATCH_CHILDREN.ADDR</CODE>) of a heavily contended latch, this
-  queries the file and block numbers:
+  queries the file and block numbers:</P>
   <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
   <DIV CLASS="code" STYLE="width:24em">
   SELECT file#, dbablk, class, state<BR>
   &nbsp;&nbsp;FROM X$BH<BR>
   &nbsp;WHERE HLADDR='address of latch';</DIV>
   </TD></TR></TABLE>
-  There are many blocks protected by each latch. One of these buffers will
+ <P>There are many blocks protected by each latch. One of these buffers will
   likely be the hot block. Perform this query a number of times, and identify
   the block that consistently appears in the output, using the combination of
   file number (<CODE>file#</CODE>) and block number (<CODE>dbablk</CODE>). This
@@ -187,5 +188,12 @@
   <CODE>DBA_EXTENTS</CODE> using the file number and block number, to identify
   the segment.</P>
 </TD></TR></TABLE>
+
+<SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
+  if ( opener != null && opener.version != '' && opener.version != null )
+    version = 'v'+opener.version;
+  else version = '';
+  document.write('<DIV ALIGN="center" STYLE="margin-top:3px"><IMG SRC="..\/w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" ALIGN="middle">OSPRep '+version+' &copy; 2003-2004 by <A STYLE="text-decoration:none" HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg<\/A> &amp; <A STYLE="text-decoration:none" HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft<\/A><\/SPAN><IMG SRC="..\/islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"><\/DIV>');
+//--></SCRIPT>
 
 </BODY></HTML>

@@ -1,6 +1,7 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD>
- <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15"/>
- <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'/>
+ <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">
+ <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'>
  <TITLE>OraHelp: Library Cache</TITLE>
 </HEAD><BODY>
 
@@ -9,7 +10,7 @@
  <P><I>Pct Miss</I>es should be very low. If they exceed 10%, your SQL
   statements may use unsharable SQL. You can fix this by either using bind
   variables or by the <CODE>cursor_sharing</CODE> statement in your
-  <CODE>init.ora</CODE>. Available values to this parameter are:
+  <CODE>init.ora</CODE>. Available values to this parameter are:</P>
   <DIV ALIGN="center" STYLE="margin-bottom:5px"><TABLE BORDER="1" WIDTH="95%" STYLE="margin:5px">
    <TR><TH CLASS="th_sub">Value</TH><TH CLASS="th_sub">Comment</TH></TR>
    <TR><TD CLASS="td_name">exact</TD>
@@ -28,7 +29,7 @@
 	   the optimizer cannot predict precise selectivity you should think
 	   twice before using this)</TD></TR>
   </TABLE></DIV>
-  Since this parameter is dynamic, you may use <CODE>ALTER SYSTEM</CODE> to
+ <P>Since this parameter is dynamic, you may use <CODE>ALTER SYSTEM</CODE> to
   change its value without restarting the instance.</P>
  <P>An important statistic to look at is the number or <I>RELOADS</I>. If there
   are significant number of <I>RELOADS</I>, then reusable information is being
@@ -42,5 +43,12 @@
   frequently. The effects of invalidations can be reduced by executing DDL
   statements during off peak periods.</P>
 </TD></TR></TABLE>
+
+<SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
+  if ( opener != null && opener.version != '' && opener.version != null )
+    version = 'v'+opener.version;
+  else version = '';
+  document.write('<DIV ALIGN="center" STYLE="margin-top:3px"><IMG SRC="..\/w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" ALIGN="middle">OSPRep '+version+' &copy; 2003-2004 by <A STYLE="text-decoration:none" HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg<\/A> &amp; <A STYLE="text-decoration:none" HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft<\/A><\/SPAN><IMG SRC="..\/islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"><\/DIV>');
+//--></SCRIPT>
 
 </BODY></HTML>

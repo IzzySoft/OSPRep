@@ -1,6 +1,7 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD>
- <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15"/>
- <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'/>
+ <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">
+ <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'>
  <TITLE>OraHelp: Latches</TITLE>
 </HEAD><BODY>
 
@@ -50,7 +51,7 @@
   block, and then why the block is being contended for.</P>
 
  <H3>Potential Fixes for indicated Latch problems</H3><DIV ALIGN="center">
-  <TABLE WIDTH="90%" BORDER="1" WIDTH="95%" STYLE="margin:5px">
+  <TABLE BORDER="1" WIDTH="95%" STYLE="margin:5px">
    <TR><TH CLASS="th_sub">Latch</TH><TH CLASS="th_sub">Potential Fix</TH></TR>
    <TR><TD CLASS="inner">library cache and shared pool latches</TD>
        <TD CLASS="inner" STYLE="text-align:justify">adjusting the <CODE>shared_pool_size</CODE> and use of bind
@@ -71,5 +72,12 @@
   <P>Again, these are potential fixes, not general solutions. More information can
   be found on the help page about <A HREF="latchfree.html">Latch Free Waits</A></P>
 </TD></TR></TABLE>
+
+<SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
+  if ( opener != null && opener.version != '' && opener.version != null )
+    version = 'v'+opener.version;
+  else version = '';
+  document.write('<DIV ALIGN="center" STYLE="margin-top:3px"><IMG SRC="..\/w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" ALIGN="middle">OSPRep '+version+' &copy; 2003-2004 by <A STYLE="text-decoration:none" HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg<\/A> &amp; <A STYLE="text-decoration:none" HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft<\/A><\/SPAN><IMG SRC="..\/islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"><\/DIV>');
+//--></SCRIPT>
 
 </BODY></HTML>
