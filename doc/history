@@ -131,3 +131,10 @@ v0.1.5 (19.12.2003)
 * outsourced verbose hints to external help files (and made them even more
   verbose ;)
 + updated the doc/readme.txt concerning the installation instructions
+
+v0.1.6
+-------------------
+* one more digit for pctChange on data file growth (may now grow up to 9999.99%)
++ added external help file for rollback segment stats and undo segment stats
++ more detailled help on latch statistics
++ more detailled help on library cache statistics (external help file now)
