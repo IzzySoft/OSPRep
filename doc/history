@@ -163,3 +163,6 @@ v0.1.9
 -------------------
 ! file names could get messed up when different SID/Connect string was specified
   on commandline with parameter "-s"
+* adapted new command line syntax on fts_plans.sh
+* if user provided BEGIN_SNAP_ID (with "-b") but no END_SNAP_ID (with "-e")
+  the report could go nuts; prevented this assuming EID=BID for these cases
