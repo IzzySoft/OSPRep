@@ -91,3 +91,8 @@ v0.1.1 (16.11.2003)
 v0.1.2
 -------------------
 + added HitRatio to Buffer Pool Stats
++ additional procedure (and table) for statspack to gather information on
+  wait objects is included now. Table needs to be installed into the perfstat
+  schema, the procedure needs the SYS schema - see docs and files for details.
+  Installing this is optional.
++ enhanced buffer wait stats (including tuning tips)
