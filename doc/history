@@ -190,12 +190,12 @@ v0.2.1 (16.02.2004)
 + added (cumulative) charts for selected system events (use charts.sh to create
   them)
 
-v0.2.2
+v0.2.2 (19.02.2004)
 -------------------
 * M$IE had some problems with formatting of the charts - worked around it
 + added enqueue waits to waitobject gatherer
 + added Delta- & Ratio- charts: (current) Logons and Opened Cursors,
   Freebuffers inspected/requested, Chained-Fetch-Ratio (Ratio charts). Delta-
   charts have the same items as cumulative charts.
-* updated the (HTML) documentation
 + added AvgCharts (cumulative: timeouts per snapshot)
+* updated the (HTML) documentation
