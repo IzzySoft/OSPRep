@@ -14,5 +14,8 @@
     IF MK_SEG_LOCK = 1 THEN
       seg_lw;
     END IF;
+    IF MK_SEG_ITL = 1 THEN
+      seg_iw;
+    END IF;
     print('<HR>');
 --  END IF;
