@@ -928,6 +928,31 @@ DECLARE
        AND e.gets - b.gets   > 0
      ORDER BY param;
 
+  CURSOR C_CAM (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.namespace namespace,
+           to_char(e.gets - b.gets,'999,999,990') gets,
+	   nvl(to_char(decode(e.gets,b.gets,NULL,
+	                100 - (e.gethits - b.gethits) * 100 /
+			(e.gets - b.gets)),'990.00'),'&nbsp;') getm,
+	   to_char(e.pins - b.pins,'9,999,999,990') pins,
+	   nvl(to_char(decode(e.pins,b.pins,NULL,
+	                100 - (e.pinhits - b.pinhits) *100 /
+			(e.pins - b.pins)),'990.00'),'&nbsp;') pinm,
+	   to_char(e.reloads - b.reloads,'9,999,990') reloads,
+	   to_char(e.invalidations - b.invalidations,'999,990') inv
+      FROM stats\$librarycache b, stats\$librarycache e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.namespace       = e.namespace
+       AND e.gets - b.gets   > 0
+     ORDER BY namespace;
+
 
 BEGIN
   -- Configuration
@@ -1833,6 +1858,28 @@ BEGIN
     L_LINE := '<TD ALIGN="right">'||R_CA.scanm||'</TD><TD ALIGN="right">'||
               R_CA.mods||'</TD><TD ALIGN="right">'||R_CA.usage||
 	      '</TD><TD ALIGN="right">'||R_CA.sgapct||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+
+  -- Library Cache
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#caches">Library Cache</A></TH></TR>'||
+            ' <TR><TD COLSPAN="7" ALIGN="center">"Pct Misses" should be very low</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">NameSpace</TH><TH CLASS="th_sub">Get Requests</TH>'||
+            '<TH CLASS="th_sub">Pct Miss</TH><TH CLASS="th_sub">Pin Reqs</TH>'||
+	    '<TH CLASS="th_sub">Pct Miss</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">Reloads</TH><TH CLASS="th_sub">Invalidations</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_CA IN C_CAM(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_CA.namespace||'</TD><TD ALIGN="right">'||
+              R_CA.gets||'</TD><TD ALIGN="right">'||R_CA.getm||
+	      '</TD><TD ALIGN="right">'||R_CA.pins||'</TD>';
+    dbms_output.put_line(L_LINE);
+    L_LINE := '<TD ALIGN="right">'||R_CA.pinm||'</TD><TD ALIGN="right">'||
+              R_CA.reloads||'</TD><TD ALIGN="right">'||R_CA.inv||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
