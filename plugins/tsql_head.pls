@@ -15,7 +15,7 @@
   -- Get and print the Execution Plan
   PROCEDURE get_plan (hashval IN VARCHAR2) IS
     HASHID NUMBER; CI NUMBER; SI NUMBER; OSIZE VARCHAR2(50); IND VARCHAR2(255);
-    CW NUMBER;
+    CW NUMBER; TDI VARCHAR2(20);
     CURSOR C_PGet (hash_val IN VARCHAR2) IS
       SELECT operation,options,object_owner,object_name,optimizer,cost,
              NVL(TO_CHAR(cost,'999,990'),'&nbsp;') vcost,
@@ -80,16 +80,18 @@
 	    ELSE
 	      S1 := ' CLASS="warn"';
 	    END IF;
+            TDI := '';
 	  ELSE
-	    S1 := '';
+	    S1  := '';
+            TDI := ' CLASS="inner"';
 	  END IF;
-          print('<TR'||S1||'><TD CLASS="inner"><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
-                '</CODE></DIV></TD><TD CLASS="inner">'||rplan.object_owner||'.'||rplan.object_name||
-                '</TD><TD CLASS="inner">'||NVL(rplan.optimizer,'&nbsp;'));
-          print('</TD><TD ALIGN="right" CLASS="inner">'||rplan.vcost||'</TD><TD ALIGN="right" CLASS="inner">'||
+          print('<TR'||S1||'><TD'||TDI||'><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
+                '</CODE></DIV></TD><TD'||TDI||'>'||rplan.object_owner||'.'||rplan.object_name||
+                '</TD><TD'||TDI||'>'||NVL(rplan.optimizer,'&nbsp;'));
+          print('</TD><TD ALIGN="right"'||TDI||'>'||rplan.vcost||'</TD><TD ALIGN="right"'||TDI||'>'||
                 NVL(TO_CHAR(rplan.cpu_cost,'999,990'),'&nbsp;')||
-                '</TD><TD ALIGN="right" CLASS="inner">'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
-                '</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:'||CI||'em">'||OSIZE||'</DIV></TD></TR>');
+                '</TD><TD ALIGN="right"'||TDI||'>'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
+                '</TD><TD ALIGN="right"'||TDI||'><DIV STYLE="width:'||CI||'em">'||OSIZE||'</DIV></TD></TR>');
         END LOOP;
         print('</TABLE></TD></TR>');
       END IF;
