@@ -203,3 +203,4 @@ v0.2.2 (19.02.2004)
 v0.2.3
 -------------------
 ! cosmetical fix: description of initial diagram of Ratio charts fixed
+! fixed division by zero error in buffer pool stats

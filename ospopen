@@ -453,12 +453,14 @@ DECLARE
 	           '999,999') wcwait,
 	   to_char(e.buffer_busy_wait - nvl(b.buffer_busy_wait,0),
 	           '999,999,999') bbwait,
-           to_char( 100*
+           to_char( decode(((e.consistent_gets - b.consistent_gets) +
+                           (e.db_block_gets - b.db_block_gets)),
+			   0,to_number(NULL),100*
 	     (((e.consistent_gets - b.consistent_gets) +
 	       (e.db_block_gets - b.db_block_gets)) -
   	       (e.physical_reads - b.physical_reads)) /
 	     ((e.consistent_gets - b.consistent_gets) +
-	      (e.db_block_gets - b.db_block_gets)),'990.00')        ratio
+	      (e.db_block_gets - b.db_block_gets)),'990.00') )       ratio
       FROM stats\$buffer_pool_statistics b, stats\$buffer_pool_statistics e
      WHERE b.snap_id(+)  = bid
        AND e.snap_id     = eid
