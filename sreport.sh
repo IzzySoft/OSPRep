@@ -13,7 +13,7 @@
 #                                                              Itzchak Rehberg
 #
 #
-version='0.0.3'
+version='0.0.4'
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
   echo
@@ -78,7 +78,7 @@ DECLARE
   I1 NUMBER;
   I2 NUMBER;
   I3 NUMBER;
-  BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER;
+  BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER; EDRT NUMBER;
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
   PARA VARCHAR2(3); VERSN VARCHAR(17); HOST_NAME VARCHAR(64);
   LHTR NUMBER; BFWT NUMBER; TRAN NUMBER; CHNG NUMBER; UCAL NUMBER; UROL NUMBER;
@@ -121,7 +121,8 @@ DECLARE
 	   NVL(e.ucomment,'&nbsp;') end_snap_comment,
 	   to_char(round(((e.snap_time - b.snap_time) * 1440 * 60),0)/60,'9,990.00') elapsed,
 	   (e.snap_time - b.snap_time)*1440*60 ela,
-	   e.buffer_gets_th ebgt
+	   e.buffer_gets_th ebgt,
+	   e.disk_reads_th edrt
       FROM stats\$snapshot b, stats\$snapshot e
      WHERE b.snap_id=$START_ID
        AND e.snap_id=$END_ID
@@ -245,42 +246,24 @@ DECLARE
 	   )
      WHERE rownum <= 10;
 
-  CURSOR C_GetSQL (hv IN NUMBER) IS
-    SELECT sql_text FROM stats\$sqltext WHERE hash_value=hv
-     ORDER BY piece;
-
--- dummy - remove!			
-  CURSOR C_SQLByGet (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, gets IN NUMBER) IS
-    SELECT bufgets,execs,getsperexec,pcttotal,cputime,elapsed,hashval,statement
+  CURSOR C_SQLByReads (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, phyr IN NUMBER) IS
+    SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,hashval
       FROM ( SELECT /*+ ordered use_nl (b st) */
-              DECODE ( st.piece,0,
-	                to_char((e.buffer_gets - nvl(b.buffer_gets,0)),'99,999,999,990'),
-			'&nbsp;' ) bufgets,
-              DECODE ( st.piece,0,
-	                to_char((e.executions - nvl(b.executions,0)),'999,999,999'),
-			'&nbsp;' ) execs,
-              DECODE ( st.piece,0,
-	                to_char(decode(e.executions - nvl(b.executions,0),
+              to_char((e.disk_reads - nvl(b.disk_reads,0)),'99,999,999,990') phyreads,
+	      to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
+	      to_char(decode(e.executions - nvl(b.executions,0),
 			         0, '&nbsp;',
-				 (e.buffer_gets - nvl(b.buffer_gets,0)) /
+				 (e.disk_reads - nvl(b.disk_reads,0)) /
 				 (e.executions - nvl(b.executions,0))),
-				 '999,999,990.0'),
-		        '&nbsp;' ) getsperexec,
-              DECODE ( st.piece,0,
-	                to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/gets,
-			  '990.0'),
-			'&nbsp;' ) pcttotal,
-              DECODE ( st.piece,0,
-	                nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0))/1000000,
-			  '99,990.00'),'0.00'),
-		       '&nbsp;' ) cputime,
-              DECODE ( st.piece,0,
-	                nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0))
-			/ 1000000,'99,990.00'), '0.00'),
-			'&nbsp;' ) elapsed,
-	      NVL ( e.hash_value,0 ) hashval,
-	      st.sql_text statement
-	      FROM stats\$sql_summary e, stats\$sql_summary b, stats\$sqltext st
+				 '999,999,990.0') readsperexec,
+	      to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/phyr,
+			  '990.0') pcttotal,
+	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0))/1000000,
+			  '99,990.00'),'0.00') cputime,
+	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0))
+			/ 1000000,'99,990.00'), '0.00') elapsed,
+	      NVL ( e.hash_value,0 ) hashval
+	      FROM stats\$sql_summary e, stats\$sql_summary b
 	     WHERE b.snap_id(+)  = bid
 	       AND b.dbid(+)     = e.dbid
 	       AND b.instance_number(+) = e.instance_number
@@ -290,15 +273,17 @@ DECLARE
 	       AND e.snap_id     = eid
 	       AND e.dbid        = db_id
 	       AND e.instance_number    = instnum
-	       AND e.hash_value  = st.hash_value
-	       AND e.text_subset = st.text_subset
-	       AND st.piece      < 5
 	       AND e.executions  > nvl(b.executions,0)
-	     ORDER BY (e.buffer_gets - nvl(b.buffer_gets,0)) desc,
-	              e.hash_value --, st.piece
+	       AND phyr          > 0
+	     ORDER BY (e.disk_reads - nvl(b.disk_reads,0)) desc,
+	              e.hash_value
 	   )
-     WHERE rownum < 5;
-			
+     WHERE rownum <= 10;
+
+  CURSOR C_GetSQL (hv IN NUMBER) IS
+    SELECT sql_text FROM stats\$sqltext WHERE hash_value=hv
+     ORDER BY piece;
+
 
 BEGIN
   -- Configuration
@@ -335,7 +320,7 @@ BEGIN
   L_LINE :=   ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#top5wait">Top 5 Wait</A>'||
             ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#bgwaitevents">Background Waits</A> ]';
   dbms_output.put_line(L_LINE);
-  L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#invobj">Invalid Objects</A> ]'||
+  L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||
 	    ' [ <A HREF="#misc">Misc</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
@@ -451,6 +436,7 @@ BEGIN
     dbms_output.put_line(L_LINE);
     ELA  := Rec_SnapInfo.ela;
     EBGT := Rec_SnapInfo.ebgt;
+    EDRT := Rec_SnapInfo.edrt;
   END LOOP;
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -686,6 +672,36 @@ BEGIN
   FOR R_SQL IN C_SQLByGets(DBID,INST_NUM,BID,EID,GETS) LOOP
     L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.bufgets||'</TD><TD ALIGN="right">'||
               R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.getsperexec||
+	      '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'</TD><TD ALIGN="right">';
+    dbms_output.put_line(L_LINE);
+    L_LINE := R_SQL.cputime||'</TD><TD ALIGN="right">'||R_SQL.elapsed||
+              '</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||CHR(10)||
+	      ' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
+    dbms_output.put_line(L_LINE);
+    FOR R_Statement IN C_GetSQL(R_SQL.hashval) LOOP
+      L_LINE := R_Statement.sql_text;
+      dbms_output.put_line(L_LINE);
+    END LOOP;
+    L_LINE := '</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- SQL by Reads
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#sqlbyreads">SQL ordered by Reads</A></TH></TR>'||CHR(10)||
+            ' <TR><TD COLSPAN="7" ALIGN="center">End Disk Reads Treshold: '||EDRT||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Pysical Reads</TH><TH CLASS="th_sub">Executions</TH>'||
+	    '<TH CLASS="th_sub">Reads per Exec</TH><TH CLASS="th_sub">% Total</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">CPU Time (s)</TH><TH CLASS="th_sub">'||
+            'Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_SQL IN C_SQLByReads(DBID,INST_NUM,BID,EID,PHYR) LOOP
+    L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.phyreads||'</TD><TD ALIGN="right">'||
+              R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.readsperexec||
 	      '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'</TD><TD ALIGN="right">';
     dbms_output.put_line(L_LINE);
     L_LINE := R_SQL.cputime||'</TD><TD ALIGN="right">'||R_SQL.elapsed||
