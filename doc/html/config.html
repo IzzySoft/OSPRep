@@ -168,6 +168,17 @@
            The only other difference is: TSIO stats are ordered by IOs, while FIO
            stats are ordered by TS and file names.</td></tr>
    <tr><td class="td_name"><code>MK_FIO</code></td></tr>
+   <tr><td class="td_name"><code>MK_SEG_LR</code></td>
+       <td class="text" rowspan="4">These switches are for the segment statistics
+           (Statspack Level 7) introduced with Oracle 9.2 and will have no effect
+           for Oracle < 9.2 reports. Valid settings are 0 and 1 to switch the
+           selected block on or off in the report: LR = Logical Reads, PR = Physical
+           Reads, BUSY = Buffer Busy Waits, LOCK = Row Lock Waits and ITL = ITL
+           Waits per segment. These reports are always ordered by waits DESC.</td></tr>
+   <tr><td class="td_name"><code>MK_SEG_PR</code></td></tr>
+   <tr><td class="td_name"><code>MK_SEG_BUSY</code></td></tr>
+   <tr><td class="td_name"><code>MK_SEG_LOCK</code></td></tr>
+   <tr><td class="td_name"><code>MK_SEG_ITL</code></td></tr>
    <tr><td class="td_name"><code>MK_INSTACT</code></td>
        <td class="text">The "Instance Activity" segment of the report can be boring
            sometimes, so you may suppress it here and just activate it if you
