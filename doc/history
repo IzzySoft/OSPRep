@@ -12,6 +12,7 @@ v0.3.2
   instance restart, the ID of the end snapshot was setup wrong (absolute)
   if -e was not specified as well
 + generated HTML code is now HTML 4.01 compliant
+! in Datafiles Statistics, the report displayed %Used instead of %Free
 
 v0.3.1 (26.07.2004)
 -------------------
