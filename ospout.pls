@@ -385,7 +385,18 @@
 
   -- TS IO Summary
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="tsio">TableSpace IO Summary Statistics</A></TH></TR>'||
-            ' <TR><TD COLSPAN="9" ALIGN="center">Ordered by IOs (Reads + Writes) desc</TD></TR>';
+            ' <TR><TD COLSPAN="9" ALIGN="center">Ordered by IOs (Reads + Writes)'||
+	    ' desc<DIV ALIGN="justify">';
+  print(L_LINE);
+  L_LINE := 'If the value for Avg Blks/Rd is higher than 1, this indicates full '||
+            'table scans. If it grows higher than <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE> '||
+	    'we must assume that ';
+  print(L_LINE);
+  L_LINE := 'almost every operation on this TS is executed as full table scan '||
+            'instead of using an index first, so you should consider creating '||
+	    'appropriate indices ';
+  print(L_LINE);
+  L_LINE := 'or, maybe, increasing the <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE>.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Reads</TH>'||
 	    '<TH CLASS="th_sub">AvgReads/s</TH><TH CLASS="th_sub">AvgRd (ms)</TH>'||
@@ -410,7 +421,18 @@
 
   -- File IO Summary
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="fileio">File IO Summary Statistics</A></TH></TR>'||
-            ' <TR><TD COLSPAN="10" ALIGN="center">Ordered by TableSpace, File</TD></TR>';
+            ' <TR><TD COLSPAN="10" ALIGN="center">Ordered by TableSpace, File'||
+	    '<DIV ALIGN="justify">';
+  print(L_LINE);
+  L_LINE := 'If the value for Avg Blks/Rd is higher than 1, this indicates full '||
+            'table scans. If it grows higher than <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE> '||
+	    'we must assume that ';
+  print(L_LINE);
+  L_LINE := 'almost every operation on this TS is executed as full table scan '||
+            'instead of using an index first, so you should consider creating '||
+	    'appropriate indices ';
+  print(L_LINE);
+  L_LINE := 'or, maybe, increasing the <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE>.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Filename</TH>'||
             '<TH CLASS="th_sub">Reads</TH><TH CLASS="th_sub">AvgReads/s</TH>'||
