@@ -135,6 +135,23 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
+  PROCEDURE get_sysstat(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, eventname IN VARCHAR2, arrname IN VARCHAR2) IS
+    CURSOR C_Sys(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, eventname IN VARCHAR2, arrname IN VARCHAR2) IS
+      SELECT arrname||'['||snap_id||'] = '||value||';' line
+        FROM stats\$sysstat
+       WHERE name=eventname
+         AND instance_number=instnum
+	 AND dbid=db_id
+	 AND snap_id BETWEEN bid AND eid;
+    BEGIN
+      print(CHR(10)||'var '||arrname||' = new Array();');
+      FOR rec IN C_Sys(db_id,instnum,bid,eid,eventname,arrname) LOOP
+        print(rec.line);
+      END LOOP;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN NULL;
+    END;
+
 BEGIN
   OSPVER := '$version';
   dbms_output.enable(1000000);
@@ -181,6 +198,7 @@ BEGIN
   get_sysevent(DBID,INST_NUM,BID,EID,'enqueue','enq');  
   get_sysevent(DBID,INST_NUM,BID,EID,'LGWR wait for redo copy','lgwr');  
   get_sysevent(DBID,INST_NUM,BID,EID,'log file switch completion','lgsw');  
+  get_sysstat(DBID,INST_NUM,BID,EID,'redo log space requests','redoreq');  
 
 END;
 /

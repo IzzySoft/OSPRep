@@ -45,6 +45,9 @@ function drawStat(stat) {
     case "lgsw" :  parent.dstat = parent.lgsw;
                   parent.dname = "Log File Switch Completion";
 		  break;
+    case "redoreq" :  parent.dstat = parent.redoreq;
+                  parent.dname = "Redo Log Space Requests";
+		  break;
   }
   location.reload();
 }
