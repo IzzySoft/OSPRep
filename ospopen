@@ -1019,7 +1019,7 @@ BEGIN
   print(L_LINE);
 
   -- Navigation
-  L_LINE := TABLE_OPEN||'<TR><TD ALIGN="center"><FONT SIZE=-2>[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
+  L_LINE := TABLE_OPEN||'<TR><TD ALIGN="center"><DIV CLASS="small">[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
             '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> '||
             '] [ <A HREF="#efficiency">Efficiency</A> ]';
   print(L_LINE);
@@ -1040,7 +1040,7 @@ BEGIN
   print(L_LINE);
   L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]'||
             ' [ <A HREF="#resourcelimits">Resource Limits</A> ]'||
-	    ' [ <A HREF="#initora">Init Params</A> ]</TD></TR>';
+	    ' [ <A HREF="#initora">Init Params</A> ]</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := TABLE_CLOSE;
   print(L_LINE);
