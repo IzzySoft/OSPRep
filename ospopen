@@ -521,8 +521,6 @@ BEGIN
   END IF;
   IF MK_TSIO + MK_FIO > 0 THEN
     L_LINE := L_LINE ||' [ <A HREF="#fileio">File IO</A> ]';
-  ELSE
-    L_LINE := '';
   END IF;
   IF MK_RECO = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#recover">Instance Recovery</A> ]';
