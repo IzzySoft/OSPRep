@@ -76,13 +76,14 @@ case :-)
    read all contained files.
 3. Create a directory to hold the scripts - this should *NOT* be below your
    web servers document root. As example, we use ~/scripts here.
-4. Unpack this archive (including sub directories) to ~/scripts
-   (since you read this file, you may already have the archive unpacked; in
-   this case just move the files there).
+4. Unpack this archive (including the plugins/ and install/ sub directories)
+   to ~/scripts (since you read this file, you may already have the archive
+   unpacked; in this case just move the files there).
 5. Edit the ~/scripts/config file to reflect your settings. That file is the
    only one you need to edit, leave the others untouched. Important to change
    are at least the settings for user, password, REPDIR (if other than in our
-   example) and the location of the style sheet (which you need to copy there)
+   example) and the location of the style sheet (which you need to copy there;
+   just select one of the *.css files provided in the reports/ directory)
 6. Go to the ~scripts/install directory and execute mkhelp.sh which creates
    the help files (placement of the stylesheet is adjusted this way) in the
    /var/www/html/oracle/reports/help directory, copies the help icon to this

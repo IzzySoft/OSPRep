@@ -266,3 +266,4 @@ v0.2.9
 * some cleanup to charts.sh
 * some code cleanup, formatting improvements and minor corrections
 ! scripts crashed when specified END_ID was higher then the latest snapshot
++ added alternative StyleSheet: iceage.css
