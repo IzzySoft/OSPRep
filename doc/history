@@ -183,8 +183,9 @@ v0.2.0 (02.02.2004)
   Top_N_SQL (FTS in execution plans), TS IO Summary, File IO Summary,
   Library Cache
 
-v0.2.1
+v0.2.1 (16.02.2004)
 -------------------
 + more verbous explanation for cursor sharing
 * some formatting updates for the help files
-+ added charts for selected system events (use charts.sh to create them)
++ added (cumulative) charts for selected system events (use charts.sh to create
+  them)
