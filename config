@@ -28,8 +28,6 @@ password="pyha#"
 # Top settings: Display Top N Statements [Number]
 TOP_N_SQL=5
 TOP_N_WAITS=10
-# Include the execution plan for the statements, if available? [0|1]
-MK_EP=1
 
 # Exclusion of performance stats for these object owners (where possible).
 # Comment this statement out if you want to exclude nobody. Case sensitive!
@@ -51,6 +49,10 @@ END_ID=0
 MK_ALLWAITS=0
 # Include Background Waits? [0|1]
 MK_BGWAITS=0
+# Include the TOP_N_SQL statements? [0|1]
+MK_TOPSQL=1
+# Include the execution plan for the statements, if available? [0|1]
+MK_EP=1
 # Include the common DataFile Stats? [0|1]
 MK_DFSTAT=1
 # Include the TS and File I/O Stats? [0|1]
@@ -58,7 +60,7 @@ MK_TSIO=1
 MK_FIO=1
 # Include Instance Activity? [0|1]
 MK_INSTACT=0
-# Include Instance REcovery Stats? [0|1]
+# Include Instance Recovery Stats? [0|1]
 MK_RECO=1
 # Include Buffer Stats (Pool & Waits)? [0|1]
 MK_BUFFP=0

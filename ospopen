@@ -34,6 +34,7 @@ DECLARE
   MK_DFSTAT NUMBER;
   MK_TSIO NUMBER;
   MK_FIO NUMBER;
+  MK_TOPSQL NUMBER;
   MK_EP NUMBER;
   WR_IE_BUFFNW NUMBER;
   AR_IE_BUFFNW NUMBER;
@@ -595,6 +596,7 @@ BEGIN
   MK_DFSTAT   := :MK_DFSTAT;
   MK_TSIO     := :MK_TSIO;
   MK_FIO      := :MK_FIO;
+  MK_TOPSQL   := :MK_TOPSQL;
   MK_EP       := :MK_EP;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
@@ -701,13 +703,19 @@ BEGIN
   THEN
     print(' [ <A HREF="#waitobjects">Wait Objects</A> ]');
   END IF;
-  L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||
-	    ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]';
+  IF MK_TOPSQL = 1 THEN
+    L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||
+              ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]';
+  ELSE
+    L_LINE := '';
+  END IF;
   IF MK_INSTACT = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#instact">Instance Activity</A> ]';
   END IF;
-  print(L_LINE);
-  L_LINE := '';
+  IF LENGTH(L_LINE) > 0 THEN
+    print(L_LINE);
+    L_LINE := '';
+  END IF;
   IF MK_DFSTAT = 1 THEN
     S1 := 'istats\$datafiles'; I1 := 1; I2 := 0;
     tab_exists(S1,I1,I2);
@@ -727,7 +735,9 @@ BEGIN
   IF MK_BUFFP + MK_BUFFW > 0 THEN
     L_LINE := L_LINE||' [ <A HREF="#buffstat">Buffer Stats</A> ]';
   END IF;
-  print(L_LINE);
+  IF LENGTH(L_LINE) > 0 THEN
+    print(L_LINE);
+  END IF;
   IF MK_PGAA + MK_PGAM > 0 THEN
     L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ]';
   ELSE
@@ -745,7 +755,9 @@ BEGIN
   IF MK_LACT = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#latches">Latches</A> ]';
   END IF;
-  print(L_LINE);
+  IF LENGTH(L_LINE) > 0 THEN
+    print(L_LINE);
+  END IF;
   IF MK_DC + MK_LC > 0 THEN
     L_LINE := ' [ <A HREF="#caches">Caches</A> ]';
   ELSE
@@ -760,9 +772,10 @@ BEGIN
   IF MK_IORA = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#initora">Init Params</A> ]</DIV></TD></TR>';
   END IF;
-  print(L_LINE);
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
+  IF LENGTH(L_LINE) > 0 THEN
+    print(L_LINE);
+  END IF;
+  print(TABLE_CLOSE);
 
   -- Initial information about this instance
   SELECT to_char(SYSDATE,'DD.MM.YYYY HH24:MI') INTO S4 FROM DUAL;
