@@ -199,3 +199,7 @@ v0.2.2 (19.02.2004)
   charts have the same items as cumulative charts.
 + added AvgCharts (cumulative: timeouts per snapshot)
 * updated the (HTML) documentation
+
+v0.2.3
+-------------------
+! cosmetical fix: description of initial diagram of Ratio charts fixed
