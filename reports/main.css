@@ -1,0 +1,11 @@
+BODY { background-color:#7777FF; }
+P { text-align:justified; }
+H2 { text-align:center;color:red;background-color:#EEEEEE }
+H3 { text-align:center; }
+TABLE { background-color:#FFFFFF; }
+TH { text-align:center; background-color:#FFD000; }
+TD { font-size:80%; }
+
+.th_sub  { text-align:center;font-size:90%;font-style:italic;background-color:#FFEEAA; }
+.th_sub2 { text-align:center;font-size:90%;font-style:italic;background-color:lemonchiffon; }
+.td_name { font-weight:bold;background-color=#f0f0f0 }
