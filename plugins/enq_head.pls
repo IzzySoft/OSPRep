@@ -1,3 +1,26 @@
+  FUNCTION have_enqs (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) RETURN BOOLEAN IS
+    CI NUMBER;
+    BEGIN
+      SELECT COUNT(*) INTO CI
+        FROM stats$enqueue_stat b, stats$enqueue_stat e
+       WHERE b.snap_id(+) = bid
+         AND e.snap_id    = eid
+         AND b.dbid(+)    = db_id
+         AND e.dbid       = db_id
+         AND b.dbid(+)    = e.dbid
+         AND b.instance_number(+) = instnum
+         AND e.instance_number    = instnum
+         AND b.instance_number(+) = e.instance_number
+         AND b.eq_type(+) = e.eq_type
+         AND e.total_wait# - nvl(b.total_wait#,0) > 0;
+      IF CI > 0 THEN
+        RETURN TRUE;
+      ELSE
+        RETURN FALSE;
+      END IF;
+    EXCEPTION
+      WHEN OTHERS THEN NULL;
+    END;
 
   PROCEDURE enqact IS
     CURSOR C_Enq (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS

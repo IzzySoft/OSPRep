@@ -1,3 +1,5 @@
   -- Enqueue Activity
-  enqact;
-  print('<HR>');
+  IF HAVENQ THEN
+    enqact;
+    print('<HR>');
+  END IF;

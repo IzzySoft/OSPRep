@@ -30,6 +30,7 @@ DECLARE
   MK_RSSTAT NUMBER;
   MK_RSSTOR NUMBER;
   MK_ENQ NUMBER;
+  HAVENQ BOOLEAN;
   MK_PGAA NUMBER;
   MK_PGAM NUMBER;
   MK_SPSTAT NUMBER;
@@ -292,6 +293,14 @@ if [ -n "$PGAHEAD" ]; then
 fi
 if [ -n "$ENQHEAD" ]; then
   cat $ENQHEAD>>$SQLSET
+else
+  cat>>$SQLSET<<ENDSQL
+  FUNCTION have_enqs (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) RETURN BOOLEAN IS
+    BEGIN
+      RETURN FALSE;
+    END;
+
+ENDSQL
 fi
 if [ -n "$CACHEHEAD" ]; then
   cat $CACHEHEAD>>$SQLSET
@@ -491,7 +500,10 @@ BEGIN
     L_LINE := '';
   END IF;
   IF MK_ENQ = 1 THEN
-    L_LINE := L_LINE||' [ <A HREF="#enq">Enqueue Activity</A> ]';
+    HAVENQ := have_enqs(DBID,INST_NUM,BID,EID);
+    IF HAVENQ THEN
+      L_LINE := L_LINE||' [ <A HREF="#enq">Enqueue Activity</A> ]';
+    END IF;
   END IF;
   IF MK_USS + MK_USSTAT > 0 THEN
     L_LINE := L_LINE||' [ <A HREF="#undo">Undo Segs</A> ]';

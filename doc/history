@@ -244,3 +244,4 @@ v0.2.7
 + Reorganized segment grouping: connected stats (as e.g. "Datafile Statistics"
   and "File IO") are now directly following each other (and are no longer
   spread across the report)
+* if no Enqueue Activities are reported, we do not draw an empty table anymore
