@@ -830,6 +830,35 @@ DECLARE
        ORDER BY begin_time desc )
    WHERE rownum < 25;
 
+  CURSOR C_LAA (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.name name,
+           to_char(e.gets - b.gets,'99,999,999,999') gets,
+	   nvl(to_char(decode(e.gets, b.gets, NULL,
+	                  (e.misses - b.misses) * 100 /
+			  (e.gets - b.gets)),'990.00'),'&nbsp;') missed,
+	   nvl(to_char(decode(e.misses, b.misses, NULL,
+	                  (e.sleeps - b.sleeps) /
+			  (e.misses - b.misses)),'990.00'),'&nbsp;') sleeps,
+	   to_char((e.wait_time - b.wait_time)/1000000,'99,999') wt,
+	   to_char(e.immediate_gets - b.immediate_gets,'99,999,999,999') nowai,
+	   nvl(to_char(decode(e.immediate_gets, b.immediate_gets, NULL,
+	                  (e.immediate_misses - b.immediate_misses) *100 /
+			  (e.immediate_gets - b.immediate_gets)),'990.00'),
+		'&nbsp;') imiss
+      FROM stats\$latch b, stats\$latch e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.name    = e.name
+       AND (  e.gets - b.gets
+            + e.immediate_gets - b.immediate_gets ) > 0
+     ORDER BY wt,sleeps,imiss;
+
 
 BEGIN
   -- Configuration
@@ -875,7 +904,8 @@ BEGIN
 	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ] [ <A HREF="#enq">Enqueue Activity</A> ]'||
-            ' [ <A HREF="#rbs">RBS</A> ] [ <A HREF="#undo">Undo Segs</A> ]</TD></TR>';
+            ' [ <A HREF="#rbs">RBS</A> ] [ <A HREF="#undo">Undo Segs</A> ]'||
+	    ' [ <A HREF="#latches">Latches</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1615,7 +1645,7 @@ BEGIN
   dbms_output.put_line(L_LINE);
 
   -- Undo Segs Stat
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="#undo">Undo Segment Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8">Undo Segment Statistics</TH></TR>'||
             ' <TR><TD COLSPAN="8" ALIGN="center">Ordered by Time desc</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">End Time</TH><TH CLASS="th_sub">Undo Blocks</TH>'||
@@ -1633,6 +1663,37 @@ BEGIN
     L_LINE := '<TD ALIGN="right">'||R_USS.maxc||'</TD><TD ALIGN="right">'||
               R_USS.snol||'</TD><TD ALIGN="right">'||R_USS.nosp||'</TD><TD ALIGN="right">'||
 	      R_USS.blkst||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- Latch Activity
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#latches">Latch Activity</A></TH></TR>'||
+            ' <TR><TD COLSPAN="7" ALIGN="center">"Get Requests", "Pct Get Miss"'||
+	    ' and "Avg Slps/Miss" are statistics for willing-to-wait';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' latch get requests<BR>"NoWait Requests", "Pct NoWait Miss" are '||
+            'for no-wait latch get requests<BR>"Pct Misses" for both should be '||
+	    'very close to 0.0<BR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := 'Ordered by Wait Time desc, Avg Slps/Miss, Pct NoWait Miss desc</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Latch</TH><TH CLASS="th_sub">Get Requests</TH>'||
+            '<TH CLASS="th_sub">Pct Get Miss</TH><TH CLASS="th_sub">Avg Slps/Miss</TH>'||
+	    '<TH CLASS="th_sub">Wait Time (s)</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">NoWait Requests</TH><TH CLASS="th_sub">'||
+            'Pct NoWait Miss</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_LA IN C_LAA(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_LA.name||'</TD><TD ALIGN="right">'||
+              R_LA.gets||'</TD><TD ALIGN="right">'||R_LA.missed||
+	      '</TD><TD ALIGN="right">'||R_LA.sleeps||'</TD>';
+    dbms_output.put_line(L_LINE);
+    L_LINE := '<TD ALIGN="right">'||R_LA.wt||'</TD><TD ALIGN="right">'||
+              R_LA.nowai||'</TD><TD ALIGN="right">'||R_LA.imiss||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
