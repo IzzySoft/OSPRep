@@ -30,7 +30,7 @@
           segment. This enqueue is used to serialize the allocation of space
 	  above the high water mark of a segment:<BR>
 	  <CODE>V$SESSION_WAIT.P2 / V$LOCK.ID1</CODE> is the tablespace number<BR>
-	  <CODE>V$SESSION_WAIT.P2 / V$LOCK.ID2<CODE> is the relative dba segment
+	  <CODE>V$SESSION_WAIT.P2 / V$LOCK.ID2</CODE> is the relative dba segment
 	  header of the object for which space is being allocated<BR>
 	  If this is a point of contention for an object, then manual allocation
 	  of extents solves the problem.</TD></TR>

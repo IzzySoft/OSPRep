@@ -34,7 +34,7 @@
   L_LINE := ' <TR><TD CLASS="td_name">Redo Size</TD><TD ALIGN="right">'||
             to_char(round(RSIZ/ELA,2),'99,999,999,990.00')||
             '</TD><TD ALIGN="right">'||
-	    to_char(round(RSIZ/TRAN,2),'9,999,990.00')||'</TD></TR>';
+	    to_char(round(RSIZ/TRAN,2),'99,999,999,990.00')||'</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TD CLASS="td_name">Logical Reads</TD><TD ALIGN="right">'||
             to_char(round(GETS/ELA,2),'99,999,999,990.00')||

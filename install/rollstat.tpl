@@ -42,9 +42,9 @@
   <TR><TH CLASS="th_sub2" COLSPAN="2">Rollback Segments Storage</TH></TR>
   <TR><TD>Segment Size</TD><TD>The actual size of this segment</TD></TR>
   <TR><TD>Avg Active</TD><TD>Average transaction size for this RBS</TD></TR>
-  <TR><TD>Optimal Size</TD><TD>The optimal size of this segment as defined at
-      creation of the segment or with the <CODE>ALTER</CODE> command at a later
-      time</TD></TR>
+  <TR><TD>Optimal Size</TD><TD>The <CODE>OPTIMAL</CODE> size of this segment as
+      defined at creation of the segment or with the <CODE>ALTER</CODE> command
+      at a later time</TD></TR>
   <TR><TD>Maximum Size</TD><TD>Size reached by the largest transaction we've had</TD></TR>
  </TABLE>
 
@@ -55,12 +55,12 @@
       <TH CLASS="th_sub">Recommendation</TH></TR>
   <TR><TD><DIV ALIGN="center">Low</DIV></TD>
       <TD><DIV ALIGN="center">Low</DIV></TD>
-      <TD><DIV ALIGN="justify">If the value for <I>AveActive</I> is close to
+      <TD><DIV ALIGN="justify">If the value for <I>Avg Active</I> is close to
           <I>OptSize</I>, the settings are correct. If not, then the settings
-          for <I>OPTIMAL</I> are too large.<BR>
+          for <CODE>OPTIMAL</CODE> are too large.<BR>
           <FONT SIZE="-1">Note: Be aware that it is sometimes better to have
           a larger <CODE>OPTIMAL</CODE> value - depending on the nature of the
-          applications running, reducing it towards <I>AveActive</I> may cause
+          applications running, reducing it towards <I>Avg Active</I> may cause
           some applications to start experiencing <CODE>ORA-01555</CODE>.</FONT></DIV></TD></TR>
   <TR><TD><DIV ALIGN="center">Low</DIV></TD>
       <TD><DIV ALIGN="center">High</DIV></TD>

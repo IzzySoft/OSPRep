@@ -15,21 +15,24 @@
   each latch is its level - to avoid deadlocks, a process already holding a
   latch cannot obtain another latch of the same or subordinate level.</P>
  <H3>What is this table about?</H3>
- <P><I>Pct Get Miss</I>es and <I>Pct NoWait Miss</I>es should be low. <I>Pct
-  Get Miss</I> is the percentage of time a latch was requested (in a
-  willing-to-wait mode) and not obtained immediately. For latches requested
-  in No-Wait mode, <I>Pct NoWait Miss</I>es is a percentage based on the
-  number of times a latch was requested in NoWait mode, and the latch request
-  was not successful.</P>
- <P>For willing-to-wait latch gets, also examine the <I>Avg Slps/Miss</I>
-  statistic which shows the average number of times a server process had to
-  sleep before being able to acquire the latch. This statistic should be low.</P>
- <P>Look at the raw sleep data in the <I>Latch Sleep Breakdown</I> section, and
-  identify latches which are obtained by spinning or by sleeping, with sleeping
-  being the most expensive method of getting the latch.</P>
- <P>The <I>Latch Miss Sources</I> report is primarily useful to Oracle Support
-  staff. The data here is used to identify the code which was executing at the
-  time the latch was not obtained (i.e. "missed").</P>
+ <P><SPAN CLASS="ObjectName">Pct Get Miss</SPAN>es and <SPAN
+  CLASS="ObjectName">Pct NoWait Miss</SPAN>es should be low. <SPAN
+  CLASS="ObjectName">Pct Get Miss</SPAN> is the percentage of time a latch was
+  requested (in a willing-to-wait mode) and not obtained immediately. For
+  latches requested in No-Wait mode, <SPAN CLASS="ObjectName">Pct NoWait
+  Miss</SPAN>es is a percentage based on the number of times a latch was
+  requested in NoWait mode, and the latch request was not successful.</P>
+ <P>For willing-to-wait latch gets, also examine the <SPAN
+  CLASS="ObjectName">Avg Slps/Miss</SPAN> statistic which shows the average
+  number of times a server process had to sleep before being able to acquire
+  the latch. This statistic should be low.</P>
+ <P>Look at the raw sleep data in the <SPAN CLASS="ObjectName">Latch Sleep
+  Breakdown</SPAN> section, and identify latches which are obtained by spinning
+  or by sleeping, with sleeping being the most expensive method of getting the
+  latch.</P>
+ <P>The <SPAN CLASS="ObjectName">Latch Miss Sources</SPAN> report is primarily
+  useful to Oracle Support staff. The data here is used to identify the code
+  which was executing at the time the latch was not obtained (i.e. "missed").</P>
  <P>Three of the most common latches waited for are the shared pool, library cache
   and cache buffers chains latches. Latch contention is not usually a problem in
   itself, but is symptomatic of other issues. For example, contention on the
@@ -61,9 +64,9 @@
    <TR><TD>row cache objects latches</TD>
        <TD>increase the <CODE>shared_pool_size</CODE></TD></TR>
    <TR><TD>cache buffer chain latches</TD>
-       <TD>adjust _db_block_hash_buckets</TD></TR>
+       <TD>adjust <CODE>_db_block_hash_buckets</CODE></TD></TR>
    <TR><TD>cache buffer latches</TD>
-       <TD>use _db_block_lru_lru_latches or multiple buffer pools</TD></TR>
+       <TD>use <CODE>_db_block_lru_lru_latches</CODE> or multiple buffer pools</TD></TR>
   </TABLE>
   <P>Again, these are potential fixes, not general solutions. More information can
   be found on the help page about <A HREF="latchfree.html">Latch Free Waits</A></P>
