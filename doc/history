@@ -251,3 +251,4 @@ v0.2.7 (08.03.2004)
 v0.2.8
 -------------------
 + added FileIO to Ratio charts (phys. Reads/Writes per SnapShot)
++ charts.sh now also supports the "-c" parameter (alternative config file)

@@ -26,6 +26,7 @@ if [ -z "$1" ]; then
   echo ----------------------------------------------------------------------------
   echo "Syntax: ${SCRIPT} <ORACLE_SID> [Options]"
   echo "  Options:"
+  echo "     -c <ConfigFileName>"
   echo "     -b <BEGIN_ID (Snapshot)"
   echo "     -e <END_ID (Snapshot)>"
   echo "     -p <Password>"
@@ -39,8 +40,8 @@ if [ -z "$1" ]; then
 fi
 
 # =================================================[ Configuration Section ]===
-# -------------------------------------------[ Read the Configuration File ]---
-. ./config $*
+CONFIG=$BINDIR/config
+ARGS=$*
 # ------------------------------------------[ process command line options ]---
 while [ "$1" != "" ] ; do
   case "$1" in
@@ -49,9 +50,13 @@ while [ "$1" != "" ] ; do
     -p) shift; password=$1;;
     -e) shift; PEND_ID=$1;;
     -b) shift; PSTART_ID=$1;;
+    -c) shift; CONFIG=$1;;
   esac
   shift
 done
+
+# -------------------------------------------[ Read the Configuration File ]---
+. $CONFIG $ARGS
 if [ -z "$ORACLE_CONNECT" ]; then
   ORACLE_CONNECT=$ORACLE_SID
 fi
