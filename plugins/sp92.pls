@@ -1,7 +1,7 @@
   -- Collect Changes from statspack - Interface for Oracle 9.2
   statspack.stat_changes (
    BID, EID,
-   DBID, INST_NUM,
+   DB_ID, INST_NUM,
    PARA,           -- End of IN arguments
    LHTR, BFWT,
    TRAN, CHNG,

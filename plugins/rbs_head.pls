@@ -1,23 +1,24 @@
 
   PROCEDURE rbs_stat IS
-    CURSOR C_RBS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    WRT VARCHAR2(10);
+    CURSOR C_RBS IS
       SELECT b.usn rbs#,
              to_char(e.gets - b.gets,'9,999,999,990.0') gets,
              to_char(to_number(decode(e.gets,b.gets,NULL,
 	          (e.waits - b.waits) * 100 / (e.gets - b.gets) )),
 		  '990.00') waits,
-	     to_char(e.writes - b.writes,'999,999,999,990') writes,
+	     ABS(e.writes - b.writes) writes,
              to_char(e.wraps - b.wraps,'999,999') wraps,
 	     to_char(e.shrinks - b.shrinks,'999,999') shrinks,
              to_char(e.extends - b.extends,'999,999') extends
         FROM stats$rollstat b, stats$rollstat e
-       WHERE b.snap_id = bid
-         AND e.snap_id = eid
-         AND b.dbid    = db_id
-         AND e.dbid    = db_id
+       WHERE b.snap_id = BID
+         AND e.snap_id = EID
+         AND b.dbid    = DB_ID
+         AND e.dbid    = DB_ID
          AND b.dbid    = e.dbid
-         AND b.instance_number = instnum
-         AND e.instance_number = instnum
+         AND b.instance_number = INST_NUM
+         AND e.instance_number = INST_NUM
          AND b.instance_number = e.instance_number
          AND e.usn     = b.usn
        ORDER BY e.usn;
@@ -47,37 +48,37 @@
       L_LINE := '<TH CLASS="th_sub">Shrinks</TH><TH CLASS="th_sub">'||
                 'Extends</TH></TR>';
       print(L_LINE);
-      FOR R_RBS IN C_RBS(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_RBS IN C_RBS LOOP
+        WRT := format_fsize(R_RBS.writes);
         L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_RBS.rbs#||'</TD><TD ALIGN="right">'||
                   R_RBS.gets||'</TD><TD ALIGN="right">'||R_RBS.waits||
-	          '</TD><TD ALIGN="right">'||R_RBS.writes||'</TD>';
+	          '</TD><TD ALIGN="right">'||WRT||'</TD>';
         print(L_LINE);
         L_LINE := '<TD ALIGN="right">'||R_RBS.wraps||'</TD><TD ALIGN="right">'||
                   R_RBS.shrinks||'</TD><TD ALIGN="right">'||R_RBS.extends||'</TD></TR>';
         print(L_LINE);
       END LOOP;
-      L_LINE := TABLE_CLOSE;
-      print(L_LINE);
+      print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN print(TABLE_CLOSE);
     END;
 
   PROCEDURE rbs_stor IS
-    CURSOR C_RBST (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    RSSIZ VARCHAR2(10); OSIZ VARCHAR2(10); MSIZ VARCHAR2(10); AVESIZ VARCHAR2(10);
+    CURSOR C_RBST IS
       SELECT b.usn rbs#,
-             to_char(e.rssize,'99,999,999,999') rssize,
-             to_char(e.aveactive,'999,999,999') active,
-	     nvl(to_char(to_number(decode(e.optsize,-4096,NULL,e.optsize)),
-	           '99,999,999,999'),'&nbsp;') optsize,
-             to_char(e.hwmsize,'99,999,999,999') hwmsize
+             e.rssize rssize,
+             e.aveactive active,
+	     to_number(decode(e.optsize,-4096,NULL,e.optsize)) optsize,
+             e.hwmsize hwmsize
         FROM stats$rollstat b, stats$rollstat e
-       WHERE b.snap_id = bid
-         AND e.snap_id = eid
-         AND b.dbid    = db_id
-         AND e.dbid    = db_id
+       WHERE b.snap_id = BID
+         AND e.snap_id = EID
+         AND b.dbid    = DB_ID
+         AND e.dbid    = DB_ID
          AND b.dbid    = e.dbid
-         AND b.instance_number = instnum
-         AND e.instance_number = instnum
+         AND b.instance_number = INST_NUM
+         AND e.instance_number = INST_NUM
          AND b.instance_number = e.instance_number
          AND e.usn     = b.usn
        ORDER BY e.usn;
@@ -88,22 +89,25 @@
 	        'VALIGN="middle"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="5" ALIGN="center">Optimal Size should be larger '||
-                'than Avg Active</TD></TR>';
+                'than Avg Active<BR>Values are taken from the End SnapShot</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">RBS#</TH><TH CLASS="th_sub">Segment Size</TH>'||
                 '<TH CLASS="th_sub">Avg Active</TH><TH CLASS="th_sub">Optimal Size</TH>'||
 	        '<TH CLASS="th_sub">Maximum Size</TH></TR>';
       print(L_LINE);
-      FOR R_RBS IN C_RBST(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_RBS IN C_RBST LOOP
+        RSSIZ  := format_fsize(R_RBS.rssize);
+        OSIZ   := format_fsize(R_RBS.optsize);
+        MSIZ   := format_fsize(R_RBS.hwmsize);
+        AVESIZ := format_fsize(R_RBS.active);
         L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_RBS.rbs#||'</TD><TD ALIGN="right">'||
-                  R_RBS.rssize||'</TD><TD ALIGN="right">'||R_RBS.active||
-	          '</TD><TD ALIGN="right">'||R_RBS.optsize||'</TD>';
+                  RSSIZ||'</TD><TD ALIGN="right">'||AVESIZ||
+	          '</TD><TD ALIGN="right">'||OSIZ||'</TD>';
         print(L_LINE);
-        L_LINE := '<TD ALIGN="right">'||R_RBS.hwmsize||'</TD></TR>';
+        L_LINE := '<TD ALIGN="right">'||MSIZ||'</TD></TR>';
         print(L_LINE);
       END LOOP;
-      L_LINE := TABLE_CLOSE;
-      print(L_LINE);
+      print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN print(TABLE_CLOSE);
     END;

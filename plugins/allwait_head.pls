@@ -1,6 +1,6 @@
 
   PROCEDURE allwaits IS
-    CURSOR C_AllWait (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, tran NUMBER) IS
+    CURSOR C_AllWait IS
       SELECT e.event event,
              to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
 	     to_char(e.total_timeouts - NVL(b.total_timeouts,0),'9,999,999,999') timeouts,
@@ -9,16 +9,16 @@
 	            0,'0.00',to_char(
 	 	      ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
 		      / (e.total_waits - NVL(b.total_waits,0)),'9,999,990.00') ) wt,
-	     to_char((e.total_waits - NVL(b.total_waits,0))/tran,'99,990.00') txwaits,
+	     to_char((e.total_waits - NVL(b.total_waits,0))/TRAN,'99,990.00') txwaits,
 	     decode(i.event,NULL,0,99) idle,
 	     decode(i.event,NULL,' ','*') idlemark
         FROM stats$system_event b, stats$system_event e, stats$idle_event i
-       WHERE b.snap_id(+)  = bid
-         AND e.snap_id     = eid
-         AND b.dbid(+)     = db_id
-         AND e.dbid        = db_id
-         AND b.instance_number(+) = instnum
-         AND e.instance_number    = instnum
+       WHERE b.snap_id(+)  = BID
+         AND e.snap_id     = EID
+         AND b.dbid(+)     = DB_ID
+         AND e.dbid        = DB_ID
+         AND b.instance_number(+) = INST_NUM
+         AND e.instance_number    = INST_NUM
          AND b.event(+)    = e.event
          AND e.total_waits > NVL(b.total_waits,0)
          AND e.event NOT LIKE '%timer%'
@@ -40,7 +40,7 @@
       L_LINE := '<TH CLASS="th_sub">Avg Wait Time (ms)</TH><TH CLASS="th_sub">'||
                 'Waits/TXN</TH></TR>';
       print(L_LINE);
-      FOR R_AllWait IN C_AllWait(DBID,INST_NUM,BID,EID,TRAN) LOOP
+      FOR R_AllWait IN C_AllWait LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_AllWait.event||R_AllWait.idlemark||
                   '</TD><TD ALIGN="right">'||R_AllWait.waits||'</TD><TD ALIGN="right">'||
 	          R_AllWait.timeouts||'</TD><TD ALIGN="right">'||

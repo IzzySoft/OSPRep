@@ -1,7 +1,7 @@
   -- Collect Changes from statspack - Interface for Oracle 8.1.7
   statspack.stat_changes (
    BID, EID,
-   DBID, INST_NUM, -- End of IN arguments
+   DB_ID, INST_NUM, -- End of IN arguments
    LHTR, BFWT,
    TRAN, CHNG,
    UCAL, UROL,

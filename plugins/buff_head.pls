@@ -1,17 +1,17 @@
 
   PROCEDURE spstat IS
-    CURSOR C_SPSQL (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    CURSOR C_SPSQL IS
       SELECT (100*(1-b.single_use_sql/b.total_sql)) AS b_single_sql,
              (100*(1-e.single_use_sql/e.total_sql)) AS e_single_sql,
              (100*(1-b.single_use_sql_mem/b.total_sql_mem)) AS b_single_mem,
 	     (100*(1-e.single_use_sql_mem/e.total_sql_mem)) AS e_single_mem
         FROM stats$sql_statistics b, stats$sql_statistics e
-       WHERE b.snap_id=bid
-         AND e.snap_id=eid
-         AND b.instance_number=instnum
-         AND e.instance_number=instnum
-         AND b.dbid=db_id
-         AND e.dbid=db_id;
+       WHERE b.snap_id=BID
+         AND e.snap_id=EID
+         AND b.instance_number=INST_NUM
+         AND e.instance_number=INST_NUM
+         AND b.dbid=DB_ID
+         AND e.dbid=DB_ID;
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="sharedpool">Shared Pool Statistics</A></TH></TR>'||CHR(10)||
                 ' <TR><TH CLASS="th_sub">Name</TH><TH CLASS="th_sub">Begin</TH>'||
@@ -21,7 +21,7 @@
                 to_char(round(100*(1-BFRM/BSPM),2),'990.00')||'</TD><TD>'||
 	        to_char(round(100*(1-EFRM/ESPM),2),'990.00')||'</TD></TR>';
       print(L_LINE);
-      FOR R_SPSQL IN C_SPSQL(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_SPSQL IN C_SPSQL LOOP
         L_LINE := ' <TR><TD CLASS="td_name">% SQL with executions &gt; 1</TD><TD>'||
                   to_char(round(R_SPSQL.b_single_sql,2),'990.00')||'</TD><TD>'||
 	          to_char(round(R_SPSQL.e_single_sql,2),'990.00')||'</TD></TR>';
@@ -38,8 +38,8 @@
 
   PROCEDURE buffp IS
     ratz VARCHAR2(20);
-    CURSOR C_BuffP (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, bs IN NUMBER) IS
-      SELECT replace(e.block_size/1024||'k',bs/1024||'k',substr(e.name,1,1)) name,
+    CURSOR C_BuffP IS
+      SELECT replace(e.block_size/1024||'k',BS/1024||'k',substr(e.name,1,1)) name,
              e.set_msize numbufs,
              nvl(to_char(decode(  e.db_block_gets   - nvl(b.db_block_gets,0)
 	                  + e.consistent_gets - nvl(b.consistent_gets,0),
@@ -67,12 +67,12 @@
 	        ((e.consistent_gets - b.consistent_gets) +
 	         (e.db_block_gets - b.db_block_gets)) ratio_but
         FROM stats$buffer_pool_statistics b, stats$buffer_pool_statistics e
-       WHERE b.snap_id(+)  = bid
-         AND e.snap_id     = eid
-         AND b.dbid(+)     = db_id
-         AND e.dbid        = db_id
-         AND b.instance_number(+) = instnum
-         AND e.instance_number    = instnum
+       WHERE b.snap_id(+)  = BID
+         AND e.snap_id     = EID
+         AND b.dbid(+)     = DB_ID
+         AND e.dbid        = DB_ID
+         AND b.instance_number(+) = INST_NUM
+         AND e.instance_number    = INST_NUM
          AND b.instance_number(+) = e.instance_number
          AND b.id(+)       = e.id
        ORDER BY e.name;
@@ -91,7 +91,7 @@
                '<TH CLASS="th_sub">Wrt complete Waits</TH><TH CLASS="th_sub">Buffer Busy Waits</TH>'||
 	       '<TH CLASS="th_sub">HitRatio (%)</TH></TR>';
       print(L_LINE);
-      FOR R_Buff IN C_BuffP(DBID,INST_NUM,BID,EID,BS) LOOP
+      FOR R_Buff IN C_BuffP LOOP
         IF R_Buff.ratio_but > 0 THEN
           ratz := to_char(100*R_Buff.ratio_top / R_Buff.ratio_but,'990.00');
         ELSE
@@ -113,7 +113,7 @@
     END;
 
   PROCEDURE buffw IS
-    CURSOR C_BuffW (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    CURSOR C_BuffW IS
       SELECT e.class class,
              to_char(e.wait_count - nvl(b.wait_count,0),'99,999,999') icnt,
              to_char((e.time - nvl(b.time,0))/100,'999,990.00') itim,
@@ -123,12 +123,12 @@
  	      (e.wait_count - nvl(b.wait_count,0))/((e.time - nvl(b.time,0))/100)),
               '999,990.00') wps
         FROM stats$waitstat b, stats$waitstat e
-       WHERE b.snap_id = bid
-         AND e.snap_id = eid
-         AND b.dbid    = db_id
-         AND e.dbid    = db_id
-         AND b.instance_number = instnum
-         AND e.instance_number = instnum
+       WHERE b.snap_id = BID
+         AND e.snap_id = EID
+         AND b.dbid    = DB_ID
+         AND e.dbid    = DB_ID
+         AND b.instance_number = INST_NUM
+         AND e.instance_number = INST_NUM
          AND b.instance_number = e.instance_number
          AND b.class   = e.class
          AND b.wait_count < e.wait_count
@@ -144,7 +144,7 @@
                 '<TH CLASS="th_sub">Avg Wait Time (s)</TH>'||
 	        '<TH CLASS="th_sub">Waits/s</TH></TR>';
       print(L_LINE);
-      FOR R_Buff IN C_BuffW(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_Buff IN C_BuffW LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.class||'</TD><TD ALIGN="right">'||
                   R_Buff.icnt||'</TD><TD ALIGN="right">'||R_Buff.itim||
 	          '</TD><TD ALIGN="right">'||R_Buff.iavg;

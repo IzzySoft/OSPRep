@@ -1,6 +1,6 @@
 
   PROCEDURE undosum IS
-    CURSOR C_USS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
+    CURSOR C_USS IS
       SELECT undotsn,
              to_char(sum(undoblks),'99,999,999') undob,
 	     to_char(sum(txncount),'9,999,999,999,999') txcnt,
@@ -12,10 +12,10 @@
 	     sum(unxpblkreucnt)||' / '||sum(expstealcnt)||'/'||
 	     sum(expblkrelcnt)||'/'||sum(expblkreucnt) blkst
         FROM stats$undostat
-       WHERE dbid = db_id
-         AND instance_number = instnum
-         AND end_time > to_date(btime, 'DD.MM.YYYY HH24:MI:SS')
-         AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
+       WHERE dbid = DB_ID
+         AND instance_number = INST_NUM
+         AND end_time > to_date(BTIME, 'DD.MM.YYYY HH24:MI:SS')
+         AND begin_time < to_date(ETIME, 'DD.MM.YYYY HH24:MI:SS')
        GROUP BY undotsn;
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8">Undo Segment Summary'||
@@ -35,7 +35,7 @@
       L_LINE := '<TH CLASS="th_sub">Snapshot Too Old</TH><TH CLASS="th_sub">'||
                 'Out of Space</TH><TH CLASS="th_sub">uS/ur/uU / eS/eR/eU</TH></TR>';
       print(L_LINE);
-      FOR R_USS IN C_USS(DBID,INST_NUM,BID,EID,BTIME,ETIME) LOOP
+      FOR R_USS IN C_USS LOOP
         L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_USS.undotsn||'</TD><TD ALIGN="right">'||
                   R_USS.undob||'</TD><TD ALIGN="right">'||R_USS.txcnt||
 	          '</TD><TD ALIGN="right">'||R_USS.maxq||'</TD>';
@@ -45,14 +45,13 @@
 	          R_USS.blkst||'</TD></TR>';
         print(L_LINE);
       END LOOP;
-      L_LINE := TABLE_CLOSE;
-      print(L_LINE);
+      print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN print(TABLE_CLOSE);
     END;
 
   PROCEDURE undostats IS
-    CURSOR C_UST (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
+    CURSOR C_UST IS
       SELECT undotsn, endt,undob,txcnt,maxq,maxc,snol,nosp,blkst
         FROM ( SELECT undotsn,
                       to_char(end_time,'DD.MM.YYYY HH24:MI') endt,
@@ -66,10 +65,10 @@
 		      unxpblkreucnt||' / '||expstealcnt||'/'||
 		      expblkrelcnt||'/'||expblkreucnt blkst
                  FROM stats$undostat
-                WHERE dbid = db_id
-                  AND instance_number = instnum
-                  AND end_time > to_date(btime, 'DD.MM.YYYY HH24:MI:SS')
-                  AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
+                WHERE dbid = DB_ID
+                  AND instance_number = INST_NUM
+                  AND end_time > to_date(BTIME, 'DD.MM.YYYY HH24:MI:SS')
+                  AND begin_time < to_date(ETIME, 'DD.MM.YYYY HH24:MI:SS')
                 ORDER BY begin_time desc )
        WHERE rownum < 25;
     BEGIN
@@ -87,7 +86,7 @@
       L_LINE := '<TH CLASS="th_sub">Snapshot Too Old</TH><TH CLASS="th_sub">'||
                 'Out of Space</TH><TH CLASS="th_sub">uS/ur/uU / eS/eR/eU</TH></TR>';
       print(L_LINE);
-      FOR R_USS IN C_UST(DBID,INST_NUM,BID,EID,BTIME,ETIME) LOOP
+      FOR R_USS IN C_UST LOOP
         L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_USS.endt||'</TD><TD ALIGN="right">'||
                   R_USS.undob||'</TD><TD ALIGN="right">'||R_USS.txcnt||
 	          '</TD><TD ALIGN="right">'||R_USS.maxq||'</TD>';
@@ -99,6 +98,6 @@
       END LOOP;
       print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN print(TABLE_CLOSE);
     END;
 

@@ -189,7 +189,7 @@ then
 else
   cat >$GWDUMMY<<ENDSQL
   cat>>$SQLSET<<ENDDUMMY
-  PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+  PROCEDURE get_waitobj IS
   BEGIN
     NULL;
   END;
@@ -207,7 +207,7 @@ then
 else
   cat >$DFDUMMY<<ENDSQL
   cat>>$SQLSET<<ENDDUMMY
-  PROCEDURE get_filestats(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+  PROCEDURE get_filestats IS
   BEGIN
     NULL;
   END;

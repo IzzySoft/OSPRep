@@ -12,7 +12,7 @@ EXCLUDING=`echo $EXCLUDE_OWNERS|sed "s/'//g"`
 EXCLUDING=`echo $EXCLUDING|sed "s/,/, /g"`
 
 cat>>$SQLSET<<ENDSQL
-PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+PROCEDURE get_waitobj IS
  CURSOR cur IS
   SELECT owner,segment_name,segment_type,event,waited,entries FROM (
    SELECT owner,segment_name,segment_type,event,sum(waited) waited,count(waited) entries
@@ -21,9 +21,9 @@ PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN 
  		   instance_number,dbid
  	      FROM istats\$waitobjects
 	     WHERE owner NOT IN ($EXCLUDE_OWNERS) )
-    WHERE dbid = db_id
-      AND instance_number = instnum
-      AND snap_id BETWEEN bid AND eid
+    WHERE dbid = DB_ID
+      AND instance_number = INST_NUM
+      AND snap_id BETWEEN BID AND EID
     GROUP BY owner,segment_name,segment_type,event
     ORDER BY waited DESC,entries DESC )
    WHERE rownum <= TOP_N_WAITS;

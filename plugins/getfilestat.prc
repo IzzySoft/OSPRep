@@ -9,7 +9,7 @@
 # =============================================================================
 
 cat>>$SQLSET<<ENDSQL
-PROCEDURE get_filestats(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+PROCEDURE get_filestats IS
  CURSOR cur IS
   SELECT b.tablespace tsname,b.datafile dfname,
          TO_CHAR(b.bytes/1024/1024,'99,999,990.0') b_bytes,
@@ -25,11 +25,11 @@ PROCEDURE get_filestats(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid I
     FROM istats\$datafiles b,istats\$datafiles e,
 	 ( SELECT MIN(snap_id) minsnap, MAX(snap_id) maxsnap
 	     FROM istats\$datafiles
-	    WHERE snap_id BETWEEN bid AND eid ) s
-   WHERE b.dbid = db_id
-     AND e.dbid = db_id
-     AND b.instance_number = instnum
-     AND e.instance_number = instnum
+	    WHERE snap_id BETWEEN BID AND EID ) s
+   WHERE b.dbid = DB_ID
+     AND e.dbid = DB_ID
+     AND b.instance_number = INST_NUM
+     AND e.instance_number = INST_NUM
      AND b.snap_id = s.minsnap
      AND e.snap_id = s.maxsnap
      AND b.datafile = e.datafile

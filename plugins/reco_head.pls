@@ -1,6 +1,6 @@
 
   PROCEDURE reco IS
-    CURSOR C_Recover (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    CURSOR C_Recover IS
       SELECT 'B' name,
              to_char(target_mttr,'999,999') tm,
              to_char(estimated_mttr,'999,999') em,
@@ -12,9 +12,9 @@
              nvl(to_char(log_chkpt_interval_redo_blks,'99,999,999,999'),'&nbsp;') lcirb,
 	     snap_id snid
         FROM stats$instance_recovery b
-       WHERE b.snap_id = bid
-         AND b.dbid    = db_id
-         AND b.instance_number = instnum
+       WHERE b.snap_id = BID
+         AND b.dbid    = DB_ID
+         AND b.instance_number = INST_NUM
       UNION SELECT 'E' name,
              to_char(target_mttr,'999,999') tm,
              to_char(estimated_mttr,'999,999') em,
@@ -26,9 +26,9 @@
              nvl(to_char(log_chkpt_interval_redo_blks,'99,999,999,999'),'&nbsp;') lcirb,
 	     snap_id snid
         FROM stats$instance_recovery e
-       WHERE e.snap_id = eid
-         AND e.dbid    = db_id
-         AND e.instance_number = instnum
+       WHERE e.snap_id = EID
+         AND e.dbid    = DB_ID
+         AND e.instance_number = INST_NUM
        ORDER BY snid;
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="recover">Instance Recovery Statistics</A></TH></TR>'||
@@ -42,7 +42,7 @@
                '<TH CLASS="th_sub">Log Ckpt Timeout Redo Blks</TH>'||
 	       '<TH CLASS="th_sub">Log Ckpt Interval Redo Blks</TH></TR>';
       print(L_LINE);
-      FOR R_Reco IN C_Recover(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_Reco IN C_Recover LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_Reco.name||'</TD><TD ALIGN="right">'||
                   R_Reco.tm||'</TD><TD ALIGN="right">'||R_Reco.em||
 	          '</TD><TD ALIGN="right">'||R_Reco.rei||'</TD><TD ALIGN="right">'||
@@ -55,6 +55,6 @@
       END LOOP;
       print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN print(TABLE_CLOSE);
     END;
 

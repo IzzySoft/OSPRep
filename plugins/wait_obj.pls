@@ -3,6 +3,6 @@
   tab_exists(S1,I1,I2);
   IF I2 = 1
   THEN
-    get_waitobj(DBID,INST_NUM,BID,EID);
+    get_waitobj;
   END IF;
 

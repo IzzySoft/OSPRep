@@ -1,6 +1,6 @@
 
   PROCEDURE dictcache IS
-    CURSOR C_CAD (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    CURSOR C_CAD IS
       SELECT lower(b.parameter) param,
              to_char(e.gets - b.gets,'9,999,999,990') gets,
              nvl(to_char(decode(e.gets, b.gets, NULL,
@@ -15,13 +15,13 @@
 	     nvl(to_char(decode(nvl(e.total_usage,0),0,0,
 	                   e.usage *100/e.total_usage),'990.00'),'&nbsp') sgapct
         FROM stats$rowcache_summary b, stats$rowcache_summary e
-       WHERE b.snap_id = bid
-         AND e.snap_id = eid
-         AND b.dbid    = db_id
-         AND e.dbid    = db_id
+       WHERE b.snap_id = BID
+         AND e.snap_id = EID
+         AND b.dbid    = DB_ID
+         AND e.dbid    = DB_ID
          AND b.dbid    = e.dbid
-         AND b.instance_number = instnum
-         AND e.instance_number = instnum
+         AND b.instance_number = INST_NUM
+         AND e.instance_number = INST_NUM
          AND b.instance_number = e.instance_number
          AND b.parameter       = e.parameter
          AND e.gets - b.gets   > 0
@@ -41,7 +41,7 @@
       L_LINE := '<TH CLASS="th_sub">Mod Reqs</TH><TH CLASS="th_sub">Final Usage</TH>'||
                 '<TH CLASS="th_sub">Pct SGA</TH></TR>';
       print(L_LINE);
-      FOR R_CA IN C_CAD(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_CA IN C_CAD LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_CA.param||'</TD><TD ALIGN="right">'||
                   R_CA.gets||'</TD><TD ALIGN="right">'||R_CA.getm||
 	          '</TD><TD ALIGN="right">'||R_CA.scans||'</TD>';
@@ -58,7 +58,7 @@
     END;
 
   PROCEDURE libcache IS
-    CURSOR C_CAM (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    CURSOR C_CAM IS
       SELECT b.namespace namespace,
              to_char(e.gets - b.gets,'999,999,990') gets,
              nvl(to_char(decode(e.gets,b.gets,NULL,
@@ -78,13 +78,13 @@
              decode(e.gets,b.gets,NULL,
 	            (e.invalidations - b.invalidations) / (e.gets - b.gets)) ipg
         FROM stats$librarycache b, stats$librarycache e
-       WHERE b.snap_id = bid
-         AND e.snap_id = eid
-         AND b.dbid    = db_id
-         AND e.dbid    = db_id
+       WHERE b.snap_id = BID
+         AND e.snap_id = EID
+         AND b.dbid    = DB_ID
+         AND e.dbid    = DB_ID
          AND b.dbid    = e.dbid
-         AND b.instance_number = instnum
-         AND e.instance_number = instnum
+         AND b.instance_number = INST_NUM
+         AND e.instance_number = INST_NUM
          AND b.instance_number = e.instance_number
          AND b.namespace       = e.namespace
          AND e.gets - b.gets   > 0
@@ -103,7 +103,7 @@
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">Reloads</TH><TH CLASS="th_sub">Invalidations</TH></TR>';
       print(L_LINE);
-      FOR R_CA IN C_CAM(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_CA IN C_CAM LOOP
         S1 := alert_gt_warn(R_CA.ngetm,AR_LC_MISS,WR_LC_MISS);
         S2 := alert_gt_warn(R_CA.rpg,AR_LC_RLPRQ,WR_LC_RLPRQ);
         S3 := alert_gt_warn(R_CA.ipg,AR_LC_INVPRQ,WR_LC_INVPRQ);

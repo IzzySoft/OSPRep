@@ -3,7 +3,7 @@
     FROM stats$parameter
    WHERE name='db_file_multiblock_read_count'
      AND snap_id = EID
-     AND dbid    = DBID
+     AND dbid    = DB_ID
      AND instance_number = INST_NUM;
 
   print('<A NAME="fileio"></A>');

@@ -1,6 +1,6 @@
 
   PROCEDURE lact IS
-    CURSOR C_LAA (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    CURSOR C_LAA IS
       SELECT b.name name,
              to_char(e.gets - b.gets,'99,999,999,999') gets,
 	     nvl(to_char(decode(e.gets, b.gets, NULL,
@@ -16,19 +16,19 @@
 			    (e.immediate_gets - b.immediate_gets)),'990.00'),
 			    '&nbsp;') imiss
         FROM stats$latch b, stats$latch e
-       WHERE b.snap_id = bid
-         AND e.snap_id = eid
-         AND b.dbid    = db_id
-         AND e.dbid    = db_id
+       WHERE b.snap_id = BID
+         AND e.snap_id = EID
+         AND b.dbid    = DB_ID
+         AND e.dbid    = DB_ID
          AND b.dbid    = e.dbid
-         AND b.instance_number = instnum
-         AND e.instance_number = instnum
+         AND b.instance_number = INST_NUM
+         AND e.instance_number = INST_NUM
          AND b.instance_number = e.instance_number
          AND b.name    = e.name
          AND (  e.gets - b.gets
               + e.immediate_gets - b.immediate_gets ) > 0
        ORDER BY wt DESC,sleeps DESC,imiss DESC;
-    CURSOR C_LAS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    CURSOR C_LAS IS
       SELECT b.name name,
              to_char(e.gets - b.gets,'99,999,999,999') gets,
 	     to_char(e.misses - b.misses,'99,999,999') misses,
@@ -41,13 +41,13 @@
 	     to_char(e.sleep3 - b.sleep3)||'/'||
 	     to_char(e.sleep4 - b.sleep4) sleep4
         FROM stats$latch b, stats$latch e
-       WHERE b.snap_id = bid
-         AND e.snap_id = eid
-         AND b.dbid    = db_id
-         AND e.dbid    = db_id
+       WHERE b.snap_id = BID
+         AND e.snap_id = EID
+         AND b.dbid    = DB_ID
+         AND e.dbid    = DB_ID
          AND b.dbid    = e.dbid
-         AND b.instance_number = instnum
-         AND e.instance_number = instnum
+         AND b.instance_number = INST_NUM
+         AND e.instance_number = INST_NUM
          AND b.instance_number = e.instance_number
          AND b.name    = e.name
          AND e.sleeps - b.sleeps > 0
@@ -73,7 +73,7 @@
       L_LINE := '<TH CLASS="th_sub">NoWait Requests</TH><TH CLASS="th_sub">'||
                 'Pct NoWait Miss</TH></TR>';
       print(L_LINE);
-      FOR R_LA IN C_LAA(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_LA IN C_LAA LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_LA.name||'</TD><TD ALIGN="right">'||
                   R_LA.gets||'</TD><TD ALIGN="right">'||R_LA.missed||
 	          '</TD><TD ALIGN="right">'||R_LA.sleeps||'</TD>';
@@ -98,7 +98,7 @@
       L_LINE := '<TH CLASS="th_sub">PctSleep</TH><TH CLASS="th_sub">'||
                 'Spin & Sleeps 1-&gt;4</TH></TR>';
       print(L_LINE);
-      FOR R_LA IN C_LAS(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_LA IN C_LAS LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_LA.name||'</TD><TD ALIGN="right">'||
                   R_LA.gets||'</TD><TD ALIGN="right">'||R_LA.misses||
 	          '</TD><TD ALIGN="right">'||R_LA.pctmiss||'</TD>';

@@ -1,17 +1,17 @@
 
   PROCEDURE instact IS
-    CURSOR C_InstAct (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER, tran IN NUMBER) IS
+    CURSOR C_InstAct IS
       SELECT b.name name,
              to_char(e.value - b.value,'99,999,999,999,990') total,
-	     to_char(round((e.value - b.value)/ela,2),'99,999,999,990.00') sec,
-	     to_char(round((e.value - b.value)/tran,2),'99,999,999,990.00') txn
+	     to_char(round((e.value - b.value)/ELA,2),'99,999,999,990.00') sec,
+	     to_char(round((e.value - b.value)/TRAN,2),'99,999,999,990.00') txn
         FROM stats$sysstat b, stats$sysstat e
-       WHERE b.snap_id = bid
-         AND e.snap_id = eid
-         AND b.dbid    = db_id
-         AND e.dbid    = db_id
-         AND b.instance_number = instnum
-         AND e.instance_number = instnum
+       WHERE b.snap_id = BID
+         AND e.snap_id = EID
+         AND b.dbid    = DB_ID
+         AND e.dbid    = DB_ID
+         AND b.instance_number = INST_NUM
+         AND e.instance_number = INST_NUM
          AND b.name    = e.name
          AND e.name NOT IN ( 'logons current','opened cursors current','workarea memory allocated')
          AND e.value   > b.value
@@ -25,7 +25,7 @@
       L_LINE := ' <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Total</TH>'||
 	        '<TH CLASS="th_sub">per Second</TH><TH CLASS="th_sub">per TXN</TH></TR>';
       print(L_LINE);
-      FOR R_Inst IN C_InstAct(DBID,INST_NUM,BID,EID,ELA,TRAN) LOOP
+      FOR R_Inst IN C_InstAct LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_Inst.name||'</TD><TD ALIGN="right">'||
                   R_Inst.total||'</TD><TD ALIGN="right">'||R_Inst.sec||
 	          '</TD><TD ALIGN="right">'||R_Inst.txn||'</TD></TR>';

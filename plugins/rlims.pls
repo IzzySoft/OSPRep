@@ -8,7 +8,7 @@
 	      '<TH CLASS="th_sub">Max Utilization</TH><TH CLASS="th_sub">'||
 	      'Init Allocation</TH><TH CLASS="th_sub">Limit</TH></TR>';
     print(L_LINE);
-    FOR R_RLim in C_RLim(DBID,INST_NUM,BID,EID) LOOP
+    FOR R_RLim in C_RLim LOOP
       L_LINE := ' <TR><TD CLASS="td_name">'||R_RLim.rname||'</TD><TD ALIGN="right">'||
                 R_RLim.curu||'</TD><TD ALIGN="right">'||R_RLim.maxu||
 	        '</TD><TD ALIGN="right">'||R_RLim.inita||'</TD><TD ALIGN="right">'||

@@ -13,16 +13,16 @@
     END;
 
   -- Get and print the Execution Plan
-  PROCEDURE get_plan (bid IN NUMBER, eid IN NUMBER, hashval IN VARCHAR2) IS
+  PROCEDURE get_plan (hashval IN VARCHAR2) IS
     HASHID NUMBER; CI NUMBER; SI NUMBER; OSIZE VARCHAR2(50); IND VARCHAR2(255);
     CW NUMBER;
-    CURSOR C_PGet (bid IN NUMBER, eid IN NUMBER, hash_val IN VARCHAR2) IS
+    CURSOR C_PGet (hash_val IN VARCHAR2) IS
       SELECT operation,options,object_owner,object_name,optimizer,cost,
              NVL(TO_CHAR(cost,'999,990'),'&nbsp;') vcost,
              bytes,cpu_cost,io_cost,depth
         FROM stats$sql_plan,
 	     ( SELECT MAX(snap_id) maxid FROM stats$sql_plan
-	        WHERE snap_id BETWEEN bid AND eid
+	        WHERE snap_id BETWEEN BID AND EID
 		  AND plan_hash_value = hash_val ) id
        WHERE plan_hash_value = hash_val
        ORDER BY id;
@@ -31,7 +31,7 @@
         FROM ( SELECT plan_hash_value,snap_id
                  FROM stats$sql_plan_usage
                 WHERE hash_value = hashval
-                  AND snap_id BETWEEN bid AND eid );
+                  AND snap_id BETWEEN BID AND EID );
       SELECT MAX(plan_hash_value) INTO HASHID
         FROM ( SELECT plan_hash_value,snap_id
                  FROM stats$sql_plan_usage
@@ -54,7 +54,7 @@
         print('Optimizer</TH><TH CLASS="th_sub">Cost</TH><TH CLASS="th_sub">'||
               'CPUCost</TH><TH CLASS="th_sub">IOCost</TH><TH CLASS="th_sub">'||
               'Size</TH></TR>');
-        FOR rplan IN C_PGet(bid,eid,HASHID) LOOP
+        FOR rplan IN C_PGet(HASHID) LOOP
           IF NVL(rplan.bytes,0) < 1024
           THEN
             OSIZE := TO_CHAR(rplan.bytes,'9,990');
@@ -98,29 +98,29 @@
     END;
 
   -- Get CPU parse of all sessions
-  PROCEDURE get_parsecpupct (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, oval OUT VARCHAR2) IS
+  PROCEDURE get_parsecpupct (oval OUT VARCHAR2) IS
     BEGIN
      SELECT to_char((100*a.total/b.total),'990.00') INTO oval FROM
        ( SELECT (e.value - b.value) total
            FROM stats$sysstat b, stats$sysstat e
-          WHERE b.snap_id = bid
-            AND e.snap_id = eid
-            AND b.dbid    = db_id
-            AND e.dbid    = db_id
-            AND b.instance_number = instnum
-            AND e.instance_number = instnum
+          WHERE b.snap_id = BID
+            AND e.snap_id = EID
+            AND b.dbid    = DB_ID
+            AND e.dbid    = DB_ID
+            AND b.instance_number = INST_NUM
+            AND e.instance_number = INST_NUM
             AND b.name    = e.name
             AND e.name    = 'parse time cpu'
             AND e.value   > b.value
             AND e.value   > 0 ) a,
        ( SELECT (e.value - b.value) total
            FROM stats$sysstat b, stats$sysstat e
-          WHERE b.snap_id = bid
-            AND e.snap_id = eid
-            AND b.dbid    = db_id
-            AND e.dbid    = db_id
-            AND b.instance_number = instnum
-            AND e.instance_number = instnum
+          WHERE b.snap_id = BID
+            AND e.snap_id = EID
+            AND b.dbid    = DB_ID
+            AND e.dbid    = DB_ID
+            AND b.instance_number = INST_NUM
+            AND e.instance_number = INST_NUM
             AND b.name    = e.name
             AND e.name    = 'CPU used by this session'
             AND e.value   > b.value
@@ -131,7 +131,7 @@
   -- SQL by Gets
   PROCEDURE sqlbygets IS
     WARN VARCHAR2(50);
-    CURSOR C_SQLByGets (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, gets IN NUMBER) IS
+    CURSOR C_SQLByGets (gets IN NUMBER) IS
       SELECT bufgets,execs,getsperexec,pcttotal,cputime,elapsed,hashval,exe,ela
         FROM ( SELECT /*+ ordered use_nl (b st) */
               to_char((e.buffer_gets - nvl(b.buffer_gets,0)),'99,999,999,990') bufgets,
@@ -151,15 +151,15 @@
               nvl((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
-	     WHERE b.snap_id(+)  = bid
+	     WHERE b.snap_id(+)  = BID
 	       AND b.dbid(+)     = e.dbid
 	       AND b.instance_number(+) = e.instance_number
 	       AND b.hash_value(+)      = e.hash_value
 	       AND b.address(+)  = e.address
 	       AND b.text_subset(+)     = e.text_subset
-	       AND e.snap_id     = eid
-	       AND e.dbid        = db_id
-	       AND e.instance_number    = instnum
+	       AND e.snap_id     = EID
+	       AND e.dbid        = DB_ID
+	       AND e.instance_number    = INST_NUM
 	       AND e.executions  > nvl(b.executions,0)
 	     ORDER BY (e.buffer_gets - nvl(b.buffer_gets,0)) desc,
 	              e.hash_value
@@ -184,7 +184,7 @@
                 '<TH CLASS="th_sub">% Total</TH><TH CLASS="th_sub">CPU Time (s)</TH>'||
                 '<TH CLASS="th_sub">Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
-      FOR R_SQL IN C_SQLByGets(DBID,INST_NUM,BID,EID,GETS) LOOP
+      FOR R_SQL IN C_SQLByGets(GETS) LOOP
         WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
         L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.bufgets||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.getsperexec||
@@ -197,7 +197,7 @@
 	print_tsql(R_SQL.hashval);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(BID,EID,R_SQL.hashval);
+          get_plan(R_SQL.hashval);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -208,7 +208,7 @@
   -- SQL by Reads
   PROCEDURE sqlbyreads IS
     WARN VARCHAR2(50);
-    CURSOR C_SQLByReads (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, phyr IN NUMBER) IS
+    CURSOR C_SQLByReads IS
       SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,hashval,exe,ela
         FROM ( SELECT /*+ ordered use_nl (b st) */
               to_char((e.disk_reads - nvl(b.disk_reads,0)),'99,999,999,990') phyreads,
@@ -228,15 +228,15 @@
               nvl((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
-	     WHERE b.snap_id(+)  = bid
+	     WHERE b.snap_id(+)  = BID
 	       AND b.dbid(+)     = e.dbid
 	       AND b.instance_number(+) = e.instance_number
 	       AND b.hash_value(+)      = e.hash_value
 	       AND b.address(+)  = e.address
 	       AND b.text_subset(+)     = e.text_subset
-	       AND e.snap_id     = eid
-	       AND e.dbid        = db_id
-	       AND e.instance_number    = instnum
+	       AND e.snap_id     = EID
+	       AND e.dbid        = DB_ID
+	       AND e.instance_number    = INST_NUM
 	       AND e.executions  > nvl(b.executions,0)
 	       AND phyr          > 0
 	     ORDER BY (e.disk_reads - nvl(b.disk_reads,0)) desc,
@@ -258,7 +258,7 @@
       L_LINE := '<TH CLASS="th_sub">CPU Time (s)</TH><TH CLASS="th_sub">'||
                 'Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
-      FOR R_SQL IN C_SQLByReads(DBID,INST_NUM,BID,EID,PHYR) LOOP
+      FOR R_SQL IN C_SQLByReads LOOP
         WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
         L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.phyreads||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.readsperexec||
@@ -271,7 +271,7 @@
 	print_tsql(R_SQL.hashval);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(BID,EID,R_SQL.hashval);
+          get_plan(R_SQL.hashval);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -282,7 +282,7 @@
   -- SQL by Executions
   PROCEDURE sqlbyexec IS
     WARN VARCHAR2(50);
-    CURSOR C_SQLByExec (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    CURSOR C_SQLByExec IS
       SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela
         FROM ( SELECT /*+ ordered use_nl (b st) */
 	      to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
@@ -303,15 +303,15 @@
                   (e.executions - nvl(b.executions,0)) ela,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
-	     WHERE b.snap_id(+)  = bid
+	     WHERE b.snap_id(+)  = BID
 	       AND b.dbid(+)     = e.dbid
 	       AND b.instance_number(+) = e.instance_number
 	       AND b.hash_value(+)      = e.hash_value
 	       AND b.address(+)  = e.address
 	       AND b.text_subset(+)     = e.text_subset
-	       AND e.snap_id     = eid
-	       AND e.dbid        = db_id
-	       AND e.instance_number    = instnum
+	       AND e.snap_id     = EID
+	       AND e.dbid        = DB_ID
+	       AND e.instance_number    = INST_NUM
 	       AND e.executions  > nvl(b.executions,0)
 	       AND phyr          > 0
 	     ORDER BY (e.executions - nvl(b.executions,0)) desc,
@@ -330,7 +330,7 @@
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">Elap per Exec (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
-      FOR R_SQL IN C_SQLByExec(DBID,INST_NUM,BID,EID) LOOP
+      FOR R_SQL IN C_SQLByExec LOOP
         WARN := alert_gt_warn(R_SQL.ela,AR_ET,WR_ET);
         L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.execs||'</TD><TD ALIGN="right">'||
                   R_SQL.rowsproc||'</TD><TD ALIGN="right">'||R_SQL.rowsperexec||
@@ -342,7 +342,7 @@
 	print_tsql(R_SQL.hashval);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(BID,EID,R_SQL.hashval);
+          get_plan(R_SQL.hashval);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -352,30 +352,30 @@
 
   -- SQL by Parse
   PROCEDURE sqlbyparse IS
-    CURSOR C_SQLByParse (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, prse IN NUMBER) IS
+    CURSOR C_SQLByParse IS
       SELECT parses,execs,pctparses,hashval
         FROM ( SELECT /*+ ordered use_nl (b st) */
               to_char((e.parse_calls - nvl(b.parse_calls,0)),'999,999,990') parses,
 	      to_char((e.executions - nvl(b.executions,0)),'999,999,990') execs,
-	      to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/prse,
+	      to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/PRSE,
 	             '990.00') pctparses,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
-	     WHERE b.snap_id(+)  = bid
+	     WHERE b.snap_id(+)  = BID
 	       AND b.dbid(+)     = e.dbid
 	       AND b.instance_number(+) = e.instance_number
 	       AND b.hash_value(+)      = e.hash_value
 	       AND b.address(+)  = e.address
 	       AND b.text_subset(+)     = e.text_subset
-	       AND e.snap_id     = eid
-	       AND e.dbid        = db_id
-	       AND e.instance_number    = instnum
+	       AND e.snap_id     = EID
+	       AND e.dbid        = DB_ID
+	       AND e.instance_number    = INST_NUM
 	     ORDER BY (e.parse_calls - nvl(b.parse_calls,0)) desc,
 	              e.hash_value
 	   )
        WHERE rownum <= TOP_N_SQL;
     BEGIN
-      get_parsecpupct(DBID,INST_NUM,BID,EID,S1);
+      get_parsecpupct(S1);
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
                 ' <TR><TD COLSPAN="4" ALIGN="center">End Parse Calls Treshold: '||EPC||
 	        '<BR>Consider tuning these ';
@@ -386,7 +386,7 @@
       L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
                 '<TH CLASS="th_sub">% Total Parses</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
-      FOR R_SQL IN C_SQLByParse(DBID,INST_NUM,BID,EID,PRSE) LOOP
+      FOR R_SQL IN C_SQLByParse LOOP
         L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.parses||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
 	          '</TD><TD ALIGN="right">'||R_SQL.hashval||
@@ -395,7 +395,7 @@
 	print_tsql(R_SQL.hashval);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(BID,EID,R_SQL.hashval);
+          get_plan(R_SQL.hashval);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
