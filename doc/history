@@ -135,6 +135,17 @@ v0.1.5 (19.12.2003)
 v0.1.6 (05.01.2004)
 -------------------
 * one more digit for pctChange on data file growth (may now grow up to 9999.99%)
-+ added external help file for rollback segment stats and undo segment stats
++ added external help file for rollback segment stats
++ added external help file for undo segment stats
 + more detailled help on latch statistics
 + more detailled help on library cache statistics (external help file now)
+
+v0.1.7
+-------------------
+* execution plans are now also displayed for statements w/o cost (sometimes
+  the optimizer misses to display costs)
++ added fts_plans.sh to retrieve execution plans for all statements causing
+  Full Table Scans (FTS) - these are mostly indicators for optimization, e.g.
+  index creation etc.
++ updated doc/readme.txt on PlugIns
+* increased digits for pctchange in SGA Breakdown
