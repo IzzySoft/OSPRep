@@ -265,10 +265,17 @@ DECLARE
 	           0,0,
 	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10),
 		   '9,990.0') avgrd,
+           decode(sum(e.phyrds - nvl(b.phyrds,0)),
+	           0,0,
+	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10) avems,
 	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
 	           0, to_number(NULL),
 		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
 		   sum(e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
+           decode(sum(e.phyrds - nvl(b.phyrds,0)),
+	           0, to_number(NULL),
+		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
+		   sum(e.phyrds - nvl(b.phyrds,0)) ) bprn,
 	   to_char(sum(e.phywrts - nvl(b.phywrts,0)),'9,999,999,990') writes,
 	   to_char(sum(e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
 	   to_char(sum(e.wait_count - nvl(b.wait_count,0)),'99,999,990') waits,
@@ -300,10 +307,17 @@ DECLARE
 	           0,0,
 	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10),
 		   '9,990.0') avgrd,
+           decode(sum(e.phyrds - nvl(b.phyrds,0)),
+	           0,0,
+	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10) avems,
 	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
 	           0, to_number(NULL),
 		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
 		   sum(e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
+           decode(sum(e.phyrds - nvl(b.phyrds,0)),
+	           0, to_number(NULL),
+		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
+		   sum(e.phyrds - nvl(b.phyrds,0)) ) bprn,
 	   to_char(sum(e.phywrts - nvl(b.phywrts,0)),'9,999,999,990') writes,
 	   to_char(sum(e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
 	   to_char(sum(e.wait_count - nvl(b.wait_count,0)),'9,999,990') waits,
@@ -340,10 +354,18 @@ DECLARE
 	           ((e.readtim - nvl(b.readtim,0)) / 
 		    (e.phyrds - nvl(b.phyrds,0))) * 10),
 		   '9,990.0') avgrd,
+           decode(e.phyrds - nvl(b.phyrds,0),
+	           0,0,
+	           ((e.readtim - nvl(b.readtim,0)) / 
+		    (e.phyrds - nvl(b.phyrds,0))) * 10) avems,
 	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
 	           0, to_number(NULL),
 		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
 		   (e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
+           decode(e.phyrds - nvl(b.phyrds,0),
+	           0, to_number(NULL),
+		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
+		   (e.phyrds - nvl(b.phyrds,0)) ) bprn,
 	   to_char(e.phywrts - nvl(b.phywrts,0),'9,999,999,990') writes,
 	   to_char((e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
 	   to_char(e.wait_count - nvl(b.wait_count,0),'999,999,990') waits,
@@ -373,10 +395,18 @@ DECLARE
 	           0,0,
 	           ((e.readtim - nvl(b.readtim,0)) / (e.phyrds - nvl(b.phyrds,0))) * 10),
 		   '9,990.0') avgrd,
+           decode(e.phyrds - nvl(b.phyrds,0),
+	           0,0,
+	           ((e.readtim - nvl(b.readtim,0)) / 
+		    (e.phyrds - nvl(b.phyrds,0))) * 10) avems,
 	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
 	           0, to_number(NULL),
 		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
 		   (e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
+           decode(e.phyrds - nvl(b.phyrds,0),
+	           0, to_number(NULL),
+		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
+		   (e.phyrds - nvl(b.phyrds,0)) ) bprn,
 	   to_char(e.phywrts - nvl(b.phywrts,0),'9,999,999,990') writes,
 	   to_char((e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
 	   to_char(e.wait_count - nvl(b.wait_count,0),'999,999,990') waits,
@@ -972,7 +1002,7 @@ DECLARE
     level2 VARCHAR2(100);
     BEGIN
       IF small > big THEN
-        level2 := to_char(small,'9999.99')||'_gt_'||to_char(big,'9999.99');
+--        level2 := to_char(small,'9999.99')||'_gt_'||to_char(big,'9999.99');
 --        RETURN ' CLASS="'||small||'_gt_'||big||'"';
         RETURN ' CLASS="'||level||'"';
       ELSE
@@ -983,10 +1013,10 @@ DECLARE
     END;
 
   FUNCTION alert_gt_warn(val IN NUMBER, alert IN NUMBER,warn IN NUMBER) RETURN VARCHAR2 IS
-    htmlcode VARCHAR2(30);
+    htmlcode VARCHAR2(50);
     BEGIN
       htmlcode := num_cp(val,alert,'alert');
-      IF htmlcode = '' THEN
+      IF NVL(htmlcode,'x') = 'x' THEN
         htmlcode := num_cp(val,warn,'warn');
       END IF;
       RETURN htmlcode;
@@ -998,7 +1028,7 @@ DECLARE
     htmlcode VARCHAR2(30);
     BEGIN
       htmlcode := num_cp(warn,val,'warn');
-      IF htmlcode = '' THEN
+      IF NVL(htmlcode,'x') = 'x' THEN
         htmlcode := num_cp(alert,val,'alert');
       END IF;
       RETURN htmlcode;

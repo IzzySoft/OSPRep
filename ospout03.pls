@@ -1,4 +1,11 @@
 
+  SELECT TO_NUMBER(value) INTO I1
+    FROM stats$parameter
+   WHERE name='db_file_multiblock_read_count'
+     AND snap_id = EID
+     AND dbid    = DBID
+     AND instance_number = INST_NUM;
+
   -- TS IO Summary
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="tsio">TableSpace IO Summary Statistics</A>'||
             '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
@@ -15,13 +22,16 @@
            '<TH CLASS="th_sub">Buffer Waits</TH><TH CLASS="th_sub">Avg Buf Wt (ms)</TH></TR>';
   print(L_LINE);
   FOR R_TSIO IN C_TSIO(DBID,INST_NUM,BID,EID,ELA) LOOP
+    S1 := alert_gt_warn(R_TSIO.bprn,I1,I1*0.8);
+    S2 := alert_gt_warn(R_TSIO.avems,80,50);
     L_LINE := ' <TR><TD CLASS="td_name">'||R_TSIO.tsname||'</TD><TD ALIGN="right">'||
               R_TSIO.reads||'</TD><TD ALIGN="right">'||R_TSIO.rps||
-	      '</TD><TD ALIGN="right">'||R_TSIO.avgrd||'</TD><TD ALIGN="right">';
+	      '</TD><TD ALIGN="right"'||S2||'>'||R_TSIO.avgrd;
     print(L_LINE);
-    L_LINE := R_TSIO.bpr||'</TD><TD ALIGN="right">'||R_TSIO.writes||
-              '</TD><TD ALIGN="right">'||R_TSIO.wps||'</TD><TD ALIGN="right">'||
-	      R_TSIO.waits||'</TD><TD ALIGN="right">'||R_TSIO.avgbw||'</TD></TR>';
+    L_LINE := '</TD><TD ALIGN="right"'||S1||'>'||R_TSIO.bpr||
+              '</TD><TD ALIGN="right">'||R_TSIO.writes||'</TD><TD ALIGN="right">'||
+	      R_TSIO.wps||'</TD><TD ALIGN="right">'||R_TSIO.waits||
+	      '</TD><TD ALIGN="right">'||R_TSIO.avgbw||'</TD></TR>';
     print(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
@@ -45,14 +55,17 @@
 	   '<TH CLASS="th_sub">Avg Buf Wt (ms)</TH></TR>';
   print(L_LINE);
   FOR R_TSIO IN C_FileIO(DBID,INST_NUM,BID,EID,ELA) LOOP
+    S1 := alert_gt_warn(R_TSIO.bprn,I1,I1*0.8);
+    S2 := alert_gt_warn(R_TSIO.avems,80,50);
     L_LINE := ' <TR><TD CLASS="td_name">'||R_TSIO.tsname||'</TD><TD CLASS="td_name">'||
               R_TSIO.filename||'</TD><TD ALIGN="right">'||
               R_TSIO.reads||'</TD><TD ALIGN="right">'||R_TSIO.rps||
-	      '</TD><TD ALIGN="right">'||R_TSIO.avgrd||'</TD><TD ALIGN="right">';
+	      '</TD><TD ALIGN="right"'||S2||'>'||R_TSIO.avgrd;
     print(L_LINE);
-    L_LINE := R_TSIO.bpr||'</TD><TD ALIGN="right">'||R_TSIO.writes||
-              '</TD><TD ALIGN="right">'||R_TSIO.wps||'</TD><TD ALIGN="right">'||
-	      R_TSIO.waits||'</TD><TD ALIGN="right">'||R_TSIO.avgbw||'</TD></TR>';
+    L_LINE := '</TD><TD ALIGN="right"'||S1||'>'||R_TSIO.bpr||'</TD><TD ALIGN="right">'||
+              R_TSIO.writes||'</TD><TD ALIGN="right">'||R_TSIO.wps||
+	      '</TD><TD ALIGN="right">'||R_TSIO.waits||'</TD><TD ALIGN="right">'||
+	      R_TSIO.avgbw||'</TD></TR>';
     print(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
