@@ -1,5 +1,6 @@
 bid = parent.bid;
 eid = parent.eid;
+var xyz = .001;
 if (maxval == 0) maxval = 1;
 
 // Create Diagram
@@ -49,6 +50,9 @@ function drawStat(stat) {
 		  break;
     case "enqper" :  parent.dstat = parent.enqper;
                   parent.dname = "Enqueue Timeouts per Request";
+		  break;
+    case "fbp"  : parent.dstat = parent.fbp;
+                  parent.dname = "Free Buffers Inspected / Requested";
 		  break;
     case "libmiss" :  parent.dstat = parent.libmiss;
                   parent.dname = "Pct Library Cache HitMisses";

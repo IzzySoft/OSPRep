@@ -53,7 +53,6 @@ function mkline(arr,col) {
 
 function maxDelta(arr) {
  maxval = 0;
- bummy = "";
  for (i=bid;i<eid;i++) {
    if (isNaN(arr[i])) {
      i++;
@@ -61,10 +60,8 @@ function maxDelta(arr) {
    }
    bummy = bummy + " " + arr[i];
    maxval = Math.max(maxval,arr[i]);
-   if (maxval == 0) maxval = 1;
  }
-// alert(maxval+'\n'+parent.dname+'\n'+arr);
-// alert(bummy + "\n[" + bid + "/" + eid + "]");
+ if (maxval == 0) maxval = 1;
 }
 
 document.open();
@@ -83,6 +80,7 @@ document.close();
 <SELECT NAME="stat" onChange="drawStat(this.value)">
  <OPTION VALUE="-">-- Select Statistic: --</OPTION>
  <OPTION VALUE="enqper">Enqueue Timeouts per Request</OPTION>
+ <OPTION VALUE="fbp">Free Buffers Inspected / Requested</OPTION>
  <OPTION VALUE="libmiss">Library Cache HitMisses</OPTION>
  <OPTION VALUE="logon">Logons</OPTION>
  <OPTION VALUE="opencur">Open Cursors</OPTION>

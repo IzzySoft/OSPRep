@@ -242,6 +242,7 @@ BEGIN
   get_sysevent(DBID,INST_NUM,BID,EID,'log file switch completion','lgsw');
   get_sysstat(DBID,INST_NUM,BID,EID,'redo log space requests','redoreq');
   get_sysstat_per(DBID,INST_NUM,BID,EID,'enqueue timeouts','enqueue requests','enqper');
+  get_sysstat_per(DBID,INST_NUM,BID,EID,'free buffer inspected','free buffer requested','fbp');
   get_libmiss(DBID,INST_NUM,BID,EID,'libmiss');
   get_sysstat(DBID,INST_NUM,BID,EID,'logons current','logon');
   get_sysstat(DBID,INST_NUM,BID,EID,'opened cursors current','opencur');
