@@ -1,18 +1,18 @@
 BODY { background-color:#7777FF; }
-P { text-align:justified; }
+P { text-align:justify; }
 H2 {
  text-align:center;
  color:red;
- background-color:#EEEEEE
+ background-color:#EEE;
 }
 H3 {
  text-align:center;
- background-color:#EEEEEE
+ background-color:#EEE;
 }
 H4 {
  text-align:center;
 }
-TABLE { background-color:#FFFFFF; }
+TABLE { background-color:#FFF; }
 TH {
  text-align:center;
  background-color:#FFD000;
@@ -27,25 +27,25 @@ TD.smallname {
  font-size:70%;
  font-weight:bold;
  background-color:#f0f0f0;
- border:1px solid #000000;
+ border:1px solid #000;
 }
 TD.text { text-align:justify; }
 UL {
- margin-top:2;
- margin-bottom:2;
+ margin-top:2px;
+ margin-bottom:2px;
 }
 
 .th_sub  {
  text-align:center;
  font-size:90%;
  font-style:italic;
- background-color:#FFEEAA;
+ background-color:#FEA;
 }
 .th_sub2 {
  text-align:center;
  font-size:90%;
  font-style:italic;
- background-color:lemonchiffon;
+ background-color:#fffacd;
 }
 .th_sub_idx {
  font-size:80%;
@@ -54,46 +54,46 @@ UL {
 }
 .td_name {
  font-weight:bold;
- background-color:#f0f0f0
+ background-color:#f0f0f0;
 }
 td.alert {
- background-color:#ff5555;
- font-weight:bold
+ background-color:#f55;
+ font-weight:bold;
 }
 td.warn {
  background-color:Yellow;
 }
 .th_small {
-	font-size:80%;
+ font-size:80%;
 }
 
 .small { font-size:75%; }
 .code {
-  font-family: monospace; 
-  font-size: 8pt; 
-  background-color: #FFEEAA;
-  border:  1px solid #000000;
-  margin-bottom: 6px;
-  margin-top: 6px;
-  padding: 4px;
-  color: #660033;
+ font-family: monospace; 
+ font-size: 8pt; 
+ background-color: #FFEEAA;
+ border:  1px solid #000000;
+ margin-bottom: 6px;
+ margin-top: 6px;
+ padding: 4px;
+ color: #660033;
 }
 
 a {
-  text-decoration: none;
+ text-decoration: none;
 }
 a:active {
-  background: #ffff00;
-  color: #000099;
+ background: #ff0;
+ color: #000099;
 }
 a:hover {
-  background: #ddddff;
-  color: #000099;
+ background: #ddf;
+ color: #009;
 }
 a:link {
-  text-decoration: none;
-  color: #000099;
+ text-decoration: none;
+ color: #009;
 }
 code {
-	font-size: 115%;
+ font-size: 115%;
 }
