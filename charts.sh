@@ -75,7 +75,7 @@ cat >$REPDIR/${ORACLE_SID}_chart.html<<ENDTXT
    var vers  = "${version}";
  //--></SCRIPT>
 </HEAD>
-<FRAMESET COLS="60,*" BORDER="0">
+<FRAMESET COLS="70,*" BORDER="0">
  <FRAME SRC="inc/nav.html" NAME="menu">
  <FRAME SRC="inc/cumul.html" NAME="chart">
 </FRAMESET>
