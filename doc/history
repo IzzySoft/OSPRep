@@ -205,3 +205,5 @@ v0.2.3
 ! cosmetical fix: description of initial diagram of Ratio charts fixed
 ! fixed division by zero error in buffer pool stats
 ! cmdline parameter -b and -e have been ignored
++ added Pct ReloadsPerPin, Pct GetHitRatio and Pct Row Cache Ratio to Ratio
+  charts
