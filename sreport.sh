@@ -2,7 +2,7 @@
 # $Id$
 #
 # =============================================================================
-# StatsPack Report 2 Html              (c) 2003 by IzzySoft (devel@izzysoft.de)     
+# Oracle StatsPack Report 2 Html       (c) 2003 by IzzySoft (devel@izzysoft.de)     
 # -----------------------------------------------------------------------------
 # This report script creates a HTML document containing the StatsPack Report.
 # It is a simple rewrite of the standard sprepins.sql script
@@ -18,7 +18,7 @@ if [ -z "$1" ]; then
   SCRIPT=${0##*/}
   echo
   echo ============================================================================
-  echo "StatsRep v$version              (c) 2003 by Itzchak Rehberg (devel@izzysoft.de)"
+  echo "OSPRep v$version                (c) 2003 by Itzchak Rehberg (devel@izzysoft.de)"
   echo ----------------------------------------------------------------------------
   echo This script is intended to generate a HTML report for the Oracle StatsPack
   echo collected statistics. Look inside the script header for closer details, and
@@ -1071,7 +1071,7 @@ BEGIN
   -- Page Ending
   L_LINE := '<HR>'||CHR(10)||TABLE_OPEN;
   dbms_output.put_line(L_LINE);
-  L_LINE := '<TR><TD><FONT SIZE="-2">Created by StatsRep v$version &copy; 2003 by '||
+  L_LINE := '<TR><TD><FONT SIZE="-2">Created by OSPRep v$version &copy; 2003 by '||
 	    '<A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> '||
             '&amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></FONT></TD></TR>';
   dbms_output.put_line(L_LINE);
