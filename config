@@ -1,0 +1,41 @@
+#!/bin/bash
+# =============================================================================
+# Oracle StatsPack Report 2 HTML       (c) 2003 by IzzySoft (devel@izzysoft.de)
+# -----------------------------------------------------------------------------
+# $Id$
+# -----------------------------------------------------------------------------
+# This Shell Script is the configuration file of OSPRep - and the only one the
+# user has to edit. Only change the other files if you exactly know what you
+# are doing!
+# =============================================================================
+
+# -----------------------------------------------------------------[ Files ]---
+# directory to store temporary files in
+TMPDIR=/tmp
+# in which directory should the report ($ORACLE_SID.html) be placed
+REPDIR=/var/www/html/statspack
+# StyleSheet to use
+CSS=../main.css
+
+# --------------------------------------------------------------[ DataBase ]---
+# SID of the database to analyse
+export ORACLE_SID=$1
+# login information
+user=perfstat
+password="pyha#"
+
+# -------------------------------------------------------------------[ SQL ]---
+# Top settings: Display Top N Statements
+TOP_N_SQL=5
+
+#--- SnapShot Interval. Set values to 0 for automatic evaluation of latest
+#--- continuous interval (i.e. the interval ending with the latest recording
+#--- SnapShot and starting with the first SnapShot having the same database
+#--- startup time)
+#--- You may set both values to 0 (last interval will be used then), both to
+#--- a value > 0 (specified value is used), or START_ID=0 and END_ID>0. In
+#--- all cases, only specify existing SnapShot IDs.
+#--- Arguments on the command line override these settings.
+START_ID=0
+END_ID=0
+# ===================================================================[ EOF ]===

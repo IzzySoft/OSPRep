@@ -1,0 +1,1063 @@
+#!/bin/bash
+# ============================================================================
+# Oracle StatsPack Report 2 HTML      (c) 2003 by IzzySoft (devel@izzysoft.de)
+# ----------------------------------------------------------------------------
+# $Id$
+# ----------------------------------------------------------------------------
+# The introductional block still contains some shell variables, so we cannot
+# cat it directly to SQL*Plus. Instead we append it to our opening SQL Set.
+# ============================================================================
+
+cat>>$SQLSET<<ENDSQL
+DECLARE
+  L_LINE VARCHAR2(4000);
+  R_TITLE VARCHAR(200);
+  TABLE_OPEN VARCHAR(100); -- Table Attributes
+  TABLE_CLOSE VARCHAR(100);
+  S1 VARCHAR(200); S2 VARCHAR(200); S3 VARCHAR(200); S4 VARCHAR(200);
+  I1 NUMBER; I2 NUMBER; I3 NUMBER;
+  DBVER NUMBER; DBSUBVER NUMBER; OSPVER VARCHAR2(10);
+  BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER; EDRT NUMBER; EET NUMBER;
+  EPC NUMBER; BTIME VARCHAR2(20); ETIME VARCHAR2(20);
+  DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
+  PARA VARCHAR2(3); VERSN VARCHAR(17); HOST_NAME VARCHAR(64);
+  LHTR NUMBER; BFWT NUMBER; TRAN NUMBER; CHNG NUMBER; UCAL NUMBER; UROL NUMBER;
+  UCOM NUMBER; RSIZ NUMBER; PHYR NUMBER; PHYRD NUMBER; PHYRDL NUMBER;
+  PHYW NUMBER; PRSE NUMBER; HPRS NUMBER; RECR NUMBER; GETS NUMBER; RLSR NUMBER;
+  RENT NUMBER; SRTM NUMBER; SRTD NUMBER; SRTR NUMBER; STRN NUMBER; CALL NUMBER;
+  LHR NUMBER; SP VARCHAR2(512); BC VARCHAR2(512); LB VARCHAR2(512); BS VARCHAR2(512);
+  TWT NUMBER; LOGC NUMBER; PRSCPU NUMBER; PRSELA NUMBER; TCPU NUMBER; EXE NUMBER;
+  BSPM NUMBER; ESPM NUMBER; BFRM NUMBER; EFRM NUMBER; BLOG NUMBER; ELOG NUMBER;
+  BOCUR NUMBER; EOCUR NUMBER; DMSD NUMBER; DMFC NUMBER; DMSI NUMBER; PMRV NUMBER;
+  PMPT NUMBER; NPMRV NUMBER; NPMPT NUMBER; DPMS NUMBER; DNPMS NUMBER;
+  GLSG NUMBER; GLAG NUMBER; GLGT NUMBER; GLSC NUMBER; GLAC NUMBER; GLCT NUMBER;
+  GLRL NUMBER; GCGE NUMBER; GCGT NUMBER; GCCV NUMBER; GCCT NUMBER;
+  GCCRRV NUMBER; GCCRRT NUMBER; GCCURV NUMBER; GCCURT NUMBER; GCCRSV NUMBER;
+  GCCRBT NUMBER; GCCRFT NUMBER; GCCRST NUMBER; GCCUSV NUMBER; GCCUPT NUMBER;
+  GCCUFT NUMBER; GCCUST NUMBER;
+  -- StatsPack ab Oracle v9.2 Start
+      DBFR NUMBER; GCDFR NUMBER; MSGSQ NUMBER; MSGSQT NUMBER; MSGSQK NUMBER;
+      MSGSQTK NUMBER; MSGRQ NUMBER; MSGRQT NUMBER;
+  -- StatsPack ab Oracle v9.2 END
+  -- StatsPack vor Oracle v9.2 Start
+  DFCMS NUMBER; DFCMR NUMBER; DMRV NUMBER; DYNAL NUMBER; SCMA NUMBER; SCML NUMBER;
+  PINC NUMBER; PINCRNC NUMBER; PICC NUMBER; PICRRC NUMBER; PBC NUMBER;
+  PBCRC NUMBER; PCRBPI NUMBER; DYNAPRES NUMBER; DYNAPSHL NUMBER; PRCMA NUMBER;
+  PRCML NUMBER; PWRM NUMBER; PFPIM NUMBER; PWNM NUMBER; DYNARES NUMBER;
+  PCBA NUMBER; PCCRBA NUMBER;
+  -- StatsPack vor Oracle v9.2 END
+
+  CURSOR C_MaxSnap(db_id IN NUMBER, instnum IN NUMBER) IS
+    SELECT MAX(snap_id) maxid FROM stats\$snapshot
+     WHERE dbid = db_id AND instance_number = instnum;
+
+  CURSOR C_MinSnap(db_id IN NUMBER, instnum IN NUMBER, maxsnap IN NUMBER) IS
+    SELECT MIN(snap_id) minid FROM stats\$snapshot
+     WHERE dbid = db_id AND instance_number = instnum
+       AND startup_time = (SELECT startup_time FROM stats\$snapshot
+                            WHERE dbid = db_id AND instance_number = instnum
+			      AND snap_id = maxsnap);
+  
+  CURSOR C_SnapBind (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER) IS
+    SELECT parallel,version,host_name
+      FROM stats\$database_instance di,stats\$snapshot s
+     WHERE s.snap_id=bid AND s.dbid=db_id AND s.instance_number=instnum
+       AND di.dbid=s.dbid AND di.instance_number=s.instance_number
+       AND di.startup_time=s.startup_time;
+
+  CURSOR C_SnapInfo (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.snap_id begin_snap_id,to_char(b.snap_time,'dd.mm.yyyy hh24:mi') begin_snap_time,
+           NVL(b.ucomment,'&nbsp;') begin_snap_comment,
+	   e.snap_id end_snap_id,to_char(e.snap_time,'dd.mm.yyyy hh24:mi') end_snap_time,
+	   NVL(e.ucomment,'&nbsp;') end_snap_comment,
+	   to_char(round(((e.snap_time - b.snap_time) * 1440 * 60),0)/60,'9,999,990.00') elapsed,
+	   (e.snap_time - b.snap_time)*1440*60 ela,
+	   e.buffer_gets_th ebgt,
+	   e.disk_reads_th edrt,
+	   e.executions_th eet,
+	   e.parse_calls_th epc
+      FROM stats\$snapshot b, stats\$snapshot e
+     WHERE b.snap_id=bid
+       AND e.snap_id=eid
+       AND b.dbid=db_id
+       AND e.dbid=db_id
+       AND b.instance_number=instnum
+       AND e.instance_number=instnum
+       AND b.startup_time=e.startup_time
+       AND b.snap_time < e.snap_time;
+
+  CURSOR C_SPSQL (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT (100*(1-b.single_use_sql/b.total_sql)) AS b_single_sql,
+           (100*(1-e.single_use_sql/e.total_sql)) AS e_single_sql,
+	   (100*(1-b.single_use_sql_mem/b.total_sql_mem)) AS b_single_mem,
+	   (100*(1-e.single_use_sql_mem/e.total_sql_mem)) AS e_single_mem
+      FROM stats\$sql_statistics b, stats\$sql_statistics e
+     WHERE b.snap_id=bid
+       AND e.snap_id=eid
+       AND b.instance_number=instnum
+       AND e.instance_number=instnum
+       AND b.dbid=db_id
+       AND e.dbid=db_id;
+
+  CURSOR C_Top5 (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, twt IN NUMBER) IS
+    SELECT event, waits, time, pctwtt
+      FROM ( SELECT e.event event,
+                    to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
+		    to_char((e.time_waited_micro - nvl(b.time_waited_micro,0))/1000000,'9,999,990.00') time,
+		    decode(twt,0,'0.00',
+		      to_char(100*((e.time_waited_micro - NVL(b.time_waited_micro,0))/twt),'9,990.00')) pctwtt
+	       FROM stats\$system_event b, stats\$system_event e
+	      WHERE b.snap_id(+) = bid
+	        AND e.snap_id    = eid
+		AND b.dbid(+)    = db_id
+		AND e.dbid       = db_id
+		AND b.instance_number(+) = instnum
+		AND e.instance_number    = instnum
+		AND b.event(+)   = e.event
+		AND e.event NOT IN ( SELECT event FROM stats\$idle_event )
+	      ORDER BY time desc, waits desc )
+     WHERE rownum <= 5;
+
+  CURSOR C_AllWait (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, tran NUMBER) IS
+    SELECT e.event event,
+           to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
+	   to_char(e.total_timeouts - NVL(b.total_timeouts,0),'999,999') timeouts,
+	   to_char((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000000,'99,999,990.00') time,
+	   decode ((e.total_waits - NVL(b.total_waits,0)),
+	          0,'0.00',to_char(
+		    ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
+		    / (e.total_waits - NVL(b.total_waits,0)),'9,999,990.00') ) wt,
+	   to_char((e.total_waits - NVL(b.total_waits,0))/tran,'99,990.00') txwaits,
+	   decode(i.event,NULL,0,99) idle
+      FROM stats\$system_event b, stats\$system_event e, stats\$idle_event i
+     WHERE b.snap_id(+)  = bid
+       AND e.snap_id     = eid
+       AND b.dbid(+)     = db_id
+       AND e.dbid        = db_id
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.event(+)    = e.event
+       AND e.total_waits > NVL(b.total_waits,0)
+       AND e.event NOT LIKE '%timer%'
+       AND e.event NOT LIKE 'rdbms ipc%'
+       AND i.event(+)    = e.event
+     ORDER BY idle, time desc, waits desc;
+
+  CURSOR C_BGWait (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, tran NUMBER) IS
+    SELECT e.event event,
+           to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
+	   to_char(e.total_timeouts - NVL(b.total_timeouts,0),'999,999') timeouts,
+	   to_char((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000000,'99,999,990.00') time,
+	   decode ((e.total_waits - NVL(b.total_waits,0)),
+	          0,'0.00',to_char(
+		    ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
+		    / (e.total_waits - NVL(b.total_waits,0)),'9,999,990.00') ) wt,
+	   to_char((e.total_waits - NVL(b.total_waits,0))/tran,'99,990.00') txwaits,
+	   decode(i.event,NULL,0,99) idle
+      FROM stats\$bg_event_summary b, stats\$bg_event_summary e, stats\$idle_event i
+     WHERE b.snap_id(+)  = bid
+       AND e.snap_id     = eid
+       AND b.dbid(+)     = db_id
+       AND e.dbid        = db_id
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.event(+)    = e.event
+       AND e.total_waits > NVL(b.total_waits,0)
+       AND i.event(+)    = e.event
+     ORDER BY idle, time desc, waits desc;
+
+  CURSOR C_SQLByGets (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, gets IN NUMBER) IS
+    SELECT bufgets,execs,getsperexec,pcttotal,cputime,elapsed,hashval
+      FROM ( SELECT /*+ ordered use_nl (b st) */
+              to_char((e.buffer_gets - nvl(b.buffer_gets,0)),'99,999,999,990') bufgets,
+	      to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
+	      to_char(decode(e.executions - nvl(b.executions,0),
+			         0, '&nbsp;',
+				 (e.buffer_gets - nvl(b.buffer_gets,0)) /
+				 (e.executions - nvl(b.executions,0))),
+				 '999,999,990.0') getsperexec,
+	      to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/gets,
+			  '990.0') pcttotal,
+	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0))/1000000,
+			  '99,990.00'),'0.00') cputime,
+	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0))
+			/ 1000000,'99,990.00'), '0.00') elapsed,
+	      NVL ( e.hash_value,0 ) hashval
+	      FROM stats\$sql_summary e, stats\$sql_summary b
+	     WHERE b.snap_id(+)  = bid
+	       AND b.dbid(+)     = e.dbid
+	       AND b.instance_number(+) = e.instance_number
+	       AND b.hash_value(+)      = e.hash_value
+	       AND b.address(+)  = e.address
+	       AND b.text_subset(+)     = e.text_subset
+	       AND e.snap_id     = eid
+	       AND e.dbid        = db_id
+	       AND e.instance_number    = instnum
+	       AND e.executions  > nvl(b.executions,0)
+	     ORDER BY (e.buffer_gets - nvl(b.buffer_gets,0)) desc,
+	              e.hash_value
+	   )
+     WHERE rownum <= $TOP_N_SQL;
+
+  CURSOR C_SQLByReads (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, phyr IN NUMBER) IS
+    SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,hashval
+      FROM ( SELECT /*+ ordered use_nl (b st) */
+              to_char((e.disk_reads - nvl(b.disk_reads,0)),'99,999,999,990') phyreads,
+	      to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
+	      to_char(decode(e.executions - nvl(b.executions,0),
+			         0, '&nbsp;',
+				 (e.disk_reads - nvl(b.disk_reads,0)) /
+				 (e.executions - nvl(b.executions,0))),
+				 '999,999,990.0') readsperexec,
+	      to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/phyr,
+			  '990.0') pcttotal,
+	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0))/1000000,
+			  '99,990.00'),'0.00') cputime,
+	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0))
+			/ 1000000,'99,990.00'), '0.00') elapsed,
+	      NVL ( e.hash_value,0 ) hashval
+	      FROM stats\$sql_summary e, stats\$sql_summary b
+	     WHERE b.snap_id(+)  = bid
+	       AND b.dbid(+)     = e.dbid
+	       AND b.instance_number(+) = e.instance_number
+	       AND b.hash_value(+)      = e.hash_value
+	       AND b.address(+)  = e.address
+	       AND b.text_subset(+)     = e.text_subset
+	       AND e.snap_id     = eid
+	       AND e.dbid        = db_id
+	       AND e.instance_number    = instnum
+	       AND e.executions  > nvl(b.executions,0)
+	       AND phyr          > 0
+	     ORDER BY (e.disk_reads - nvl(b.disk_reads,0)) desc,
+	              e.hash_value
+	   )
+     WHERE rownum <= $TOP_N_SQL;
+
+  CURSOR C_SQLByExec (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval
+      FROM ( SELECT /*+ ordered use_nl (b st) */
+	      to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
+	      to_char((nvl(e.rows_processed,0) - nvl(b.rows_processed,0)),
+	             '99,999,999,999') rowsproc,
+	      to_char(decode(nvl(e.rows_processed,0) - nvl(b.rows_processed,0),
+			         0, 0,
+				 (e.rows_processed - nvl(b.rows_processed,0)) /
+				 (e.executions - nvl(b.executions,0))),
+				 '9,999,999,990.0') rowsperexec,
+	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0)) /
+	                   (e.executions - nvl(b.executions,0)),
+			  '9,999,999,990.00'),'0.00') cputime,
+	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0)) /
+	                   (e.executions - nvl(b.executions,0)),
+			'999,990.00'), '0.00') elapsed,
+	      NVL ( e.hash_value,0 ) hashval
+	      FROM stats\$sql_summary e, stats\$sql_summary b
+	     WHERE b.snap_id(+)  = bid
+	       AND b.dbid(+)     = e.dbid
+	       AND b.instance_number(+) = e.instance_number
+	       AND b.hash_value(+)      = e.hash_value
+	       AND b.address(+)  = e.address
+	       AND b.text_subset(+)     = e.text_subset
+	       AND e.snap_id     = eid
+	       AND e.dbid        = db_id
+	       AND e.instance_number    = instnum
+	       AND e.executions  > nvl(b.executions,0)
+	       AND phyr          > 0
+	     ORDER BY (e.executions - nvl(b.executions,0)) desc,
+	              e.hash_value
+	   )
+     WHERE rownum <= $TOP_N_SQL;
+
+  CURSOR C_SQLByParse (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, prse IN NUMBER) IS
+    SELECT parses,execs,pctparses,hashval
+      FROM ( SELECT /*+ ordered use_nl (b st) */
+              to_char((e.parse_calls - nvl(b.parse_calls,0)),'999,999,990') parses,
+	      to_char((e.executions - nvl(b.executions,0)),'999,999,990') execs,
+	      to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/prse,
+	             '990.00') pctparses,
+	      NVL ( e.hash_value,0 ) hashval
+	      FROM stats\$sql_summary e, stats\$sql_summary b
+	     WHERE b.snap_id(+)  = bid
+	       AND b.dbid(+)     = e.dbid
+	       AND b.instance_number(+) = e.instance_number
+	       AND b.hash_value(+)      = e.hash_value
+	       AND b.address(+)  = e.address
+	       AND b.text_subset(+)     = e.text_subset
+	       AND e.snap_id     = eid
+	       AND e.dbid        = db_id
+	       AND e.instance_number    = instnum
+	     ORDER BY (e.parse_calls - nvl(b.parse_calls,0)) desc,
+	              e.hash_value
+	   )
+     WHERE rownum <= $TOP_N_SQL;
+
+  CURSOR C_GetSQL (hv IN NUMBER) IS
+    SELECT replace(replace(sql_text,'<','&lt;'),'>','&gt;') AS sql_text
+      FROM stats\$sqltext WHERE hash_value=hv
+     ORDER BY piece;
+
+  CURSOR C_InstAct (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER, tran IN NUMBER) IS
+    SELECT b.name name,
+           to_char(e.value - b.value,'99,999,999,999,990') total,
+	   to_char(round((e.value - b.value)/ela,2),'99,999,999,990.00') sec,
+	   to_char(round((e.value - b.value)/tran,2),'99,999,999,990.00') txn
+      FROM stats\$sysstat b, stats\$sysstat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.name    = e.name
+       AND e.name NOT IN ( 'logons current','opened cursors current','workarea memory allocated')
+       AND e.value   > b.value
+       AND e.value   > 0
+     ORDER BY b.name;
+
+  CURSOR C_TSIO (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER) IS
+    SELECT e.tsname tsname,
+           to_char(sum(e.phyrds - nvl(b.phyrds,0)),'9,999,999,990') reads,
+	   to_char(sum(e.phyrds - nvl(b.phyrds,0))/ela,'9,990.00') rps,
+	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
+	           0,0,
+	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10),
+		   '9,990.0') avgrd,
+	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
+	           0, to_number(NULL),
+		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
+		   sum(e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
+	   to_char(sum(e.phywrts - nvl(b.phywrts,0)),'9,999,999,990') writes,
+	   to_char(sum(e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
+	   to_char(sum(e.wait_count - nvl(b.wait_count,0)),'99,990') waits,
+	   to_char(decode(sum(e.wait_count - nvl(b.wait_count,0)),
+	           0,0,
+		   (sum(e.time - nvl(b.time,0)) /
+		    sum(e.wait_count - nvl(b.wait_count,0)))*10),
+		   '9,990.0') avgbw,
+	   sum(e.phywrts - nvl(b.phywrts,0)) +
+	   sum(e.phyrds - nvl(b.phyrds,0)) ios
+      FROM stats\$filestatxs e, stats\$filestatxs b
+     WHERE b.snap_id(+) = bid
+       AND e.snap_id    = eid
+       AND b.dbid(+)    = db_id
+       AND e.dbid       = db_id
+       AND b.dbid(+)    = e.dbid
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.instance_number(+) = e.instance_number
+       AND b.tsname(+)  = e.tsname
+       AND b.filename(+)= e.filename
+       AND ( (e.phyrds - nvl(b.phyrds,0) ) +
+             (e.phywrts - nvl(b.phywrts,0) ) ) > 0
+     GROUP BY e.tsname
+    UNION SELECT e.tsname tsname,
+           to_char(sum(e.phyrds - nvl(b.phyrds,0)),'9,999,999,990') reads,
+	   to_char(sum(e.phyrds - nvl(b.phyrds,0))/ela,'9,990.00') rps,
+	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
+	           0,0,
+	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10),
+		   '9,990.0') avgrd,
+	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
+	           0, to_number(NULL),
+		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
+		   sum(e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
+	   to_char(sum(e.phywrts - nvl(b.phywrts,0)),'9,999,999,990') writes,
+	   to_char(sum(e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
+	   to_char(sum(e.wait_count - nvl(b.wait_count,0)),'99,990') waits,
+	   to_char(decode(sum(e.wait_count - nvl(b.wait_count,0)),
+	           0,0,
+		   (sum(e.time - nvl(b.time,0)) /
+		    sum(e.wait_count - nvl(b.wait_count,0)))*10),
+		   '9,990.0') avgbw,
+	   sum(e.phywrts - nvl(b.phywrts,0)) +
+	   sum(e.phyrds - nvl(b.phyrds,0)) ios
+      FROM stats\$tempstatxs e, stats\$tempstatxs b
+     WHERE b.snap_id(+) = bid
+       AND e.snap_id    = eid
+       AND b.dbid(+)    = db_id
+       AND e.dbid       = db_id
+       AND b.dbid(+)    = e.dbid
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.instance_number(+) = e.instance_number
+       AND b.tsname(+)  = e.tsname
+       AND b.filename(+)= e.filename
+       AND ( (e.phyrds - nvl(b.phyrds,0) ) +
+             (e.phywrts - nvl(b.phywrts,0) ) ) > 0
+     GROUP BY e.tsname
+     ORDER BY ios desc;
+
+  CURSOR C_FileIO (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER) IS
+    SELECT e.tsname tsname,
+           e.filename filename,
+           to_char(e.phyrds - nvl(b.phyrds,0),'9,999,999,990') reads,
+	   to_char((e.phyrds - nvl(b.phyrds,0))/ela,'9,990.00') rps,
+	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
+	           0,0,
+	           ((e.readtim - nvl(b.readtim,0)) / 
+		    (e.phyrds - nvl(b.phyrds,0))) * 10),
+		   '9,990.0') avgrd,
+	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
+	           0, to_number(NULL),
+		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
+		   (e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
+	   to_char(e.phywrts - nvl(b.phywrts,0),'9,999,999,990') writes,
+	   to_char((e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
+	   to_char(e.wait_count - nvl(b.wait_count,0),'99,990') waits,
+	   to_char(decode(e.wait_count - nvl(b.wait_count,0),
+	           0,0,
+		   ((e.time - nvl(b.time,0)) /
+		    (e.wait_count - nvl(b.wait_count,0)))*10),
+		   '9,990.0') avgbw
+      FROM stats\$filestatxs e, stats\$filestatxs b
+     WHERE b.snap_id(+) = bid
+       AND e.snap_id    = eid
+       AND b.dbid(+)    = db_id
+       AND e.dbid       = db_id
+       AND b.dbid(+)    = e.dbid
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.instance_number(+) = e.instance_number
+       AND b.tsname(+)  = e.tsname
+       AND b.filename(+)= e.filename
+       AND ( (e.phyrds - nvl(b.phyrds,0) ) +
+             (e.phywrts - nvl(b.phywrts,0) ) ) > 0
+    UNION SELECT e.tsname tsname,
+           e.filename filename,
+           to_char(e.phyrds - nvl(b.phyrds,0),'9,999,999,990') reads,
+	   to_char((e.phyrds - nvl(b.phyrds,0))/ela,'9,990.00') rps,
+	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
+	           0,0,
+	           ((e.readtim - nvl(b.readtim,0)) / (e.phyrds - nvl(b.phyrds,0))) * 10),
+		   '9,990.0') avgrd,
+	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
+	           0, to_number(NULL),
+		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
+		   (e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
+	   to_char(e.phywrts - nvl(b.phywrts,0),'9,999,999,990') writes,
+	   to_char((e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
+	   to_char(e.wait_count - nvl(b.wait_count,0),'99,990') waits,
+	   to_char(decode(e.wait_count - nvl(b.wait_count,0),
+	           0,0,
+		   ((e.time - nvl(b.time,0)) /
+		    (e.wait_count - nvl(b.wait_count,0)))*10),
+		   '9,990.0') avgbw
+      FROM stats\$tempstatxs e, stats\$tempstatxs b
+     WHERE b.snap_id(+) = bid
+       AND e.snap_id    = eid
+       AND b.dbid(+)    = db_id
+       AND e.dbid       = db_id
+       AND b.dbid(+)    = e.dbid
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.instance_number(+) = e.instance_number
+       AND b.tsname(+)  = e.tsname
+       AND b.filename(+)= e.filename
+       AND ( (e.phyrds - nvl(b.phyrds,0) ) +
+             (e.phywrts - nvl(b.phywrts,0) ) ) > 0
+     ORDER BY tsname,filename;
+
+  CURSOR C_BuffP (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, bs IN NUMBER) IS
+    SELECT replace(e.block_size/1024||'k',bs/1024||'k',substr(e.name,1,1)) name,
+           e.set_msize numbufs,
+	   to_char(decode(  e.db_block_gets   - nvl(b.db_block_gets,0)
+	                  + e.consistent_gets - nvl(b.consistent_gets,0),
+		     0, to_number(NULL),
+		     (100* (1- (  (e.physical_reads  - nvl(b.physical_reads,0))
+		                / (  e.db_block_gets   - nvl(b.db_block_gets,0)
+				   + e.consistent_gets - nvl(b.consistent_gets,0))
+			       ) ) ) ),'990.9' ) hitratio,
+	   to_char(  e.db_block_gets   - nvl(b.db_block_gets,0)
+	           + e.consistent_gets - nvl(b.consistent_gets,0),
+		   '99,999,999,999') gets,
+	   to_char(e.physical_reads - nvl(b.physical_reads,0),
+	           '99,999,999,999') phread,
+	   to_char(e.physical_writes - nvl(b.physical_writes,0),
+	           '999,999,999') phwrite,
+	   to_char(e.free_buffer_wait - nvl(b.free_buffer_wait,0),
+	           '999,999') fbwait,
+	   to_char(e.write_complete_wait - nvl(b.write_complete_wait,0),
+	           '999,999') wcwait,
+	   to_char(e.buffer_busy_wait - nvl(b.buffer_busy_wait,0),
+	           '9,999,999') bbwait
+      FROM stats\$buffer_pool_statistics b, stats\$buffer_pool_statistics e
+     WHERE b.snap_id(+)  = bid
+       AND e.snap_id     = eid
+       AND b.dbid(+)     = db_id
+       AND e.dbid        = db_id
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.instance_number(+) = e.instance_number
+       AND b.id(+)       = e.id
+     ORDER BY e.name;
+		  
+  CURSOR C_Recover (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT 'B' name,
+           to_char(target_mttr,'999,999') tm,
+	   to_char(estimated_mttr,'999,999') em,
+	   to_char(recovery_estimated_ios,'9,999,999') rei,
+	   to_char(actual_redo_blks,'99,999,999') arb,
+	   to_char(target_redo_blks,'99,999,999') trb,
+	   to_char(log_file_size_redo_blks,'99,999,999') lfrb,
+	   to_char(log_chkpt_timeout_redo_blks,'99,999,999') lctrb,
+	   to_char(log_chkpt_interval_redo_blks,'99,999,999,999') lcirb,
+	   snap_id snid
+      FROM stats\$instance_recovery b
+     WHERE b.snap_id = bid
+       AND b.dbid    = db_id
+       AND b.instance_number = instnum
+    UNION SELECT 'E' name,
+           to_char(target_mttr,'999,999') tm,
+	   to_char(estimated_mttr,'999,999') em,
+	   to_char(recovery_estimated_ios,'9,999,999') rei,
+	   to_char(actual_redo_blks,'99,999,999') arb,
+	   to_char(target_redo_blks,'99,999,999') trb,
+	   to_char(log_file_size_redo_blks,'99,999,999') lfrb,
+	   to_char(log_chkpt_timeout_redo_blks,'99,999,999') lctrb,
+	   to_char(log_chkpt_interval_redo_blks,'99,999,999,999') lcirb,
+	   snap_id snid
+      FROM stats\$instance_recovery e
+     WHERE e.snap_id = eid
+       AND e.dbid    = db_id
+       AND e.instance_number = instnum
+     ORDER BY snid;
+
+  CURSOR C_BuffW (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT e.class class,
+           to_char(e.wait_count - nvl(b.wait_count,0),'999,999') icnt,
+	   to_char((e.time - nvl(b.time,0))/100,'999,990.00') itim,
+	   to_char((e.time - nvl(b.time,0)) /
+	   (e.wait_count - nvl(b.wait_count,0)) * 10,'999,990.00') iavg
+      FROM stats\$waitstat b, stats\$waitstat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.class   = e.class
+       AND b.wait_count < e.wait_count
+     ORDER BY itim desc, icnt desc;
+
+  CURSOR C_PGAA (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT 'B' snap,
+           to_char(to_number(p.value)/1024/1024,'999,990.00')  pgaat,
+	   to_char(mu.PGA_inuse/1024/1024,'999,990.00')        tot_pga_used,
+	   to_char( (mu.PGA_used_auto + mu.PGA_used_man)
+	            /1024/1024,'999,990.00')                   tot_tun_used,
+	   to_char(mu.onepr/1024/1024,'999,990.00')            onepr,
+	   nvl(to_char(s.opt_pct,'990.00'),'&nbsp;')           opt_pct,
+	   to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
+	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
+           to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
+	   to_char(100* mu.PGA_used_man  / PGA_inuse,'990.00') pct_man_tun
+      FROM ( SELECT sum(case when name like 'total PGA inuse%'
+                             then value else 0 end)             PGA_inuse,
+		    sum(case when name like 'total PGA used for auto%'
+                             then value else 0 end)             PGA_used_auto,
+		    sum(case when name like 'total PGA used for manual%'
+                             then value else 0 end)             PGA_used_man,
+		    sum(case when name like 'maximum % one-pass'
+                             then value else 0 end)             onepr
+	       FROM stats\$pgastat pga
+	      WHERE pga.snap_id = bid
+	        AND pga.dbid    = db_id
+		AND pga.instance_number = instnum ) mu,
+           ( SELECT 100* sum(case when ss.name like
+                              'workarea executions - optimal'
+			      then ss.value else 0 end)
+		       / decode( (  sum(case when ss.name like
+		                     'workarea executions - optimal'
+				     then ss.value else 0 end)
+				  + sum(case when ss.name like
+				     'workarea executions - onepass'
+				     then ss.value else 0 end)
+				  + sum(case when ss.name like
+				     'workarea executions - multipass'
+				     then ss.value else 0 end)
+				 ),0,NULL)                     opt_pct
+	      FROM stats\$sysstat ss
+	     WHERE ss.snap_id = bid
+	       AND ss.dbid    = db_id
+	       AND ss.instance_number = instnum
+	       AND ss.name like 'workarea executions - %'
+	   ) s,
+	   stats\$parameter p
+     WHERE p.snap_id = bid
+       AND p.dbid    = db_id
+       AND p.instance_number = instnum
+       AND p.name    = 'pga_aggregate_target'
+       AND p.value  != 0
+    UNION SELECT 'E' snap,
+           to_char(to_number(p.value)/1024/1024,'999,990.00')  pgaat,
+	   to_char(mu.PGA_inuse/1024/1024,'999,990.00')        tot_pga_used,
+	   to_char( (mu.PGA_used_auto + mu.PGA_used_man)
+	            /1024/1024,'999,990.00')                   tot_tun_used,
+	   to_char(mu.onepr/1024/1024,'999,990.00')            onepr,
+	   nvl(to_char(s.opt_pct,'990.00'),'&nbsp;')           opt_pct,
+	   to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
+	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
+           to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
+	   to_char(100* mu.PGA_used_man  / PGA_inuse,'990.00') pct_man_tun
+      FROM ( SELECT sum(case when name like 'total PGA inuse%'
+                             then value else 0 end)             PGA_inuse,
+		    sum(case when name like 'total PGA used for auto%'
+                             then value else 0 end)             PGA_used_auto,
+		    sum(case when name like 'total PGA used for manual%'
+                             then value else 0 end)             PGA_used_man,
+		    sum(case when name like 'maximum % one-pass'
+                             then value else 0 end)             onepr
+	       FROM stats\$pgastat pga
+	      WHERE pga.snap_id = eid
+	        AND pga.dbid    = db_id
+		AND pga.instance_number = instnum ) mu,
+           ( SELECT 100* sum(case when ss.name like
+                              'workarea executions - optimal'
+			      then ss.value else 0 end)
+		       / decode( (  sum(case when ss.name like
+		                     'workarea executions - optimal'
+				     then ss.value else 0 end)
+				  + sum(case when ss.name like
+				     'workarea executions - onepass'
+				     then ss.value else 0 end)
+				  + sum(case when ss.name like
+				     'workarea executions - multipass'
+				     then ss.value else 0 end)
+				 ),0,NULL)                     opt_pct
+	      FROM stats\$sysstat ss
+	     WHERE ss.snap_id = eid
+	       AND ss.dbid    = db_id
+	       AND ss.instance_number = instnum
+	       AND ss.name like 'workarea executions - %'
+	   ) s,
+	   stats\$parameter p
+     WHERE p.snap_id = eid
+       AND p.dbid    = db_id
+       AND p.instance_number = instnum
+       AND p.name    = 'pga_aggregate_target'
+       AND p.value  != 0;
+
+  CURSOR C_PGAM (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.name st,
+           to_char(b.value/1024/1024,'9,999,990.00') snap1,
+           to_char(e.value/1024/1024,'9,999,990.00') snap2,
+	   to_char(decode(b.value,0,100* (e.value - nvl(b.value,0)),
+	                            100*((e.value - nvl(b.value,0))/b.value)),
+		   '990.00') diff
+      FROM stats\$pgastat b, stats\$pgastat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.name    = e.name
+       AND e.value  >= b.value
+       AND e.value  >  0
+    UNION SELECT b.name st,
+           to_char(b.value/1024/1024,'9,999,990.00') snap1,
+           to_char(e.value/1024/1024,'9,999,990.00') snap2,
+	   to_char(decode(b.value,0,100* (e.value - nvl(b.value,0)),
+	                            100*((e.value - nvl(b.value,0))/b.value)),
+		   '990.00') diff
+      FROM stats\$sysstat b, stats\$sysstat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.name    = e.name
+       AND e.name    = 'workarea memory allocated'
+       AND e.value  >= b.value
+       AND e.value  >  0;
+
+  CURSOR C_Enq (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT e.eq_type name,
+           to_char(e.total_req# - nvl(b.total_req#,0),'99,999,999') reqs,
+	   to_char(e.succ_req#  - nvl(b.succ_req#,0),'99,999,999') sreq,
+	   to_char(e.failed_req# - nvl(b.failed_req#,0),'99,999,999') freq,
+	   to_char(e.total_wait# - nvl(b.total_wait#,0),'999,999') waits,
+	   to_char(decode( (e.total_wait# - nvl(b.total_wait#,0)),
+	                   0, to_number(NULL),
+			   (  (e.cum_wait_time - nvl(b.cum_wait_time,0))
+			    / (e.total_wait# - nvl(b.total_wait#,0))
+			   ) ),'999,999,990.00') awttm,
+	   to_char((e.cum_wait_time - nvl(b.cum_wait_time,0))/1000,
+	            '999,999') wttm
+      FROM stats\$enqueue_stat b, stats\$enqueue_stat e
+     WHERE b.snap_id(+) = bid
+       AND e.snap_id    = eid
+       AND b.dbid(+)    = db_id
+       AND e.dbid       = db_id
+       AND b.dbid(+)    = e.dbid
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.instance_number(+) = e.instance_number
+       AND b.eq_type(+) = e.eq_type
+       AND e.total_wait# - nvl(b.total_wait#,0) > 0
+     ORDER BY waits desc, reqs desc;
+
+  CURSOR C_RBS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.usn rbs#,
+           to_char(e.gets - b.gets,'999,990.0') gets,
+	   to_char(to_number(decode(e.gets,b.gets,NULL,
+	          (e.waits - b.waits) * 100 / (e.gets - b.gets) )),
+		  '990.00') waits,
+	   to_char(e.writes - b.writes,'999,999,999,990') writes,
+	   to_char(e.wraps - b.wraps,'999,999') wraps,
+	   to_char(e.shrinks - b.shrinks,'999,999') shrinks,
+	   to_char(e.extends - b.extends,'999,999') extends
+      FROM stats\$rollstat b, stats\$rollstat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND e.usn     = b.usn
+     ORDER BY e.usn;
+
+  CURSOR C_RBST (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.usn rbs#,
+           to_char(e.rssize,'99,999,999,999') rssize,
+	   to_char(e.aveactive,'999,999,999') active,
+	   nvl(to_char(to_number(decode(e.optsize,-4096,NULL,e.optsize)),
+	           '99,999,999,999'),'&nbsp;') optsize,
+	   to_char(e.hwmsize,'99,999,999,999') hwmsize
+      FROM stats\$rollstat b, stats\$rollstat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND e.usn     = b.usn
+     ORDER BY e.usn;
+
+  CURSOR C_USS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
+    SELECT undotsn,
+           to_char(sum(undoblks),'99,999,999') undob,
+	   to_char(sum(txncount),'99,999,999') txcnt,
+	   to_char(max(maxquerylen),'999,999,999') maxq,
+	   to_char(max(maxconcurrency),'999,999') maxc,
+	   to_char(sum(ssolderrcnt),'99,999') snol,
+	   to_char(sum(nospaceerrcnt),'99,999') nosp,
+	   sum(unxpstealcnt)||'/'||sum(unxpblkrelcnt)||'/'||
+	   sum(unxpblkreucnt)||' / '||sum(expstealcnt)||'/'||
+	   sum(expblkrelcnt)||'/'||sum(expblkreucnt) blkst
+      FROM stats\$undostat
+     WHERE dbid = db_id
+       AND instance_number = instnum
+       AND end_time > to_date(btime, 'DD.MM.YYYY HH24:MI:SS')
+       AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
+     GROUP BY undotsn;
+
+  CURSOR C_UST (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
+    SELECT undotsn, endt,undob,txcnt,maxq,maxc,snol,nosp,blkst
+    FROM ( SELECT undotsn,
+                to_char(end_time,'DD.MM.YYYY HH24:MI') endt,
+                to_char(undoblks,'99,999,999') undob,
+                to_char(txncount,'99,999,999') txcnt,
+	        to_char(maxquerylen,'999,999,999') maxq,
+	        to_char(maxconcurrency,'999,999') maxc,
+	        to_char(ssolderrcnt,'99,999') snol,
+	        to_char(nospaceerrcnt,'99,999') nosp,
+	        unxpstealcnt||'/'||unxpblkrelcnt||'/'||
+	        unxpblkreucnt||' / '||expstealcnt||'/'||
+	        expblkrelcnt||'/'||expblkreucnt blkst
+           FROM stats\$undostat
+          WHERE dbid = db_id
+            AND instance_number = instnum
+            AND end_time > to_date(btime, 'DD.MM.YYYY HH24:MI:SS')
+            AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
+       ORDER BY begin_time desc )
+   WHERE rownum < 25;
+
+  CURSOR C_LAA (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.name name,
+           to_char(e.gets - b.gets,'99,999,999,999') gets,
+	   nvl(to_char(decode(e.gets, b.gets, NULL,
+	                  (e.misses - b.misses) * 100 /
+			  (e.gets - b.gets)),'990.00'),'&nbsp;') missed,
+	   nvl(to_char(decode(e.misses, b.misses, NULL,
+	                  (e.sleeps - b.sleeps) /
+			  (e.misses - b.misses)),'990.00'),'&nbsp;') sleeps,
+	   to_char((e.wait_time - b.wait_time)/1000000,'99,999') wt,
+	   to_char(e.immediate_gets - b.immediate_gets,'99,999,999,999') nowai,
+	   nvl(to_char(decode(e.immediate_gets, b.immediate_gets, NULL,
+	                  (e.immediate_misses - b.immediate_misses) *100 /
+			  (e.immediate_gets - b.immediate_gets)),'990.00'),
+		'&nbsp;') imiss
+      FROM stats\$latch b, stats\$latch e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.name    = e.name
+       AND (  e.gets - b.gets
+            + e.immediate_gets - b.immediate_gets ) > 0
+     ORDER BY wt,sleeps,imiss;
+
+  CURSOR C_LAS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.name name,
+           to_char(e.gets - b.gets,'99,999,999,999') gets,
+	   to_char(e.misses - b.misses,'99,999,999') misses,
+	   to_char(e.sleeps - b.sleeps,'999,999,999') sleeps,
+	   to_char(e.spin_gets - b.spin_gets)||'/'||
+	   to_char(e.sleep1 - b.sleep1)||'/'||
+	   to_char(e.sleep2 - b.sleep2)||'/'||
+	   to_char(e.sleep3 - b.sleep3)||'/'||
+	   to_char(e.sleep4 - b.sleep4) sleep4
+      FROM stats\$latch b, stats\$latch e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.name    = e.name
+       AND e.sleeps - b.sleeps > 0
+     ORDER BY misses desc;
+
+  CURSOR C_LAM (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT e.parent_name parent,
+           e.where_in_code where_from,
+	   to_char(e.nwfail_count - nvl(b.nwfail_count,0),'99,999') nwmisses,
+	   to_char(e.sleep_count - nvl(b.sleep_count,0),'9,999,999') sleeps,
+	   to_char(e.wtr_slp_count - nvl(b.wtr_slp_count,0),'9,999,999') waiter_sleeps
+      FROM stats\$latch_misses_summary b, stats\$latch_misses_summary  e
+     WHERE b.snap_id(+) = bid
+       AND e.snap_id    = eid
+       AND b.dbid(+)    = db_id
+       AND e.dbid       = db_id
+       AND b.dbid(+)    = e.dbid
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.instance_number(+) = e.instance_number
+       AND b.parent_name(+)     = e.parent_name
+       AND b.where_in_code(+)   = e.where_in_code
+       AND e.sleep_count > nvl(b.sleep_count,0)
+     ORDER BY e.parent_name, sleeps desc;
+
+  CURSOR C_CAD (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT lower(b.parameter) param,
+           to_char(e.gets - b.gets,'9,999,999,990') gets,
+	   nvl(to_char(decode(e.gets, b.gets, NULL,
+	                (e.getmisses - b.getmisses) *100 /
+			(e.gets - b.gets)),'990.00'),'&nbsp') getm,
+	   to_char(e.scans - b.scans,'9,990') scans,
+	   nvl(to_char(decode(e.scans, b.scans, NULL,
+	                (e.scanmisses - b.scanmisses) *100 /
+			(e.scans - b.scans)),'990.00'),'&nbsp;') scanm,
+	   to_char(e.modifications - b.modifications,'999,990') mods,
+	   to_char(e.usage,'9,999,990') usage,
+	   nvl(to_char(decode(nvl(e.total_usage,0),0,0,
+	                 e.usage *100/e.total_usage),'990.00'),'&nbsp') sgapct
+      FROM stats\$rowcache_summary b, stats\$rowcache_summary e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.parameter       = e.parameter
+       AND e.gets - b.gets   > 0
+     ORDER BY param;
+
+  CURSOR C_CAM (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.namespace namespace,
+           to_char(e.gets - b.gets,'999,999,990') gets,
+	   nvl(to_char(decode(e.gets,b.gets,NULL,
+	                100 - (e.gethits - b.gethits) * 100 /
+			(e.gets - b.gets)),'990.00'),'&nbsp;') getm,
+	   to_char(e.pins - b.pins,'9,999,999,990') pins,
+	   nvl(to_char(decode(e.pins,b.pins,NULL,
+	                100 - (e.pinhits - b.pinhits) *100 /
+			(e.pins - b.pins)),'990.00'),'&nbsp;') pinm,
+	   to_char(e.reloads - b.reloads,'9,999,990') reloads,
+	   to_char(e.invalidations - b.invalidations,'999,990') inv
+      FROM stats\$librarycache b, stats\$librarycache e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.namespace       = e.namespace
+       AND e.gets - b.gets   > 0
+     ORDER BY namespace;
+
+  CURSOR C_SGASum (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT name,
+           to_char(value,'999,999,999,990') val,
+	   value rawval
+      FROM stats\$sga
+     WHERE snap_id = eid
+       AND dbid    = db_id
+       AND instance_number = instnum
+     ORDER BY name;
+
+  CURSOR C_SGABreak (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT nvl(replace(b.pool,'pool',''),'&nbsp;') pool,
+           b.name name,
+	   to_char(b.bytes,'999,999,999,999') snap1,
+	   to_char(e.bytes,'999,999,999,999') snap2,
+	   to_char(100* (e.bytes - b.bytes)/b.bytes,'990.00') diff
+      FROM stats\$sgastat b, stats\$sgastat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.name    = e.name
+       AND nvl(b.pool,'a')   = nvl(e.pool,'a')
+     ORDER BY b.pool, b.name;
+
+  CURSOR C_RLim (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT resource_name rname,
+           to_char(current_utilization,'999,999,990') curu,
+           to_char(max_utilization,'999,999,990') maxu,
+           to_char(initial_allocation,'999,999,990') inita,
+           to_char(limit_value,'999,999,990') lim
+      FROM stats\$resource_limit
+     WHERE snap_id = eid
+       AND dbid    = db_id
+       AND instance_number = instnum
+       AND (   nvl(current_utilization,0)/limit_value > .8
+            or nvl(max_utilization,0)/limit_value > .8 )
+     ORDER BY rname;
+
+  CURSOR C_IParm (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT e.name,
+           nvl(b.value,'&nbsp;') bval,
+	   decode(b.value,e.value,'&nbsp;',e.value) eval
+      FROM stats\$parameter b, stats\$parameter e
+     WHERE b.snap_id(+) = bid
+       AND e.snap_id    = eid
+       AND b.dbid(+)    = db_id
+       AND e.dbid       = db_id
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.name(+)    = e.name
+       AND (   nvl(b.isdefault,'X')   = 'FALSE'
+            or nvl(b.ismodified,'X') != 'FALSE'
+	    or     e.ismodified      != 'FALSE'
+	    or nvl(e.value,0)        != nvl(b.value,0) );
+
+
+BEGIN
+  -- Configuration
+  OSPVER := '$version';
+  dbms_output.enable(1000000);
+  R_TITLE := 'StatsPack Report for $ORACLE_SID';
+  TABLE_OPEN := '<TABLE ALIGN="center" BORDER="1">';
+  TABLE_CLOSE := '</TABLE>'||CHR(10)||'<BR CLEAR="all">'||CHR(10);
+
+  SELECT d.dbid,d.name,i.instance_number,i.instance_name
+    INTO DBID,DB_NAME,INST_NUM,INST_NAME
+    FROM v\$database d,v\$instance i;
+
+  IF NVL($END_ID,0) = 0
+    THEN
+      FOR R_SnapID IN C_MaxSnap(DBID,INST_NUM) LOOP
+      EID := R_SnapID.maxid;
+    END LOOP;
+  ELSE
+    EID := $END_ID;
+  END IF;
+  IF NVL($START_ID,0) = 0
+  THEN
+    FOR R_SnapID IN C_MinSnap(DBID,INST_NUM,EID) LOOP
+      BID := R_SnapID.minid;
+    END LOOP;
+  ELSE
+    BID := $START_ID;
+  END IF;
+
+  FOR R_SnapBind IN C_SnapBind(DBID,INST_NUM,BID) LOOP
+    PARA  := R_SnapBind.parallel;
+    VERSN := R_SnapBind.version;
+    DBVER := TO_NUMBER(SUBSTR(VERSN,1,INSTR(VERSN,'.')-1));
+    DBSUBVER  := TO_NUMBER(SUBSTR(VERSN,INSTR(VERSN,'.')+1,INSTR(VERSN,'.',1,2)-1 -INSTR(VERSN,'.')));
+    HOST_NAME := R_SnapBind.host_name;
+  END LOOP;
+
+  -- HTML Head
+  L_LINE := '<HTML><HEAD>'||CHR(10)||
+            ' <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15"/>'||
+            CHR(10)||' <TITLE>'||R_TITLE||'</TITLE>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <LINK REL="stylesheet" TYPE="text/css" HREF="$CSS">'||CHR(10)||
+            '</HEAD><BODY>'||CHR(10)||'<H2>'||R_TITLE||'</H2>'||CHR(10);
+  dbms_output.put_line(L_LINE);
+
+  -- Navigation
+  L_LINE := TABLE_OPEN||'<TR><TD ALIGN="center"><FONT SIZE=-2>[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
+            '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> '||
+            '] [ <A HREF="#efficiency">Efficiency</A> ]';
+  dbms_output.put_line(L_LINE);
+  L_LINE :=   ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#top5wait">Top 5 Wait</A>'||
+            ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#bgwaitevents">Background Waits</A> ]';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||
+	    ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]'||
+	    ' [ <A HREF="#instact">Instance Activity</A> ]';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]'||
+            ' [ <A HREF="#bufpool">Buffer Pool</A> ] [ <A HREF="#recover">Instance Recovery</A> ]'||
+	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ] [ <A HREF="#enq">Enqueue Activity</A> ]'||
+            ' [ <A HREF="#rbs">RBS</A> ] [ <A HREF="#undo">Undo Segs</A> ]'||
+	    ' [ <A HREF="#latches">Latches</A> ]';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]'||
+            ' [ <A HREF="#resourcelimits">Resource Limits</A> ]'||
+	    ' [ <A HREF="#initora">Init Params</A> ]</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+
+  -- Initial information about this instance
+  SELECT to_char(SYSDATE,'DD.MM.YYYY HH24:MI') INTO S4 FROM DUAL;
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2">Common Instance Information</TH></TR>'||CHR(10)||
+            ' <TR><TD class="td_name">Hostname:</TD><TD>'||HOST_NAME||'</TD></TR>'||CHR(10)||
+            ' <TR><TD class="td_name">Instance:</TD><TD>'||INST_NAME||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD class="td_name">Version:</TD><TD>'||VERSN||'</TD></TR>'||CHR(10)||
+            ' <TR><TD class="td_name">Cluster:</TD><TD>'||PARA||'</TD></TR>'||CHR(10);
+  dbms_output.put_line(L_LINE);
+  SELECT SUM(members*bytes) INTO I1 FROM v\$log;
+  SELECT SUM(bytes) INTO I2 from v\$datafile;
+  I3 := (I1+I2)/1048576;
+  S1 := to_char(I3,'999,999,999.99');
+  SELECT to_char(startup_time,'DD.MM.YYYY HH24:MI'),to_char(sysdate - startup_time,'9990.00')
+    INTO S2,S3 FROM v\$instance;
+  L_LINE := ' <TR><TD class="td_name">FileSize (Data+Log)</TD><TD>'||S1||' MB</TD></TR>'||CHR(10)||
+            ' <TR><TD class="td_name">Startup / Uptime</TD><TD>'||S2||' / '||S3||' d</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD class="td_name">Report generated:</TD><TD>'||S4||'</TD></TR>'||CHR(10)||
+            TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+ENDSQL
