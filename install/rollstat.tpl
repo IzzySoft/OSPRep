@@ -30,7 +30,7 @@
   <TR><TD>Waits</TD><TD>Indicates contention for RBS extents - if this value
       is "large" then there my be a requirement for more RBS extents; see
       recommendations below</TD></TR>
-  <TR><TD>Shrinks</TD><TD>Number of growth beyond the <CODE>OPTIMAL<CODE> value
+  <TR><TD>Shrinks</TD><TD>Number of growth beyond the <CODE>OPTIMAL</CODE> value
       that have been shrunk afterwards</TD></TR>
   <TR><TD>Wraps</TD><TD>Wraps occur whenever a new extent is needed but the
       next extent in the current RBS is still in use by a transaction, so a new

@@ -42,7 +42,7 @@
   in column P1, the latch number in P2 and the number of times process has
   already slept in waiting for the latch in P3:
   <TABLE ALIGN="center"><TR><TD>
-  <DIV CLASS="code" STYLE="width:23em">
+  <DIV CLASS="code" STYLE="width:27em">
   SELECT n.name, SUM(w.p3) Sleeps<BR>
   &nbsp;&nbsp;FROM v$session_wait w, v$latchname n<BR>
   &nbsp;WHERE w.event = 'latch free'<BR>
@@ -74,8 +74,8 @@
   <TR><TD>cache buffers lru chain</TD><TD>Buffer Cache LRU lists</TD>
       <TD><UL><LI>Excessive buffer cache throughput. For example, many
                   cache-based sorts, inefficient SQL that accesses incorrect
-		  indexes iteratively (large index range scans), or many full
-		  table scans</LI>
+		  indexes iteratively (large <code>index range scans</code>),
+		  or many <code>full table scans</code></LI>
 	      <LI>DBWR not keeping up with the dirty workload; hence, foreground
 	          process spends longer holding the latch looking for a free buffer</LI>
 	      <LI>Cache may be too small</LI></UL></TD>
@@ -98,7 +98,7 @@
   <LI>Manually inspect SQL statements that have only one execution to see
       whether they are similar:
       <TABLE ALIGN="center"><TR><TD>
-      <DIV CLASS="code" STYLE="width:13em">
+      <DIV CLASS="code" STYLE="width:15em">
       SELECT sqltext<BR>
       &nbsp;&nbsp;FROM v$sqlarea<BR>
       &nbsp;WHERE executions = 1<BR>
@@ -109,7 +109,7 @@
       bytes. For example, the example below groups together statements that
       differ only after the first 60 bytes.
       <TABLE ALIGN="center"><TR><TD>
-      <DIV CLASS="code" STYLE="width:23em">
+      <DIV CLASS="code" STYLE="width:27em">
       SELECT SUBSTR(sql_text,1, 60), COUNT(*)<BR>
       &nbsp;&nbsp;FROM V$SQLAREA<BR>
       &nbsp;WHERE executions = 1<BR>
@@ -119,12 +119,12 @@
  <P><B>Reparsed Sharable SQL</B><BR>
   Check the V$SQLAREA view. Enter the following query:
   <TABLE ALIGN="center"><TR><TD>
-  <DIV CLASS="code" STYLE="width:25em">
+  <DIV CLASS="code" STYLE="width:28em">
   SELECT sql_text, parse_calls, executions<BR>
   &nbsp;&nbsp;FROM v$sqlarea<BR>
   &nbsp;ORDER BY parse_calls;</DIV>
   </TD></TR></TABLE>
-  When the <CODE>PARSE_CALLS</CODE> value is close to the <CODE>EXECUTIONS<CODE>
+  When the <CODE>PARSE_CALLS</CODE> value is close to the <CODE>EXECUTIONS</CODE>
   value for a given statement, you might be continually reparsing that
   statement. Tune the statements with the higher numbers of parse calls.</P>
  <P><B>By Session</B><BR>
@@ -143,8 +143,8 @@
   &nbsp;ORDER BY value, sid;</DIV>
   </TD></TR></TABLE>
   The result is a list of all sessions and the amount of reparsing they do. For
-  each system identifier (SID), go to V$SESSION to find the name of the program
-  that causes the reparsing.</P>
+  each system identifier (SID), go to <CODE>V$SESSION</CODE> to find the name
+  of the program that causes the reparsing.</P>
  <H3>Cache buffer LRU chain</H3>
  <P>The cache buffer lru chain latches protect the lists of buffers in the
   cache. When adding, moving, or removing a buffer from a list, a latch must be
@@ -174,7 +174,7 @@
   (<CODE>V$LATCH_CHILDREN.ADDR</CODE>) of a heavily contended latch, this
   queries the file and block numbers:
   <TABLE ALIGN="center"><TR><TD>
-  <DIV CLASS="code" STYLE="width:22em">
+  <DIV CLASS="code" STYLE="width:24em">
   SELECT file#, dbablk, class, state<BR>
   &nbsp;&nbsp;FROM X$BH<BR>
   &nbsp;WHERE HLADDR='address of latch';</DIV>
