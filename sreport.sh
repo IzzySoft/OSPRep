@@ -29,6 +29,7 @@ if [ -z "$1" ]; then
   echo "     -c <alternate ConfigFile>"
   echo "     -b <BEGIN_ID (Snapshot)>"
   echo "     -e <END_ID (Snapshot)>"
+  echo "     -o <Output Filename>"
   echo "     -p <Password>"
   echo "     -r <ReportDirectory>"
   echo "     -s <ORACLE_SID/Connection String for Target DB>"
@@ -58,6 +59,7 @@ while [ "$1" != "" ] ; do
     -b) shift; PSTART_ID=$1;;
     -c) shift; CONFIG=$1;;
     -r) shift; REPORTDIR=$1;;
+    -o) shift; FILENAME=$1;;
   esac
   shift
 done
@@ -81,6 +83,9 @@ if [ -n "$passwd" ]; then
 fi
 if [ -n "$REPORTDIR" ]; then
   REPDIR=$REPORTDIR
+fi
+if [ -z "$FILENAME" ]; then
+  FILENAME="${ORACLE_SID}.html"
 fi
 
 # --------------------------------[ Get the Oracle version of the DataBase ]---
@@ -395,7 +400,7 @@ BEGIN
   :AR_ET         := $AR_ET;
 END;
 /
-SPOOL $REPDIR/${ORACLE_SID}.html
+SPOOL $REPDIR/${FILENAME}
 ENDSQL
 
 . $BINDIR/ospopen

@@ -44,6 +44,9 @@
             Better configure it in the <a href="config.html#required">configuration</a>
             file.</td></tr>
     <tr><td class="td_name"><code>-p</code></td></tr>
+    <tr><td class="td_name"><code>-o</code></td>
+        <td class="text">Override the output file name (where the HTML output
+            shall be written to)</td></tr>
     <tr><td class="td_name"><code>-r</code></td>
         <td class="text">Override the report directory (where the HTML output
             shall be written to)</td></tr>
@@ -57,8 +60,8 @@
  <tr><td>
   An example command line could look like this:
   <table align="center" border="0"><tr><td>
-  <div class="code" style="width:34em">
-    ./sreport.sh oradb -c maint.config -b 1521 -e 1712
+  <div class="code">
+    ./sreport.sh oradb -c diagnostic.config -b 1521 -e 1712 -o special.html
   </div>
   </td></tr></table>
  </td></tr>

@@ -13,6 +13,7 @@ v0.3.2
   if -e was not specified as well
 + generated HTML code is now HTML 4.01 compliant
 ! in Datafiles Statistics, the report displayed %Used instead of %Free
++ added the -o command line parameter (to specify an alternative output file)
 
 v0.3.1 (26.07.2004)
 -------------------
