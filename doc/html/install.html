@@ -21,8 +21,9 @@
    <li><b>Create a directory where the generated reports shall be stored in.</b>
        This directory should be below your web servers <code>DOCUMENT_ROOT</code>,
        if you intend to serve the reports using an IntraNet or InterNet web site.</li>
-   <li><b>Create a directory for the Online Help pages.</b> This directory must
-       be located below the one created in step 1 and must be named <code>help</code>.</li>
+   <li><b>Create the directories for the Web-Includes.</b> They must be located
+       below the one created in step 1 and must be named <code>help</code> (for
+       the Online Help pages) and <code>inc</code> for the code snippets.</li>
    <li><b>Create a directory for the scripts.</b> This directory must <b>NOT</b>
        be below your web servers document root but in a somehow safe place, only
        accessible by authorized users. This directory is referenced to as
@@ -35,14 +36,14 @@
        default configuration file is named <code>config</code> and to be found
        within the <code>~/scripts</code> directory. For details on this step, see
        the chapter on <a href="config.html">configuration</a>.</li>
-   <li><b>Create the help pages.</b> To do so, change to the <code>~/scripts/install</code>
-       directory and run the <code>mkhelp.sh</code> script located there. This
-       will process the template (<code>*.tpl</code>) files and generate HTML
-       files out of them, which will be placed into the <code>help/</code>
-       directory created in step 2. Other files needed there (as e.g. the help
-       icon) will be copied as well. Optionally set up the
-       <a href="tech.html#plugins">Collector Plugins</a> from this directory
-       as well.</li>
+   <li><b>Create the Web-Includes.</b> To do so, change to the
+       <code>~/scripts/install</code> directory and run the <code>mkhelp.sh</code>
+       script located there. This will process the template (<code>*.tpl</code>)
+       files and generate the HTML help pages out of them, which will be placed
+       into the <code>help/</code> directory created in step 2. Other files needed
+       there (as e.g. the help icon) will be copied to their location as well as
+       the code snippets. Optionally set up the
+       <a href="tech.html#plugins">Collector Plugins</a> from this directory.</li>
    <li>In six days G*d created the heavens and the earth (see Gen 1+2) - the
        seventh day is Shabbat, and He rested. So get yourself a cup of coffee,
        tea, or whatever drink you like, and <b>relax</b> for a moment - your
@@ -52,9 +53,10 @@
  <tr><td class="text">
   Now that you succeeded up to this point, continue with the
   <a href="usage.html">usage</a> page to read important things about how to
-  call the <code>~/scripts/sreport.sh</code> and <code>~/scripts/fts_plans.sh</code>
-  scripts. Maybe after a while you want to fine-tune your setup: read more about
-  that on the <a href="config.html">configuration</a> page.
+  call the <code>~/scripts/sreport.sh</code>, <code>~scripts/charts.sh</code> and
+  <code>~/scripts/fts_plans.sh</code> scripts. Maybe after a while you want to
+  fine-tune your setup: read more about that on the
+  <a href="config.html">configuration</a> page.
  </td></tr>
 </table>
 
