@@ -117,7 +117,7 @@ DECLARE
        AND di.dbid=s.dbid AND di.instance_number=s.instance_number
        AND di.startup_time=s.startup_time;
 
-  CURSOR C_SnapInfo IS
+  CURSOR C_SnapInfo (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT b.snap_id begin_snap_id,to_char(b.snap_time,'dd.mm.yyyy hh24:mi') begin_snap_time,
            NVL(b.ucomment,'&nbsp;') begin_snap_comment,
 	   e.snap_id end_snap_id,to_char(e.snap_time,'dd.mm.yyyy hh24:mi') end_snap_time,
@@ -129,12 +129,12 @@ DECLARE
 	   e.executions_th eet,
 	   e.parse_calls_th epc
       FROM stats\$snapshot b, stats\$snapshot e
-     WHERE b.snap_id=$START_ID
-       AND e.snap_id=$END_ID
---       AND b.dbid=
---       AND e.dbid=
---       AND b.instance_number=
---       AND e.instance_number=
+     WHERE b.snap_id=bid
+       AND e.snap_id=eid
+       AND b.dbid=db_id
+       AND e.dbid=db_id
+       AND b.instance_number=instnum
+       AND e.instance_number=instnum
        AND b.startup_time=e.startup_time
        AND b.snap_time < e.snap_time;
 
@@ -1164,7 +1164,7 @@ BEGIN
   L_LINE := ' <TH CLASS="th_sub">Snap Time</TH><TH CLASS="th_sub">Sessions</TH>'||
             '<TH CLASS="th_sub">Curs/Sess</TH><TH CLASS="th_sub">Comment</TH></TR>';
   dbms_output.put_line(L_LINE);
-  FOR Rec_SnapInfo IN C_SnapInfo LOOP
+  FOR Rec_SnapInfo IN C_SnapInfo(DBID,INST_NUM,BID,EID) LOOP
     L_LINE := ' <TR><TD>Start</TD><TD ALIGN="right">'||Rec_SnapInfo.begin_snap_id||'</TD><TD>'||
               Rec_SnapInfo.begin_snap_time||'</TD><TD ALIGN="right">'||BLOG||'</TD><TD ALIGN="right">'||
 	      to_char(BOCUR/BLOG,'9,990.00')||'<TD>'||Rec_SnapInfo.begin_snap_comment||'</TD></TR>';
