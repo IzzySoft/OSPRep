@@ -171,7 +171,7 @@ DECLARE
 	   decode ((e.total_waits - NVL(b.total_waits,0)),
 	          0,'0.00',to_char(
 		    ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
-		    / (e.total_waits - NVL(b.total_waits,0)),'99,990.00') ) wt,
+		    / (e.total_waits - NVL(b.total_waits,0)),'9,999,990.00') ) wt,
 	   to_char((e.total_waits - NVL(b.total_waits,0))/tran,'99,990.00') txwaits,
 	   decode(i.event,NULL,0,99) idle
       FROM stats\$system_event b, stats\$system_event e, stats\$idle_event i
@@ -187,6 +187,30 @@ DECLARE
        AND e.event NOT LIKE 'rdbms ipc%'
        AND i.event(+)    = e.event
      ORDER BY idle, time desc, waits desc;
+
+  CURSOR C_BGWait (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, tran NUMBER) IS
+    SELECT e.event event,
+           to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
+	   to_char(e.total_timeouts - NVL(b.total_timeouts,0),'999,999') timeouts,
+	   to_char((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000000,'99,999,990.00') time,
+	   decode ((e.total_waits - NVL(b.total_waits,0)),
+	          0,'0.00',to_char(
+		    ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
+		    / (e.total_waits - NVL(b.total_waits,0)),'9,999,990.00') ) wt,
+	   to_char((e.total_waits - NVL(b.total_waits,0))/tran,'99,990.00') txwaits,
+	   decode(i.event,NULL,0,99) idle
+      FROM stats\$bg_event_summary b, stats\$bg_event_summary e, stats\$idle_event i
+     WHERE b.snap_id(+)  = bid
+       AND e.snap_id     = eid
+       AND b.dbid(+)     = db_id
+       AND e.dbid        = db_id
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.event(+)    = e.event
+       AND e.total_waits > NVL(b.total_waits,0)
+       AND i.event(+)    = e.event
+     ORDER BY idle, time desc, waits desc;
+
 
 BEGIN
   -- Configuration
@@ -221,7 +245,7 @@ BEGIN
             '] [ <A HREF="#efficiency">Efficiency</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE :=   ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#top5wait">Top 5 Wait</A>'||
-            ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#sysstat">SysStat</A> ]';
+            ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#bgwaitevents">Background Waits</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#events">Events</A> ] [ <A HREF="#invobj">Invalid Objects</A> ]'||
 	    ' [ <A HREF="#misc">Misc</A> ]</TD></TR>';
@@ -513,7 +537,10 @@ BEGIN
 
   -- All Wait Events
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#waitevents">All Wait Events</A></TH></TR>'||CHR(10)||
-            ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
+            ' <TR><TD COLSPAN="6" ALIGN="center">Ordered by Total Wait Time '||
+	    '(desc), Waits (desc); idle events last</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
 	    '<TH CLASS="th_sub">Timeouts</TH><TH CLASS="th_sub">Total Wt Time (s)</TH>';
   dbms_output.put_line(L_LINE);
   L_LINE := '<TH CLASS="th_sub">Avg Wait Time (ms)</TH><TH CLASS="th_sub">'||
@@ -524,6 +551,28 @@ BEGIN
               R_AllWait.waits||'</TD><TD ALIGN="right">'||R_AllWait.timeouts||'</TD><TD ALIGN="right">'||
 	      R_AllWait.time||'</TD><TD ALIGN="right">'||R_AllWait.wt||'</TD><TD ALIGN="right">'||
 	      R_AllWait.txwaits||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- BG Wait Events
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#bgwaitevents">Background Wait Events</A></TH></TR>'||CHR(10)||
+            ' <TR><TD COLSPAN="6" ALIGN="center">Ordered by Total Wait Time '||
+	    '(desc), Waits (desc); idle events last</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
+	    '<TH CLASS="th_sub">Timeouts</TH><TH CLASS="th_sub">Total Wt Time (s)</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">Avg Wait Time (ms)</TH><TH CLASS="th_sub">'||
+            'Waits/TXN</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_BGWait IN C_BGWait(DBID,INST_NUM,BID,EID,TRAN) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_BGWait.event||'</TD><TD ALIGN="right">'||
+              R_BGWait.waits||'</TD><TD ALIGN="right">'||R_BGWait.timeouts||'</TD><TD ALIGN="right">'||
+	      R_BGWait.time||'</TD><TD ALIGN="right">'||R_BGWait.wt||'</TD><TD ALIGN="right">'||
+	      R_BGWait.txwaits||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
