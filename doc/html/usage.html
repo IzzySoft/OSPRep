@@ -37,9 +37,12 @@
            user/password combinations in, and then just specify the corresponding
            config file at the command line.</td></tr>
     <tr><td class="td_name"><code>-u</code></td>
-        <td class="text">User name for the SQL <code>CONNECT</code> statement</td></tr>
-    <tr><td class="td_name"><code>-p</code></td>
-        <td class="text">Password for the SQL <code>CONNECT</code> statement</td></tr>
+        <td class="text" rowspan="2">User name (<code>-u</code>) and password
+            (<code>-p</code>) for the SQL <code>CONNECT</code> statement. Although
+            you may specify it here, this is not recommended for security reasons.
+            Better configure it in the <a href="config.html#required">configuration</a>
+            file.</td></tr>
+    <tr><td class="td_name"><code>-p</code></td></tr>
     <tr><td class="td_name"><code>-s</code></td>
         <td class="text">Connection string for the SQL <code>CONNECT</code>
             statement (if different from the <code>ORACLE_SID</code>). This
@@ -50,8 +53,8 @@
  <tr><td>
   An example command line could look like this:
   <table align="center" border="0"><tr><td>
-  <div class="code" style="width:42em">
-    ./sreport.sh oradb -c maint.config -d /var/www/reports/oradb
+  <div class="code" style="width:34em">
+    ./sreport.sh oradb -c maint.config -b 1521 -e 1712
   </div>
   </td></tr></table>
  </td></tr>

@@ -21,13 +21,13 @@
  </td></tr>
  <tr><th class="th_sub"><a name="plugins"></a>Collector PlugIns</th></tr>
  <tr><td class="text">
-  With OSPRep v0.1.2 I started to include collector plugins - i.e. modules
-  additional to Oracle Statspack to gather more statistical data; not to confuse
-  with the elements to be found in the <code>plugins/</code> directory of the
-  distribution. The latter ones are plugins used by the report generator, while
-  the first ones are used to gather the statistics. Right now, there are two of
-  these collector plugins available: one for gathering "Wait Objects" statistics,
-  the other for collecting information on data file growth.
+  OSPRep includes some collector plugins - i.e. modules additional to Oracle
+  Statspack to gather more statistical data; not to confuse with the elements to
+  be found in the <code>plugins/</code> directory of the distribution. The latter
+  ones are plugins used by the report generator, while the first ones are used to
+  gather the statistics. Right now, there are two of these collector plugins
+  available: one for gathering "Wait Objects" statistics, the other for collecting
+  information on data file growth.
  </td></tr>
  <tr><td class="text">
   In order to use these collector plugins, you of course have to install them
@@ -35,8 +35,8 @@
   directory. Instructions are to be found within the head of these files. After
   having them installed, don't forget to include a call to their procedures
   together with the <code>statspack.snap()</code> call (the <code>get_waitevents</code>
-  and <code>get_fileinfo</code> procedures should be run directly after each
-  snapshot).
+  and <code>get_fileinfo</code> procedures should be run directly <b><i>after</i></b>
+  each snapshot).
  </td></tr>
  <tr><th class="th_sub"><a name="require"></a>Requirements</th></tr>
  <tr><td class="text">

@@ -14,23 +14,24 @@
  <tr><td class="text">
   OSPRep is an Oracle Statspack Report Generator, used to create reports about your
   database activity statistics in a nice, human readable format - which in this
-  case is HTML -, based on the data collected by Oracle Statspack. The generated
+  case is HTML -, based on the data collected by Oracle Statspack and, optionally,
+  some <a href="tech.html#plugins">plugins</a> shipped with OSPRep. The generated
   report provides you with information on the physical database design (tablespaces,
   datafiles, memory), statistical values on your databases efficiency and more.
-  It is highly configurable concerning the report elements you need. Due to its
-  modular design, only the needed code (depending on the options you chose in
-  the config file) will be build and executed, to save your database from
+  It is highly configurable not only concerning the report elements you need. Due
+  to its modular design, only the needed code (depending on the options you chose
+  in the config file) will be build and executed, to save your database from
   unnecessary load.
  </td></tr>
  <tr><th class="th_sub"><a name="whatdoes"></a>What does OSPRep do?</th></tr>
  <tr><td class="text">
   OSPRep reads its data out of the (level 5 and 6) statistics gathered by the
-  <code>statspack.snap()</code> procedure of Oracle Statspack. Analogue to the
-  ASCII report one may generate using Oracle Statspack's <code>spreport.sql</code>,
-  OSPrep generates HTML reports out of these data. Additional to this, there are
-  some plugins available (located within the <code>install/</code> directory of
-  the distribution) to gather more information (which is not provided by Oracle
-  Statspack itself) and report on those, e.g. datafile growth and wait events.<br>
+  <code>statspack.snap()</code> procedure of Oracle Statspack and the corresponding
+  procedures from above mentioned <a href="tech.html#plugins">plugins</a>.
+  Analogue to the ASCII report one may generate using Oracle Statspack's
+  <code>spreport.sql</code>, OSPrep generates HTML reports out of these data.
+  The additional information gathered (and reported) by the mentioned plugins
+  includes e.g. datafile growth and wait events.<br>
   Together with these data, OSPRep gives some descriptions on their meaning as
   well as ideas what they may point to or what actions are required from the DBA
   in order to bring the instance to a more efficient state. For some issues,
