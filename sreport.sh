@@ -13,7 +13,7 @@
 #                                                              Itzchak Rehberg
 #
 #
-version='0.0.6'
+version='0.0.7'
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
   echo
@@ -24,7 +24,7 @@ if [ -z "$1" ]; then
   echo collected statistics. Look inside the script header for closer details, and
   echo check for the configuration there as well.
   echo ----------------------------------------------------------------------------
-  echo "Syntax: ${SCRIPT} <ORACLE_SID> [StartDir]"
+  echo "Syntax: ${SCRIPT} <ORACLE_SID> [StartID EndID]"
   echo ============================================================================
   echo
   exit 1
@@ -50,13 +50,16 @@ TOP_N_SQL=5
 #--- You may set both values to 0 (last interval will be used then), both to
 #--- a value > 0 (specified value is used), or START_ID=0 and END_ID>0. In
 #--- all cases, only specify existing SnapShot IDs.
+#--- Arguments on the command line override these settings.
 START_ID=0
 END_ID=203
 
-# If called from another script, we may have to change to another directory
-# before generating the reports
+# If Start/End ID are specified on CmdLine, override internal settings:
 if [ -n "$2" ]; then
-  cd $2
+  START_ID=$2
+fi
+if [ -n "$3" ]; then
+  END_ID=$3
 fi
 
 # ====================================================[ Script starts here ]===
