@@ -192,7 +192,7 @@
         print(L_LINE);
         L_LINE := R_SQL.cputime||'</TD><TD ALIGN="right">'||R_SQL.elapsed||
                   '</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||CHR(10)||
-	          ' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
+	          ' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="6">';
         print(L_LINE);
 	print_tsql(R_SQL.hashval);
         print('</TD></TR>');
@@ -266,7 +266,7 @@
         print(L_LINE);
         L_LINE := R_SQL.cputime||'</TD><TD ALIGN="right">'||R_SQL.elapsed||
                   '</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||CHR(10)||
-	          ' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
+	          ' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="6">';
         print(L_LINE);
 	print_tsql(R_SQL.hashval);
         print('</TD></TR>');
@@ -337,7 +337,7 @@
                   '</TD><TD ALIGN="right">'||R_SQL.cputime||'</TD><TD ALIGN="right">';
         print(L_LINE);
         L_LINE := R_SQL.elapsed||'</TD><TD ALIGN="right">'||R_SQL.hashval||
-                  '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
+                  '</TD></TR>'||CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="6">';
         print(L_LINE);
 	print_tsql(R_SQL.hashval);
         print('</TD></TR>');
