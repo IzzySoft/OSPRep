@@ -30,7 +30,7 @@ function mkline(arr,col) {
    parts = Math.ceil(620/(eid - bid));
    inc   = 1;
  }
- for (i=bid,k=bid; i<eid; i=i+inc) {
+ for (i=bid,k=bid; i<=eid; i=i+inc) {
    if (isNaN(arr[i])) {
      k++;
      continue;
