@@ -81,6 +81,9 @@ function drawStat(stat) {
     case "tx" :   parent.dstat = parent.tx;
                   parent.dname = "Transactions ('user commits' + 'transaction rollbacks') per Snapshot";
 		  break;
+    case "ckpt" : parent.dstat = parent.ckpt;
+                  parent.dname = "Checkpoint Incomplete";
+		  break;
   }
   location.reload();
 }

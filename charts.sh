@@ -494,6 +494,7 @@ BEGIN
   get_sysevent('enqueue','enq');
   get_sysevent('LGWR wait for redo copy','lgwr');
   get_sysevent('log file switch completion','lgsw');
+  get_sysevent('log file switch (checkpoint incomplete)','ckpt');
   get_sysstat('redo log space requests','redoreq');
   get_sysstat_per('enqueue timeouts','enqueue requests','enqper',1);
   get_sysstat_per('free buffer inspected','free buffer requested','fbp',1);

@@ -83,6 +83,7 @@ document.close();
  <OPTION VALUE="filescat">DB file Scattered Reads</OPTION>
  <OPTION VALUE="lgwr">LGWR Wait for Redo Copy</OPTION>
  <OPTION VALUE="lgsw">Log File Switch Completion</OPTION>
+ <OPTION VALUE="ckpt">Checkpoint Incomplete</OPTION>
  <OPTION VALUE="redoreq">Redo Log Space Requests</OPTION>
 </SELECT>
 </TD></TR></TABLE><BR>
