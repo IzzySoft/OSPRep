@@ -50,22 +50,10 @@ function mkline(arr,col) {
  }
 }
 
-function maxDelta(arr) {
- maxval = 0;
- for (i=bid,k=bid+1;i<eid;i++,k++) {
-   if (isNaN(arr[i])) {
-     i++; k++;
-     continue;
-   }
-   if ( !isNaN(Math.abs(arr[k] - arr[i])) )
-     maxval = Math.max(maxval,Math.abs(arr[k] - arr[i]));
- }
- if (maxval == 0 || isNaN(maxval)) maxval = 1;
-}
-
 document.open();
 var D=new Diagram();
-maxDelta(parent.dstat);
+maxval = parent.amaxdelta[parent.arrname];
+if (maxval == 0 || isNaN(maxval)) maxval = 1;
 mkdiag();
 mkline(parent.dstat,'#0000FF');
 document.close();

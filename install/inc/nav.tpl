@@ -8,9 +8,11 @@
       case "cumul" :
       case "delta" : parent.dstat = parent.enq;
                      parent.dname = "Enqueues";
+                     parent.arrname = 'enq';
 		     break;
       case "ratio" : parent.dstat = parent.enqper;
                      parent.dname = "Enqueue Timeouts per Request (OK: &lt;&lt; 0.01)";
+                     parent.arrname = 'enqper';
 		     break;
     }
   }

@@ -30,21 +30,34 @@ function mkline(arr,col) {
    parts = Math.ceil(620/(eid - bid));
    inc   = 1;
  }
- for (i=bid,k=bid; i<eid; i=i+inc) {
+ for (i=bid,k=bid; i<=eid; i=i+inc) {
    if (isNaN(arr[i])) {
-     k++;
      continue;
    }
-   snapcount = i - dbup_id +1;
+   snapcount  = i - dbup_id +1;
+   snapcountk = k - dbup_id +1;
+   vali = arr[i]/snapcount;
+   valk = arr[k]/snapcountk;
    if (i>bid) {
-     delta = (arr[k] - arr[i]) / parts;
+     delta = Math.abs(valk - vali) / parts;
      for (f=0;f<parts;f++) {
-       snapcount = snapcount + f/parts;
-       x = D.ScreenX(i - f/parts);
-       j = D.ScreenY( (arr[i] + f*delta) / snapcount );
-       new Pixel(x, j, col);
+       snapcount += f/parts;
+       if (!isNaN(arr[i] + f*delta)) {
+         if (valk > vali) {
+           x = D.ScreenX(i - 1 + f/parts);
+           j = D.ScreenY( (vali + (delta) - (f*delta)) );
+         } else {
+           x = D.ScreenX(i - f/parts);
+           j = D.ScreenY( (vali - ( (delta) + (f*delta)) ) );
+         }
+         new Pixel(x, j, col);
+       }
      }
-     k++;
+     l = k;
+     do {
+       l=l+inc;
+     } while (!(l>i+inc) && isNaN(arr[l]))
+     if (!isNaN(arr[l])) k = l;
    } else {
      x = D.ScreenX(i);
      j = D.ScreenY(arr[i]/snapcount);
@@ -53,23 +66,10 @@ function mkline(arr,col) {
  }
 }
 
-function maxDelta(arr) {
- maxval = 0;
- for (i=bid;i<eid;i++) {
-   if (isNaN(arr[i])) {
-     i++;
-     continue;
-   }
-   if ( !isNaN(arr[i]/(i-dbup_id+1)) )
-     maxval = Math.max(maxval,arr[i]/(i-dbup_id+1));
- }
- if (maxval == 0 || isNaN(maxval)) maxval = 1;
-}
-
-
 document.open();
 var D=new Diagram();
-maxDelta(parent.dstat);
+maxval = parent.amaxavedelta[parent.arrname];
+if (maxval == 0 || isNaN(maxval)) maxval = 1;
 mkdiag();
 mkline(parent.dstat,'#0000FF');
 document.close();

@@ -1,20 +1,16 @@
 bid = parent.bid;
 eid = parent.eid;
 dbup_id = parent.dbup_id;
-if (maxval == 0) maxval = 1;
+if (maxval == 0 || isNaN(maxval)) maxval = 1;
 
 // Create Diagram
 function mkdiag() {
   var left  = Math.max(0,(document.body.clientWidth - 460) / 2);
   var right = left + 460;
-//  D.SetFrame(80, 120, 540, 380);
- // ScreenLeftX, TopY, RightX, BottomY
   D.SetFrame(left, 120, right, 380);
  // ScreenLeftX, TopY, RightX, BottomY
   D.SetBorder(bid, eid, 0, maxval + maxval/20);
  // DiagLeftX, RightX, BottomY, TopY
-//  D.SetText("", "", "<B>"+parent.dname+"</B>");
- // ScaleX, ScaleY, Title
   D.SetText("", "", "");
  // ScaleX, ScaleY, Title
   D.Draw("#DDDDDD", "#000000", false, "");
@@ -23,6 +19,7 @@ function mkdiag() {
 
 // Draw diagram for specified stat
 function drawStat(stat) {
+  parent.arrname = stat;
   switch(stat) {
     case "enq" :  parent.dstat = parent.enq;
                   parent.dname = "Enqueues";
@@ -64,7 +61,7 @@ function drawStat(stat) {
                   parent.dname = "Open Cursors";
 		  break;
     case "cfr"  : parent.dstat = parent.cfr;
-                  parent.dname = "Chained-Fetch-Ratio (OK: &lt; 5%)";
+                  parent.dname = "Chained-Fetch-Ratio (OK: &lt; 10%)";
 		  break;
     case "rpp"  : parent.dstat = parent.rpp;
                   parent.dname = "Pct Library Cache Reloads Per Pin (OK: &lt; 1%)";
