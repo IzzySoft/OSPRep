@@ -1,5 +1,5 @@
 # =============================================================================
-# Oracle StatsPack Report 2 HTML       (c) 2003 by IzzySoft (devel@izzysoft.de)
+# Oracle StatsPack Report 2 HTML  (c) 2003-2004 by IzzySoft (devel@izzysoft.de)
 # -----------------------------------------------------------------------------
 # $Id$
 # -----------------------------------------------------------------------------
@@ -14,6 +14,7 @@ Contents
 3) Limitations
 4) Installation
 5) Plugins
+6) Additional information
 
 ===============================================================================
 
@@ -121,6 +122,16 @@ that caused full table scans (FTS). These are most likely to require some
 optimization - usually creation of new indices or rewrite of the queries (e.g.
 placing index hints). The output is written into the file <ORACLE_SID>_fts.html
 in the report directory.
+
+===============================================================================
+
+6) Additional information
+-------------------------
+
+Additonal and more verbose information is available in HTML format. You will
+find this documentation in the subdirectory doc/html as part of the distribution.
+The latest version (of the program as well as of the documentation) can be
+found at http://www.izzysoft.de/?topic=oracle
 
 
 Have fun!
