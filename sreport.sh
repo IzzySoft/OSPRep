@@ -902,6 +902,32 @@ DECLARE
        AND e.sleep_count > nvl(b.sleep_count,0)
      ORDER BY e.parent_name, sleeps desc;
 
+  CURSOR C_CAD (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT lower(b.parameter) param,
+           to_char(e.gets - b.gets,'9,999,999,990') gets,
+	   nvl(to_char(decode(e.gets, b.gets, NULL,
+	                (e.getmisses - b.getmisses) *100 /
+			(e.gets - b.gets)),'990.00'),'&nbsp') getm,
+	   to_char(e.scans - b.scans,'9,990') scans,
+	   nvl(to_char(decode(e.scans, b.scans, NULL,
+	                (e.scanmisses - b.scanmisses) *100 /
+			(e.scans - b.scans)),'990.00'),'&nbsp;') scanm,
+	   to_char(e.modifications - b.modifications,'999,990') mods,
+	   to_char(e.usage,'9,999,990') usage,
+	   to_char(e.usage *100/e.total_usage,'990.00') sgapct
+      FROM stats\$rowcache_summary b, stats\$rowcache_summary e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.parameter       = e.parameter
+       AND e.gets - b.gets   > 0
+     ORDER BY param;
+
 
 BEGIN
   -- Configuration
@@ -948,7 +974,9 @@ BEGIN
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ] [ <A HREF="#enq">Enqueue Activity</A> ]'||
             ' [ <A HREF="#rbs">RBS</A> ] [ <A HREF="#undo">Undo Segs</A> ]'||
-	    ' [ <A HREF="#latches">Latches</A> ]</TD></TR>';
+	    ' [ <A HREF="#latches">Latches</A> ]';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' [ <A HREF="#caches">Caches</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1762,7 +1790,7 @@ BEGIN
   dbms_output.put_line(L_LINE);
 
   -- Latch Miss Sources
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="#latches">Latch Miss Sources</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Latch Miss Sources</TH></TR>'||
             ' <TR><TD COLSPAN="5" ALIGN="center">Only Latches with Sleeps are '||
 	    'shown<BR>Ordered by Name, Sleeps desc</TD></TR>';
   dbms_output.put_line(L_LINE);
@@ -1775,7 +1803,36 @@ BEGIN
               R_LA.where_from||'</TD><TD ALIGN="right">'||R_LA.nwmisses||
 	      '</TD><TD ALIGN="right">'||R_LA.sleeps||'</TD>';
     dbms_output.put_line(L_LINE);
-    L_LINE := '<TD ALIGN="center">'||R_LA.waiter_sleeps||'</TD></TR>';
+    L_LINE := '<TD ALIGN="right">'||R_LA.waiter_sleeps||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- Dictionary Cache
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="#caches">Dictionary Cache</A></TH></TR>'||
+            ' <TR><TD COLSPAN="8" ALIGN="center">"Pct Misses" should be very '||
+	    ' low (&lt; 2% in most cases)<BR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '"Cache Usage" is the number of cache entries being used<BR>'||
+            '"Pct SGA" is the ratio of usage to allocated size for that cache</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Cache</TH><TH CLASS="th_sub">Get Requests</TH>'||
+            '<TH CLASS="th_sub">Pct Miss</TH><TH CLASS="th_sub">Scan Reqs</TH>'||
+	    '<TH CLASS="th_sub">Pct Miss</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">Mod Reqs</TH><TH CLASS="th_sub">Final Usage</TH>'||
+            '<TH CLASS="th_sub">Pct SGA</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_CA IN C_CAD(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_CA.param||'</TD><TD ALIGN="right">'||
+              R_CA.gets||'</TD><TD ALIGN="right">'||R_CA.getm||
+	      '</TD><TD ALIGN="right">'||R_CA.scans||'</TD>';
+    dbms_output.put_line(L_LINE);
+    L_LINE := '<TD ALIGN="right">'||R_CA.scanm||'</TD><TD ALIGN="right">'||
+              R_CA.mods||'</TD><TD ALIGN="right">'||R_CA.usage||
+	      '</TD><TD ALIGN="right">'||R_CA.sgapct||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
