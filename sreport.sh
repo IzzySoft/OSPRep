@@ -1434,19 +1434,20 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SQL by Gets
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbygets">SQL ordered by Gets</A></TH></TR>'||CHR(10)||
-            ' <TR><TD COLSPAN="7">End Buffer Gets Treshold: '||EBGT||
-	    '<P ALIGN="justify" STYLE="margin-top:4">Note that resources reported for PL/SQL includes the ';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbygets">Top $TOP_N_SQL SQL ordered by Gets</A></TH></TR>'||
+            CHR(10)||' <TR><TD COLSPAN="7" ALIGN="center">End Buffer Gets Treshold: '||EBGT;
   dbms_output.put_LINE(L_LINE);
-  L_LINE := 'resources used by all SQL statements called within the PL/SQL code.'||
-            ' As individual SQL statements are also reported, it is possible '||
-            'and valid for the summed total % to exceed 100.</P></TD></TR>';
+  L_LINE := '<P ALIGN="justify" STYLE="margin-top:4">Note that resources reported for PL/SQL includes the '||
+            'resources used by all SQL statements called within the PL/SQL code.'||
+            ' As individual SQL statements are also reported, ';
   dbms_output.put_line(L_LINE);
-  L_LINE := ' <TR><TH CLASS="th_sub">Buffer Gets</TH><TH CLASS="th_sub">Executions</TH>'||
-	    '<TH CLASS="th_sub">Gets per Exec</TH><TH CLASS="th_sub">% Total</TH>';
+  L_LINE := 'it is possible and valid for the summed total % to exceed 100.</P></TD></TR>'||
+  CHR(10)||
+            ' <TR><TH CLASS="th_sub">Buffer Gets</TH><TH CLASS="th_sub">Executions</TH>'||
+	    '<TH CLASS="th_sub">Gets per Exec</TH>';
   dbms_output.put_line(L_LINE);
-  L_LINE := '<TH CLASS="th_sub">CPU Time (s)</TH><TH CLASS="th_sub">'||
-            'Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TR>';
+  L_LINE := '<TH CLASS="th_sub">% Total</TH><TH CLASS="th_sub">CPU Time (s)</TH>'||
+            '<TH CLASS="th_sub">Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TR>';
   dbms_output.put_line(L_LINE);
   FOR R_SQL IN C_SQLByGets(DBID,INST_NUM,BID,EID,GETS) LOOP
     L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.bufgets||'</TD><TD ALIGN="right">'||
@@ -1469,7 +1470,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SQL by Reads
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbyreads">SQL ordered by Reads</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbyreads">Top $TOP_N_SQL SQL ordered by Reads</A></TH></TR>'||CHR(10)||
             ' <TR><TD COLSPAN="7" ALIGN="center">End Disk Reads Treshold: '||EDRT||'</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Pysical Reads</TH><TH CLASS="th_sub">Executions</TH>'||
@@ -1499,7 +1500,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SQL by Executions
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="sqlbyexec">SQL ordered by Executions</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="sqlbyexec">Top $TOP_N_SQL SQL ordered by Executions</A></TH></TR>'||CHR(10)||
             ' <TR><TD COLSPAN="6" ALIGN="center">End Executions Treshold: '||EET||'</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Rows Processed</TH>'||
@@ -1527,7 +1528,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SQL by Parse
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="sqlbyparse">SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="sqlbyparse">Top $TOP_N_SQL SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
             ' <TR><TD COLSPAN="4" ALIGN="center">End Parse Calls Treshold: '||EPC||'</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
