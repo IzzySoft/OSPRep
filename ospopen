@@ -1018,11 +1018,14 @@ DECLARE
     CURSOR C_PGet (bid IN NUMBER, eid IN NUMBER, hash_val IN VARCHAR2) IS
       SELECT operation,options,object_owner,object_name,optimizer,cost,
              bytes,cpu_cost,io_cost
-        FROM stats\$sql_plan
+        FROM stats\$sql_plan,
+	     ( SELECT MAX(snap_id) maxid FROM stats\$sql_plan
+	        WHERE snap_id BETWEEN bid AND eid
+		  AND plan_hash_value = hash_val ) id
        WHERE plan_hash_value = hash_val
          AND cost IS NOT NULL
 	 AND object_owner IS NOT NULL
-         AND snap_id BETWEEN bid AND eid;
+         AND snap_id = id.maxid;
     PROCEDURE print(line IN VARCHAR2) IS
       BEGIN
         dbms_output.put_line(line);
@@ -1037,12 +1040,15 @@ DECLARE
          AND cost > 0
          AND snap_id BETWEEN bid AND eid;
       SELECT COUNT(cost) INTO CI
-        FROM stats\$sql_plan
+        FROM stats\$sql_plan,
+	     ( SELECT MAX(snap_id) maxid FROM stats\$sql_plan
+	        WHERE snap_id BETWEEN bid AND eid
+		  AND plan_hash_value = HASHID ) id
        WHERE plan_hash_value = HASHID
          AND cost IS NOT NULL
 	 AND object_owner IS NOT NULL
 	 AND object_owner NOT IN ('SYS','SYSTEM')
-         AND snap_id BETWEEN bid AND eid;
+         AND snap_id = id.maxid;
       IF CI > 0
       THEN
         print('<TR><TD>&nbsp;</TD><TD COLSPAN="6">');
