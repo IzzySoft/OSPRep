@@ -32,6 +32,7 @@ function mkline(arr,col) {
  }
  for (i=bid,k=bid; i<=eid; i=i+inc) {
    if (isNaN(arr[i])) {
+     if (isNaN(arr[k])) k += inc;
      continue;
    }
    snapcount  = i - dbup_id +1;
@@ -39,19 +40,12 @@ function mkline(arr,col) {
    vali = arr[i]/snapcount;
    valk = arr[k]/snapcountk;
    if (i>bid) {
-     delta = Math.abs(valk - vali) / parts;
+     delta = (valk - vali) / parts;
      for (f=0;f<parts;f++) {
        snapcount += f/parts;
-       if (!isNaN(arr[i] + f*delta)) {
-         if (valk > vali) {
-           x = D.ScreenX(i - 1 + f/parts);
-           j = D.ScreenY( (vali + (delta) - (f*delta)) );
-         } else {
-           x = D.ScreenX(i - f/parts);
-           j = D.ScreenY( (vali - ( (delta) + (f*delta)) ) );
-         }
-         new Pixel(x, j, col);
-       }
+       x = D.ScreenX(i - 1 + f/parts);
+       j = D.ScreenY(valk - f*delta);
+       new Pixel(x, j, col);
      }
      l = k;
      do {
