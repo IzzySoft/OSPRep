@@ -42,6 +42,8 @@
 	  log); id1=object# of the snapshot log.</TD></TR>
   <TR><TD CLASS="smallname">NA..NZ</TD>
       <TD><B>Library Cache</B> Pin</TD></TR>
+  <TR><TD CLASS="smallname">RT</TD>
+      <TD><B>Redo Log</B></TD></TR>
   <TR><TD CLASS="smallname">SQ</TD>
       <TD><B>SeQuences</B> not being cached, having a to small
           cache size or being aged out of the shared pool. Consider pinning
@@ -69,6 +71,8 @@
   <TR><TD CLASS="smallname">TM</TD>
       <TD><B>Table locks</B> point to the possibility of e.g.
           foreign key constraints not being indexed</TD></TR>
+  <TR><TD CLASS="smallname">TS</TD>
+      <TD><B>Temporary Segment</B></TD></TR>
   <TR><TD CLASS="smallname">TX</TD>
       <TD><B>Transaction locks</B> indicate multiple users try
           modifying the same row of a table (row-level-lock) or a row that is
