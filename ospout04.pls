@@ -113,32 +113,3 @@
     print('<HR>');
   END IF;
 
-  -- Init.Ora Params
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="initora">Initialization Parameters (init.ora)</A></TH></TR>'||
-            ' <TR><TH CLASS="th_sub">Parameter Name</TH><TH CLASS="th_sub">Begin Value</TH>'||
-	    '<TH CLASS="th_sub">End Value (if different)</TH></TR>';
-  print(L_LINE);
-  FOR R_IParm in C_IParm(DBID,INST_NUM,BID,EID) LOOP
-    L_LINE := ' <TR><TD CLASS="td_name">'||R_IParm.name||'</TD><TD>'||
-              R_IParm.bval||'</TD><TD>'||R_IParm.eval||'</TD></TR>';
-    print(L_LINE);
-  END LOOP;
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
-
-
-  -- Page Ending
-  L_LINE := '<HR>'||CHR(10)||TABLE_OPEN;
-  print(L_LINE);
-  L_LINE := '<TR><TD><DIV CLASS="small">Created by OSPRep v'||OSPVER||' &copy; 2003-2004 by '||
-	    '<A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> '||
-            '&amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></DIV></TD></TR>';
-  print(L_LINE);
-  print(TABLE_CLOSE);
-  L_LINE := '</BODY></HTML>'||CHR(10);
-  print(L_LINE);
-
-END;
-/
-
-SPOOL off

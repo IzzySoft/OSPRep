@@ -17,6 +17,7 @@ DECLARE
   MK_USSTAT NUMBER;
   MK_LACT NUMBER;
   MK_LMS NUMBER;
+  MK_IORA NUMBER;
   WR_IE_BUFFNW NUMBER;
   AR_IE_BUFFNW NUMBER;
   WR_IE_REDONW NUMBER;
@@ -859,23 +860,6 @@ DECLARE
             or nvl(max_utilization,0)/limit_value > .8 )
      ORDER BY rname;
 
-  CURSOR C_IParm (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT e.name,
-           nvl(b.value,'&nbsp;') bval,
-	   decode(b.value,e.value,'&nbsp;',e.value) eval
-      FROM stats\$parameter b, stats\$parameter e
-     WHERE b.snap_id(+) = bid
-       AND e.snap_id    = eid
-       AND b.dbid(+)    = db_id
-       AND e.dbid       = db_id
-       AND b.instance_number(+) = instnum
-       AND e.instance_number    = instnum
-       AND b.name(+)    = e.name
-       AND (   nvl(b.isdefault,'X')   = 'FALSE'
-            or nvl(b.ismodified,'X') != 'FALSE'
-	    or     e.ismodified      != 'FALSE'
-	    or nvl(e.value,0)        != nvl(b.value,0) );
-
   PROCEDURE print(line IN VARCHAR2) IS
     BEGIN
       dbms_output.put_line(line);
@@ -1097,6 +1081,9 @@ if [ -n "$LACTHEAD" ]; then
     cat $LMSHEAD>>$SQLSET
   fi
 fi
+if [ -n "$IORAHEAD" ]; then
+  cat $IORAHEAD>>$SQLSET
+fi
 
 cat>>$SQLSET<<ENDSQL
 BEGIN
@@ -1109,6 +1096,7 @@ BEGIN
   MK_INSTACT := :MK_INSTACT;
   MK_USSTAT  := :MK_USSTAT;
   MK_LACT    := :MK_LACT;
+  MK_IORA    := :MK_IORA;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
   WR_IE_REDONW := :WR_IE_REDONW;
