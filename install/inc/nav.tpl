@@ -1,7 +1,8 @@
-<html>
-<head>
-<title>Database Statistic Diagrams: Navigation</title>
-<SCRIPT Language="JavaScript">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+ <TITLE>Database Statistic Diagrams: Navigation</TITLE>
+ <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">
   function init(mode) {
     parent.dtype = mode;
     switch(mode) {
@@ -16,8 +17,8 @@
 		     break;
     }
   }
-</SCRIPT>
-<LINK REL="stylesheet" TYPE="text/css" HREF="../{css}">
+ </SCRIPT>
+ <LINK REL="stylesheet" TYPE="text/css" HREF="../{css}">
 </HEAD><BODY>
 <TABLE BORDER="0" CELLPADDING="2" CELLSPACING="2" ALIGN="center" STYLE="margin-top:30">
  <TR><TH CLASS="th_sub">Stats</TH></TR>
@@ -26,5 +27,5 @@
  <TR><TD ALIGN="center"><A HREF="delta.html" TARGET="chart" onClick="init('delta')">Delta</A></TD></TR>
  <TR><TD ALIGN="center"><A HREF="ratio.html" TARGET="chart" onClick="init('ratio')">Ratio</A></TD></TR>
 </TABLE>
-</body>
-</html>
+</BODY>
+</HTML>

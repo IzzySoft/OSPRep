@@ -35,7 +35,7 @@ CODE {
 /*                           Headers and Paragraphs                         */
 /* ------------------------------------------------------------------------ */
 P {
- text-align:justified;
+ text-align:justify;
  font-family:sans-serif;
 }
 H2 {
@@ -109,7 +109,7 @@ td.inner {
 /*                                Miscellaneous                             */
 /* ------------------------------------------------------------------------ */
 UL {
- margin-top:2;
- margin-bottom:2;
+ margin-top:2px;
+ margin-bottom:2px;
 }
 

@@ -92,7 +92,7 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7">Library Cache'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'libcache'||CHR(39)||
-	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
+	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" ALIGN="middle" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">"Pct Misses" should '||
                 'be very low (&lt; 10%), "Reloads" should not be significantly high.</TD></TR>';

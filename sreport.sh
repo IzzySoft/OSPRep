@@ -41,8 +41,8 @@ if [ -z "$1" ]; then
 fi
 
 # =================================================[ Configuration Section ]===
-#BINDIR=${0%/*}
-BINDIR=`pwd`
+BINDIR=${0%/*}
+#BINDIR=`dirname $0`
 CONFIG=$BINDIR/config
 ARGS=$*
 PLUGINDIR=$BINDIR/plugins

@@ -25,8 +25,8 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7">Rollback Segments Stats'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'rollstat'||CHR(39)||
-	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" '||
-	        'VALIGN="middle"></A></TH></TR>';
+	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" '||
+	        'ALIGN="middle" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="7" ALIGN="justify">A high value for "Pct Waits" '||
                 'suggests more rollback segments may be required. ';
@@ -39,7 +39,7 @@
                 'be accurate between begin and end snaps when using Auto Undo '||
                 'Management, as RBS may be dynamically ';
       print(L_LINE);
-      L_LINE := 'created and dropped as needed</TD></TR>';
+      L_LINE := 'created and dropped as needed</DIV></TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">RBS#</TH><TH CLASS="th_sub">Trans Table Gets</TH>'||
                 '<TH CLASS="th_sub">Pct Waits</TH><TH CLASS="th_sub">Undo Bytes Written</TH>'||
@@ -85,8 +85,8 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Rollback Segments Storage'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'rollstat'||CHR(39)||
-	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" '||
-	        'VALIGN="middle"></A></TH></TR>';
+	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" '||
+	        'ALIGN="middle" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="5" ALIGN="center">Optimal Size should be larger '||
                 'than Avg Active<BR>Values are taken from the End SnapShot</TD></TR>';

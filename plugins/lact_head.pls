@@ -57,7 +57,7 @@
     -- Latch Activity
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="latches">Latch Activity</A>'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
-		')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
+		')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" ALIGN="middle" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">"Get Requests", "Get Miss"'||
 	        ' and "Avg Slps/Miss" are statistics for willing-to-wait '||
@@ -88,7 +88,7 @@
     -- Latch Sleep Breakdown
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7">Latch Sleep Breakdown'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
-		')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
+		')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" ALIGN="middle" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">Ordered by Misses desc</TD></TR>';
       print(L_LINE);
@@ -97,14 +97,14 @@
                 '<TH CLASS="th_sub">Sleeps</TH>';
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">PctSleep</TH><TH CLASS="th_sub">'||
-                'Spin & Sleeps 1-&gt;4</TH></TR>';
+                'Spins &amp; Sleeps 1-&gt;4</TH></TR>';
       print(L_LINE);
       FOR R_LA IN C_LAS LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_LA.name||'</TD><TD ALIGN="right">'||
                   R_LA.gets||'</TD><TD ALIGN="right">'||R_LA.misses||
 	          '</TD><TD ALIGN="right">'||R_LA.pctmiss||'%</TD>';
         print(L_LINE);
-        L_LINE := '</TD><TD ALIGN="right">'||R_LA.sleeps||'</TD><TD ALIGN="right">'||
+        L_LINE := '<TD ALIGN="right">'||R_LA.sleeps||'</TD><TD ALIGN="right">'||
                   R_LA.pctsleep||'%<TD ALIGN="center">'||R_LA.sleep4||'</TD></TR>';
         print(L_LINE);
       END LOOP;

@@ -35,7 +35,7 @@ PROCEDURE get_filestats IS
      AND b.datafile = e.datafile
     ORDER BY b.tablespace,b.datafile;
  BEGIN
-    L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="filestats">'||
+    L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="filestats"></A>'||
               ' Datafiles Statistics</TH></TR>';
     print(L_LINE);
     L_LINE := ' <TR><TD COLSPAN="10"><DIV ALIGN="center">Ordered by Tablespace, '||

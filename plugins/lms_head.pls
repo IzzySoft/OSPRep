@@ -22,7 +22,7 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Latch Miss Sources'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
-		')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
+		')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="12" ALIGN="middle" ALT="Help"></A></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="5" ALIGN="center">Only Latches with Sleeps are '||
 	        'shown<BR>Ordered by Name, Sleeps desc</TD></TR>';

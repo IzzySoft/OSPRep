@@ -261,7 +261,7 @@ BEGIN
             CHR(10)||' <TITLE>'||R_TITLE||'</TITLE>';
   print(L_LINE);
   L_LINE := ' <LINK REL="stylesheet" TYPE="text/css" HREF="$CSS">'||CHR(10)||
-            ' <SCRIPT LANGUAGE="JavaScript">'||CHR(10)||
+            ' <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript">'||CHR(10)||
 	    '   function popup(page) {'||CHR(10)||
 	    '     url = "help/" + page + ".html";';
   print(L_LINE);

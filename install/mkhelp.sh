@@ -22,6 +22,10 @@ for i in *.tpl; do
 done
 cp help.gif $REPDIR/help/
 chmod o+r $REPDIR/help/help.gif
+cp w3c.jpg $REPDIR
+cp islogo.gif $REPDIR
+cp iceage.css $REPDIR
+chmod o+r w3c.jpg islogo.gif iceage.css
 
 cd inc
 cp *.js $REPDIR/inc

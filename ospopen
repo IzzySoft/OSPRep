@@ -487,12 +487,13 @@ BEGIN
      AND dbid=DB_ID;
 
   -- HTML Head
-  L_LINE := '<HTML><HEAD>'||CHR(10)||
-            ' <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15"/>'||
+  L_LINE := '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'||CHR(10)||
+            '<HTML><HEAD>'||CHR(10)||
+            ' <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">'||
             CHR(10)||' <TITLE>'||R_TITLE||'</TITLE>';
   print(L_LINE);
   L_LINE := ' <LINK REL="stylesheet" TYPE="text/css" HREF="$CSS">'||CHR(10)||
-            ' <SCRIPT LANGUAGE="JavaScript">'||CHR(10)||
+            ' <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript">'||CHR(10)||
 	    '   function popup(page) {'||CHR(10)||
 	    '     url = "help/" + page + ".html";';
   print(L_LINE);

@@ -29,7 +29,7 @@ PROCEDURE get_waitobj IS
    WHERE rownum <= TOP_N_WAITS;
  BEGIN
     L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="waitobjects">Top '||
-              TOP_N_WAITS||' Objects waited for</TH></TR>';
+              TOP_N_WAITS||' Objects waited for</A></TH></TR>';
     print(L_LINE);
     L_LINE := ' <TR><TD COLSPAN="5"><DIV ALIGN="center">Ordered by Waited desc, Entries desc<BR>'||
               'Excluding objects for: $EXCLUDING</DIV>';
@@ -39,7 +39,7 @@ PROCEDURE get_waitobj IS
               'correct - since even 100 times 0.4 secs ';
     print(L_LINE);
     L_LINE := 'would show up as 0. The column Entries sums up how often the '||
-              'object was found in the wait events list for this event.</TD></TR>';
+              'object was found in the wait events list for this event.</DIV></TD></TR>';
     print(L_LINE);
     L_LINE := ' <TR><TH CLASS="th_sub">Object</TH><TH CLASS="th_sub">Type</TH>'||
               '<TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waited (s)</TH>'||

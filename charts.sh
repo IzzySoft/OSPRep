@@ -74,19 +74,21 @@ SQLSET=$TMPDIR/osprep_charts_$ORACLE_SID.$$
 
 # ------------------------------------[ Create the FrameSet (control) page ]---
 cat >$REPDIR/${ORACLE_SID}_chart.html<<ENDTXT
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <HTML><HEAD>
  <TITLE>DBStats for ${ORACLE_SID}</TITLE>
- <SCRIPT LANGUAGE="JavaScript" SRC="${ORACLE_SID}_chart.js"></SCRIPT>
- <SCRIPT LANGUAGE="JavaScript">//<!--
+ <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">
+ <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript" SRC="${ORACLE_SID}_chart.js"></SCRIPT>
+ <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
    var dstat = enq;
    var dname = "Enqueues";
    var sid   = "${ORACLE_SID}";
    var vers  = "${version}";
  //--></SCRIPT>
 </HEAD>
-<FRAMESET COLS="70,*" BORDER="0">
- <FRAME SRC="inc/nav.html" NAME="menu">
- <FRAME SRC="inc/cumul.html" NAME="chart">
+<FRAMESET COLS="70,*">
+ <FRAME SRC="inc/nav.html" NAME="menu" FRAMEBORDER="0">
+ <FRAME SRC="inc/cumul.html" NAME="chart" FRAMEBORDER="0">
 </FRAMESET>
 </HTML>
 ENDTXT
