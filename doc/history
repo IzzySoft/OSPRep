@@ -197,3 +197,4 @@ v0.2.2
 + added Delta- & Ratio- charts: (current) Logons and Opened Cursors,
   Freebuffers inspected/requested, Chained-Fetch-Ratio (Ratio charts). Delta-
   charts have the same items as cumulative charts.
+* updated the (HTML) documentation
