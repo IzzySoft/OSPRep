@@ -152,9 +152,9 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_sysstat_per(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
+  PROCEDURE get_sysstat_per(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2, factor IN NUMBER) IS
     CURSOR C_Sys(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
-      SELECT arrname||'['||a.snap_id||'] = '||round(a.value/b.value,5)||';' line
+      SELECT arrname||'['||a.snap_id||'] = '||round(factor*a.value/b.value,5)||';' line
         FROM stats\$sysstat a, stats\$sysstat b
        WHERE a.name=event1
          AND b.name=event2
@@ -241,8 +241,9 @@ BEGIN
   get_sysevent(DBID,INST_NUM,BID,EID,'LGWR wait for redo copy','lgwr');
   get_sysevent(DBID,INST_NUM,BID,EID,'log file switch completion','lgsw');
   get_sysstat(DBID,INST_NUM,BID,EID,'redo log space requests','redoreq');
-  get_sysstat_per(DBID,INST_NUM,BID,EID,'enqueue timeouts','enqueue requests','enqper');
-  get_sysstat_per(DBID,INST_NUM,BID,EID,'free buffer inspected','free buffer requested','fbp');
+  get_sysstat_per(DBID,INST_NUM,BID,EID,'enqueue timeouts','enqueue requests','enqper',1);
+  get_sysstat_per(DBID,INST_NUM,BID,EID,'free buffer inspected','free buffer requested','fbp',1);
+  get_sysstat_per(DBID,INST_NUM,BID,EID,'table fetch continued row','table fetch by rowid','cfr',100);
   get_libmiss(DBID,INST_NUM,BID,EID,'libmiss');
   get_sysstat(DBID,INST_NUM,BID,EID,'logons current','logon');
   get_sysstat(DBID,INST_NUM,BID,EID,'opened cursors current','opencur');

@@ -63,6 +63,9 @@ function drawStat(stat) {
     case "opencur" :  parent.dstat = parent.opencur;
                   parent.dname = "Open Cursors";
 		  break;
+    case "cfr"  : parent.dstat = parent.cfr;
+                  parent.dname = "Chained-Fetch-Ratio";
+		  break;
   }
   location.reload();
 }

@@ -82,6 +82,7 @@ document.close();
  <OPTION VALUE="enqper">Enqueue Timeouts per Request</OPTION>
  <OPTION VALUE="fbp">Free Buffers Inspected / Requested</OPTION>
  <OPTION VALUE="libmiss">Library Cache HitMisses</OPTION>
+ <OPTION VALUE="cfr">Chained Fetch Ratio</OPTION>
  <OPTION VALUE="logon">Logons</OPTION>
  <OPTION VALUE="opencur">Open Cursors</OPTION>
 </SELECT>
