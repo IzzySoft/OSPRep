@@ -771,8 +771,12 @@
   print('<HR>');
 
   -- Undo Segs Summary
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="undo">Undo Segment Summary</A></TH></TR>'||
-            ' <TR><TD COLSPAN="8" ALIGN="center">Undo Segment block stats<BR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="undo">Undo Segment Summary</A>'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'undoseg'||CHR(39)||
+	    ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" '||
+	    'VALIGN="middle"></A></TH></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD COLSPAN="8" ALIGN="center">Undo Segment block stats<BR>'||
 	    'uS - unexpired Stolen, uR - unexpired Released, uU - unexpired reUsed<BR>';
   print(L_LINE);
   L_LINE := 'eS - expired Stolen, eR - expired Released, eU - expired reUsed</TD></TR>';
@@ -798,8 +802,12 @@
   print(L_LINE);
 
   -- Undo Segs Stat
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8">Undo Segment Statistics</TH></TR>'||
-            ' <TR><TD COLSPAN="8" ALIGN="center">Ordered by Time desc</TD></TR>';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8">Undo Segment Statistics'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'undoseg'||CHR(39)||
+	    ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" '||
+	    'VALIGN="middle"></A></TH></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD COLSPAN="8" ALIGN="center">Ordered by Time desc</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">End Time</TH><TH CLASS="th_sub">Undo Blocks</TH>'||
             '<TH CLASS="th_sub"># TXN</TH><TH CLASS="th_sub">Max Qry Len (s)</TH>'||
