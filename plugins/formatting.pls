@@ -28,12 +28,15 @@
       IF st IS NULL THEN
         RETURN '&nbsp;';
       END IF;
-      CASE sdiv
-        WHEN   10 THEN string := '.'||trim(to_char(mod(st,sdiv),'0'));
-        WHEN  100 THEN string := '.'||trim(to_char(mod(st,sdiv),'00'));
-        WHEN 1000 THEN string := '.'||trim(to_char(mod(st,sdiv),'000'));
-        ELSE string := '';
-      END CASE;
+      IF sdiv = 10 THEN
+        string := '.'||trim(to_char(mod(st,sdiv),'0'));
+      ELSIF sdiv = 100 THEN
+        string := '.'||trim(to_char(mod(st,sdiv),'00'));
+      ELSIF sdiv = 1000 THEN
+        string := '.'||trim(to_char(mod(st,sdiv),'000'));
+      ELSE
+        string := '';
+      END IF;
       mt := round(st/sdiv);
       IF (round(mt/60) > 0) OR (mod(mt,60) > 9) THEN
         string := trim(to_char(mod(mt,60),'00'))||string; -- s
