@@ -41,6 +41,7 @@ fi
 # =================================================[ Configuration Section ]===
 BINDIR=${0%/*}
 PLUGINDIR=$BINDIR/plugins
+RULER=$PLUGINDIR/ruler.pls
 
 # -------------------------------------------[ Read the Configuration File ]---
 . $BINDIR/config $*
@@ -61,6 +62,14 @@ fi
 if [ $MK_USSTAT -eq 1 ]; then
   USSTATHEAD=$PLUGINDIR/undo_head.pls
   USSTATBODY=$PLUGINDIR/undo_body.pls
+fi
+if [ $MK_LACT -eq 1 ]; then
+  LACTHEAD=$PLUGINDIR/lact_head.pls
+  LACTBODY=$PLUGINDIR/lact_body.pls
+  if [ $MK_LMS -eq 1 ]; then
+    LMSHEAD=$PLUGINDIR/lms_head.pls
+    LMSBODY=$PLUGINDIR/lms_body.pls
+  fi
 fi
 
 # ------------------------------------------[ process command line options ]---
@@ -170,18 +179,22 @@ variable MK_ALLWAITS NUMBER;
 variable MK_BGWAITS NUMBER;
 variable MK_INSTACT NUMBER;
 variable MK_USSTAT NUMBER;
+variable MK_LACT NUMBER;
+variable MK_LMS NUMBER;
 BEGIN
   :MK_ALLWAITS := $MK_ALLWAITS;
   :MK_BGWAITS  := $MK_BGWAITS;
   :MK_INSTACT  := $MK_INSTACT;
   :MK_USSTAT   := $MK_USSTAT;
+  :MK_LACT     := $MK_LACT;
+  :MK_LMS      := $MK_LMS;
 END;
 /
 SPOOL $REPDIR/${ORACLE_SID}.html
 ENDSQL
 
 . $BINDIR/ospopen
-#cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $BINDIR/ospout04.pls >osp.out
-cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $BINDIR/ospout04.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
+#cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $RULER $LACTBODY $LMSBODY $BINDIR/ospout04.pls >osp.out
+cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $RULER $LACTBODY $LMSBODY $BINDIR/ospout04.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
 rm $SQLSET
 rm $TMPOUT

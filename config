@@ -53,4 +53,9 @@ MK_BGWAITS=0
 MK_INSTACT=0
 # Include Undo Segment _Statistics_? [0|1]
 MK_USSTAT=0
+# Include Latch Activity? [0|1]
+MK_LACT=0
+# Include Latch Miss Sources (only needed and understood by Oracle staff) [0|1]
+# If MK_LACT=0 it will never be included.
+MK_LMS=0
 # ===================================================================[ EOF ]===
