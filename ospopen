@@ -331,7 +331,7 @@ DECLARE
 		   sum(e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
 	   to_char(sum(e.phywrts - nvl(b.phywrts,0)),'9,999,999,990') writes,
 	   to_char(sum(e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
-	   to_char(sum(e.wait_count - nvl(b.wait_count,0)),'9,999,990') waits,
+	   to_char(sum(e.wait_count - nvl(b.wait_count,0)),'99,999,990') waits,
 	   to_char(decode(sum(e.wait_count - nvl(b.wait_count,0)),
 	           0,0,
 		   (sum(e.time - nvl(b.time,0)) /
@@ -914,7 +914,7 @@ DECLARE
            b.name name,
 	   to_char(b.bytes,'999,999,999,999') snap1,
 	   to_char(e.bytes,'999,999,999,999') snap2,
-	   to_char(100* (e.bytes - b.bytes)/b.bytes,'990.00') diff
+	   to_char(100* (e.bytes - b.bytes)/b.bytes,'9,990.00') diff
       FROM stats\$sgastat b, stats\$sgastat e
      WHERE b.snap_id = bid
        AND e.snap_id = eid
