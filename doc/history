@@ -169,3 +169,6 @@ v0.1.9
 * some CleanUp of directory structure (moving all files from the plugins/
   directory to install/ [since only needed for install], and all "plugins" to
   the plugins/ directory for cleaner structs and preparation of modularization
++ blocks that may be not needed on a regular basis can now be excluded (or
+  included) on demand - see the "config" file for details
+* Resource Limits table is now only created if content exists for it
