@@ -179,26 +179,16 @@
   print(L_LINE);
   L_LINE := ' <TR><TD>Soft Parse</TD><TD ALIGN="right">'||
             to_char(round(100*(1-HPRS/PRSE),2),'990.00')||'</TD><TD><DIV ALIGN="justify">'||
-	    'A soft parse occurs when a session attempts to execute ';
+            'When the <A HREF="JavaScript:popup('||CHR(39)||'softparse'||CHR(39)||
+	    ')">soft parse</A> ';
   print(L_LINE);
-  L_LINE := 'a SQL statement and a usable version of the statement is already '||
-            'in the shared pool, so the statement can be executed immediately. '||
-	    'The hard parse is the opposite and an expensive operation. ';
+  L_LINE := ' ratio falls much below 80%, investigate whether you can share '||
+            'SQL by using bind variables or force cursor sharing. But before '||
+            'drawing any conclusions, compare the soft parse ';
   print(L_LINE);
-  L_LINE := 'When the soft parse ratio falls much below 80%, investigate '||
-            'whether you can share SQL by using bind variables or force cursor '||
-	    'sharing by using the <CODE>init.ora</CODE> ';
-  print(L_LINE);
-  L_LINE := 'parameter <CODE>cursor_sharing</CODE> (new in Oracle8i Release '||
-            '8.1.6). But before drawing any conclusions, compare the soft parse '||
-	    'ratio against the actual hard and soft ';
-  print(L_LINE);
-  L_LINE := 'parse rates shown in the <A HREF="#loads">Loads Profile</A>. If '||
-            'the rates are low, parsing may not be a significiant issue in your '||
-	    'system. Furthermore, investigate the ';
-  print(L_LINE);
-  L_LINE := 'number of <I>Parse CPU to Parse Elapsed</I> below. If this '||
-	    'value is low, you may rather have a latch problem.</DIV></TD></TR>';
+  L_LINE := 'ratio against the actual hard and soft parse rates shown in the '||
+            '<A HREF="#loads">Loads Profile</A>. Furthermore, investigate the '||
+            'number of <I>Parse CPU to Parse Elapsed</I> below.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TD>Execute to Parse</TD><TD ALIGN="right">'||
             to_char(round(100*(1-PRSE/EXE),2),'990.00')||'</TD><TD>&nbsp;</TD></TR>'||
@@ -323,7 +313,7 @@
 	    '(desc), Waits (desc); idle events last';
   print(L_LINE);
   L_LINE := '<BR>These are the events waited for by background processes (e.g. '||
-            'PMON)<BR>. Idle events are marked with an Asterisk*; these do not '||
+            'PMON).<BR>Idle events are marked with an Asterisk*; these do not '||
 	    'contribute to performance problems.</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
@@ -507,19 +497,12 @@
   print('<HR>');
 
   -- TS IO Summary
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="tsio">TableSpace IO Summary Statistics</A></TH></TR>'||
-            ' <TR><TD COLSPAN="9" ALIGN="center">Ordered by IOs (Reads + Writes)'||
-	    ' desc<DIV ALIGN="justify">';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="tsio">TableSpace IO Summary Statistics</A>'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
+	    ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
   print(L_LINE);
-  L_LINE := 'If the value for Avg Blks/Rd is higher than 1, this indicates full '||
-            'table scans. If it grows higher than <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE> '||
-	    'we must assume that ';
-  print(L_LINE);
-  L_LINE := 'almost every operation on this TS is executed as full table scan '||
-            'instead of using an index first, so you should consider creating '||
-	    'appropriate indices ';
-  print(L_LINE);
-  L_LINE := 'or, maybe, increasing the <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE>.</DIV></TD></TR>';
+  L_LINE := ' <TR><TD COLSPAN="9" ALIGN="center">Ordered by IOs (Reads + Writes)'||
+	    ' desc</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Reads</TH>'||
 	    '<TH CLASS="th_sub">AvgReads/s</TH><TH CLASS="th_sub">AvgRd (ms)</TH>'||
@@ -543,31 +526,12 @@
   print('<HR>');
 
   -- File IO Summary
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="fileio">File IO Summary Statistics</A></TH></TR>'||
-            ' <TR><TD COLSPAN="10" ALIGN="center">Ordered by TableSpace, File'||
-	    '<DIV ALIGN="justify">';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="fileio">File IO Summary Statistics</A>'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
+	    ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></TH></TR>';
   print(L_LINE);
-  L_LINE := 'If the value for Avg Blks/Rd is higher than 1, this indicates full '||
-            'table scans. If it grows higher than <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE> '||
-	    'we must assume that ';
-  print(L_LINE);
-  L_LINE := 'almost every operation on this TS is executed as full table scan '||
-            'instead of using an index first, so you should consider creating '||
-	    'appropriate indices ';
-  print(L_LINE);
-  L_LINE := 'or, maybe, increasing the <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE>.'||
-            '<BR>Average Read Times (AvgRd) of greater than 20..40ms should be '||
-	    'considered slow for ';
-  print(L_LINE);
-  L_LINE := 'single block reads. So if this is the case, you should check whether '||
-            'the disks are capable of the required IO rates. If they are, your '||
-	    'file-to-disk layout ';
-  print(L_LINE);
-  L_LINE := 'may be causing some disks to be underused while others are overly '||
-            'busy. Furthermore, if the temporary TableSpaces have the most write '||
-	    'activity, this may indicate';
-  print(L_LINE);
-  L_LINE := 'that too much of the sorting is to disk and may require optimization.</DIV></TD></TR>';
+  L_LINE := ' <TR><TD COLSPAN="10" ALIGN="center">Ordered by TableSpace, File'||
+	    '</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Filename</TH>'||
             '<TH CLASS="th_sub">Reads</TH><TH CLASS="th_sub">AvgReads/s</TH>'||
@@ -650,21 +614,11 @@
   print('<HR>');
 
   -- Buffer Waits
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="bufwait">Buffer Wait Statistics</A></TH></TR>'||
-            ' <TR><TD COLSPAN="5" ALIGN="center">Ordered by Wait Time desc, Waits desc';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="bufwait">Buffer Wait Statistics</A>'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'buffwaits'||CHR(39)||
+            ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
   print(L_LINE);
-  L_LINE := '<DIV ALIGN="justify">If Waits/s are high for a given class, you may '||
-            'consider some tuning: For the undo headers/blocks, adding more rollback '||
-	    'segments can help.';
-  print(L_LINE);
-  L_LINE := 'With data blocks, increasing the size of the database buffer cache '||
-            'can reduce these waits. Segment header waits generally point to the '||
-	    'need to add freelists to the affected table. ';
-  print(L_LINE);
-  L_LINE := 'Freelist block waits indicate that the affected segment needs a '||
-            'higher number of freelists - for the Oracle Parallel Server, make '||
-	    'sure each instance has its own freelist groups.</DIV></TD></TR>';
-  print(L_LINE);
+  print(' <TR><TD COLSPAN="5" ALIGN="center">Ordered by Wait Time desc, Waits desc</TD></TR>');
   L_LINE := ' <TR><TH CLASS="th_sub">Class</TH><TH CLASS="th_sub">Waits</TH>'||
             '<TH CLASS="th_sub">Tot Wait Time (s)</TH>'||
 	    '<TH CLASS="th_sub">Avg Wait Time (s)</TH>'||
@@ -726,46 +680,13 @@
   print('<HR>');
 
   -- Enqueue Activity
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="enq">Enqueue Activity</A></TH></TR>'||
-            ' <TR><TD COLSPAN="7" ALIGN="center">Enqueue Stats gathered prior to 9i '||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="enq">Enqueue Activity</A>'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'enqwaits'||CHR(39)||
+	    ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
+  print(L_LINE);
+  L_LINE:=  ' <TR><TD COLSPAN="7" ALIGN="center">Enqueue Stats gathered prior to 9i '||
 	    'should not be compared with 9i data<BR>Ordered by Waits desc, Requests desc';
   print(L_LINE);
-      L_LINE := '<TABLE BORDER="0"><TR><TD CLASS="smallname">CF</TD><TD '||
-                'CLASS="small"><B>Control file schema global enqueue</TD></TR>';
-      print(L_LINE);
-      L_LINE := ' <TR><TD CLASS="smallname">CU</TD><TD CLASS="small"><B>Cursor '||
-                'Bind</B></TD></TR>';
-      print(L_LINE);
-      L_LINE := ' <TR><TD CLASS="smallname">DX</TD><TD CLASS="small"><B>'||
-                'Distributed Transactions</B></TD></TR>';
-      print(L_LINE);
-      L_LINE := ' <TR><TD CLASS="smallname">HW</TD><TD CLASS="small"><B>'||
-                'Space Management</B> operations on a specific segment'||
-		'</TD></TR>';
-      print(L_LINE);
-      L_LINE := ' <TR><TD CLASS="smallname">SQ</TD><TD CLASS="small"><B>'||
-                'SeQuences</B> not being cached, having a to small cache size '||
-		'or being aged out of the shared pool. ';
-      print(L_LINE);
-      L_LINE := 'Consider pinning sequences or increasing the '||
-                'shared_pool_size.</TD></TR>';
-      print(L_LINE);
-      L_LINE := ' <TR><TD CLASS="smallname">ST</TD><TD CLASS="small"><B>'||
-                'Space management locks</B> could be caused by using permanent '||
-		'tablespaces for sorting (rather than temporary), or ';
-      print(L_LINE);
-      L_LINE := 'by dynamic allocation resulting from inadequate storage clauses. '||
-                'In the latter case, using locally-managed tablespaces may help '||
-		'avoiding this problem.</TD></TR>';
-      print(L_LINE);
-      L_LINE := ' <TR><TD CLASS="smallname">TM</TD><TD CLASS="small"><B>'||
-                'Table locks</B> point to the possibility of e.g. foreign key '||
-		'constraints not being indexed</TD></TR>';
-      print(L_LINE);
-      L_LINE := ' <TD CLASS="smallname">TX</TD><TD CLASS="small"><B>'||
-                'Transaction locks</B> indicate multiple users try modifying '||
-		'the same row of a table (row-level-lock)</TD></TR></TABLE></DIV></TD></TR>';
-      print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Eq</TH><TH CLASS="th_sub">Requests</TH>'||
             '<TH CLASS="th_sub">Succ Gets</TH><TH CLASS="th_sub">Failed Gets</TH>'||
 	    '<TH CLASS="th_sub">Waits</TH>';
@@ -894,31 +815,17 @@
   print('<HR>');
 
   -- Latch Activity
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="latches">Latch Activity</A></TH></TR>'||
-            ' <TR><TD COLSPAN="7" ALIGN="center">"Get Requests", "Pct Get Miss"'||
-	    ' and "Avg Slps/Miss" are statistics for willing-to-wait';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="latches">Latch Activity</A>'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
+		')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
   print(L_LINE);
-  L_LINE := ' latch get requests<BR>"NoWait Requests", "Pct NoWait Miss" are '||
-            'for no-wait latch get requests<BR>"Pct Misses" for both should be '||
-	    'very close to 0.0<DIV ALIGN="justify">';
+  L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">"Get Requests", "Pct Get Miss"'||
+	    ' and "Avg Slps/Miss" are statistics for willing-to-wait '||
+            'latch get requests<BR>"NoWait Requests", "Pct NoWait Miss" are ';
   print(L_LINE);
-  L_LINE := 'Potential Fixes for indicated Latch problems are: for the library '||
-            'cache and shared pool latches: adjusting the <CODE>shared_pool_size</CODE> '||
-	    'and use of bind variables / set ';
-  print(L_LINE);
-  L_LINE := '<CODE>cursor_sharing</CODE> parameter in your <CODE>init.ora</CODE>; '||
-            'for redo allocation latches: minimize redo generation and avoid '||
-	    'unnecessary commits; for redo copy latches: ';
-  print(L_LINE);
-  L_LINE := 'increase the <CODE>_log_simultaneous_</CODE> copies; for row cache '||
-            'objects latches: increase the shared pool; for cache buffer chain '||
-	    'latches: adjust <CODE>_db_block_hash_buckets</CODE>; ';
-  print(L_LINE);
-  L_LINE := 'for cache buffer latches: use <CODE>_db_block_lru_lru_latches</CODE> '||
-            'or multiple buffer pools. Again, these are <I>potential</I> fixes, '||
-	    'not general solutions.</DIV>';
-  print(L_LINE);
-  L_LINE := 'Ordered by Wait Time desc, Avg Slps/Miss, Pct NoWait Miss desc</TD></TR>';
+  L_LINE := 'for no-wait latch get requests<BR>"Pct Misses" for both should be '||
+	    'very close to 0.0<BR>Ordered by Wait Time desc, Avg Slps/Miss, '||
+            'Pct NoWait Miss desc</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Latch</TH><TH CLASS="th_sub">Get Requests</TH>'||
             '<TH CLASS="th_sub">Pct Get Miss</TH><TH CLASS="th_sub">Avg Slps/Miss</TH>'||

@@ -406,7 +406,7 @@ DECLARE
 		   (e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
 	   to_char(e.phywrts - nvl(b.phywrts,0),'9,999,999,990') writes,
 	   to_char((e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
-	   to_char(e.wait_count - nvl(b.wait_count,0),'9,999,990') waits,
+	   to_char(e.wait_count - nvl(b.wait_count,0),'999,999,990') waits,
 	   to_char(decode(e.wait_count - nvl(b.wait_count,0),
 	           0,0,
 		   ((e.time - nvl(b.time,0)) /
@@ -439,7 +439,7 @@ DECLARE
 		   (e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
 	   to_char(e.phywrts - nvl(b.phywrts,0),'9,999,999,990') writes,
 	   to_char((e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
-	   to_char(e.wait_count - nvl(b.wait_count,0),'9,999,990') waits,
+	   to_char(e.wait_count - nvl(b.wait_count,0),'999,999,990') waits,
 	   to_char(decode(e.wait_count - nvl(b.wait_count,0),
 	           0,0,
 		   ((e.time - nvl(b.time,0)) /
@@ -482,7 +482,7 @@ DECLARE
 	   to_char(e.write_complete_wait - nvl(b.write_complete_wait,0),
 	           '999,999') wcwait,
 	   to_char(e.buffer_busy_wait - nvl(b.buffer_busy_wait,0),
-	           '9,999,999') bbwait,
+	           '999,999,999') bbwait,
            to_char( 100*
 	     (((e.consistent_gets - b.consistent_gets) +
 	       (e.db_block_gets - b.db_block_gets)) -
@@ -1154,6 +1154,17 @@ BEGIN
             CHR(10)||' <TITLE>'||R_TITLE||'</TITLE>';
   print(L_LINE);
   L_LINE := ' <LINK REL="stylesheet" TYPE="text/css" HREF="$CSS">'||CHR(10)||
+            ' <SCRIPT LANGUAGE="JavaScript">'||CHR(10)||
+	    '   function popup(page) {'||CHR(10)||
+	    '     url = "help/" + page + ".html";';
+  print(L_LINE);
+  L_LINE := '     pos = (screen.width/2)-400;'||CHR(10)||
+            '     helpwin = eval("window.open(url,'||CHR(39)||'help'||CHR(39)||
+	    ','||CHR(39)||'toolbar=no,location=no,titlebar=no,directories=no,'||
+	    'status=yes,copyhistory=no,scrollbars=yes,width=600,height=400,top=0,left="+pos+"'||
+	    CHR(39)||')");';
+  print(L_LINE);
+  L_LINE := '   }'||CHR(10)||' </SCRIPT>'||CHR(10)||
             '</HEAD><BODY>'||CHR(10)||'<H2>'||R_TITLE||'</H2>'||CHR(10);
   print(L_LINE);
 

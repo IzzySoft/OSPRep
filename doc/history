@@ -126,3 +126,7 @@ v0.1.5
 + new AddOn for datafile growth statistics
 ! fixed another bug in get_plan() that broke the job if a statement had multiple
   execution plans
+! PctChange for datafile growth statistics had wrong base (files got smaller ;)
+* increased number length for buffer waits
+* outsourced verbose hints to external help files (and made them even more
+  verbose ;)
