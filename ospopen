@@ -13,6 +13,7 @@ DECLARE
   MK_RLIMS BOOLEAN;
   MK_ALLWAITS NUMBER;
   MK_BGWAITS NUMBER;
+  MK_WAITOBJ NUMBER;
   MK_INSTACT NUMBER;
   MK_USS NUMBER;
   MK_USSTAT NUMBER;
@@ -576,6 +577,7 @@ BEGIN
   TOP_N_WAITS := $TOP_N_WAITS;
   MK_ALLWAITS := :MK_ALLWAITS;
   MK_BGWAITS  := :MK_BGWAITS;
+  MK_WAITOBJ  := :MK_WAITOBJ;
   MK_INSTACT  := :MK_INSTACT;
   MK_USS      := :MK_USS;
   MK_USSTAT   := :MK_USSTAT;
@@ -697,11 +699,13 @@ BEGIN
     L_LINE := L_LINE||' [ <A HREF="#bgwaitevents">Background Waits</A> ]';
   END IF;
   print(L_LINE);
-  S1 := 'istats\$waitobjects'; I1 := 1; I2 := 0;
-  tab_exists(S1,I1,I2);
-  IF I2 = 1
-  THEN
-    print(' [ <A HREF="#waitobjects">Wait Objects</A> ]');
+  IF MK_WAITOBJ = 1 THEN
+    S1 := 'istats\$waitobjects'; I1 := 1; I2 := 0;
+    tab_exists(S1,I1,I2);
+    IF I2 = 1
+    THEN
+      print(' [ <A HREF="#waitobjects">Wait Objects</A> ]');
+    END IF;
   END IF;
   IF MK_TOPSQL = 1 THEN
     L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||

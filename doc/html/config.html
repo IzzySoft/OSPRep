@@ -86,14 +86,6 @@
        <td class="text" rowspan="2">How many items to list up in the "Top N"
            blocks of the report for Wait objects and SQL statements</td></tr>
    <tr><td class="td_name"><code>TOP_N_WAITS</code></td></tr>
-   <tr><td class="td_name"><code>MK_EP</code></td>
-       <td class="text">If your snapshots are taken with level 6 or higher, the
-           execution plans are captured with each snapshot and can be displayed
-           together with the respective SQL statement in the <code>TOP_N_SQL</code>.
-           block. With the <code>MK_EP</code> parameter you can suppress these
-           execution plans even if they are available (by setting it to
-           <code>MK_EP=0</code>). However, if you only collect level 5 data with
-           your snapshots, <code>MK_EP=1</code> will have no effect at all.</td></tr>
    <tr><td class="td_name"><code>EXC_PERF_FOR</code></td>
        <td class="text">This can be used to exclude objects of given users from
            some statistics. For example, it makes no sense to print long
@@ -127,6 +119,28 @@
            normal cases, you will not need the "All Wait Events" and "Background Waits"
            segments (that's why they are turned off by the default configuration),
            but they may be useful for closer investigations.</td></tr>
+   <tr><td class="td_name"><code>MK_WAITOBJ</code></td>
+       <td class="text">Whether to list up the Top N Wait objects (see
+           <code>TOP_N_WAITS</code> above). This is only possible if you installed
+           the additional <a href="tech.html#plugins">collector plugin</a> shipped
+           with OSPRep - otherwise the setting of <code>MK_WAITOBJ</code> will
+           have no visible effect.</td></tr>
+   <tr><td class="td_name"><code>MK_TOPSQL</code></td>
+       <td class="text">List up the Top N SQL statements at all? If set to
+           <code>MK_TOPSQL=1</code>, four blocks will be included: Top N SQL by
+           Gets, by Reads, by Executions and by Parse Calls. If
+           <code>MK_TOPSQL=0</code>, the setting for <code>MK_EP</code> will have
+           no effect at all (since execution plans are always connected to SQL
+           statements).</td></tr>
+   <tr><td class="td_name"><code>MK_EP</code></td>
+       <td class="text">If your snapshots are taken with level 6 or higher, the
+           execution plans are captured with each snapshot and can be displayed
+           together with the respective SQL statement in the <code>TOP_N_SQL</code>.
+           block. With the <code>MK_EP</code> parameter you can suppress these
+           execution plans even if they are available (by setting it to
+           <code>MK_EP=0</code>). However, if you only collect level 5 data with
+           your snapshots (or if you set <code>MK_TOPSQL=0</code>, see above),
+           <code>MK_EP=1</code> will have no effect at all.</td></tr>
    <tr><td class="td_name"><code>MK_TSIO</code></td>
        <td class="text" rowspan="2">The "TableSpace IO Summary Statistics" and
            "File IO Summary Statistics" generally list up the same values, as long

@@ -49,6 +49,8 @@ END_ID=0
 MK_ALLWAITS=0
 # Include Background Waits? [0|1]
 MK_BGWAITS=0
+# Create the table with the Objects waited for, if possible? [0|1]
+MK_WAITOBJ=1
 # Include the TOP_N_SQL statements? [0|1]
 MK_TOPSQL=1
 # Include the execution plan for the statements, if available? [0|1]
