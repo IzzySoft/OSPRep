@@ -13,7 +13,7 @@
 #                                                              Itzchak Rehberg
 #
 #
-version='0.0.1'
+version='0.0.2'
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
   echo
@@ -78,7 +78,7 @@ DECLARE
   I1 NUMBER;
   I2 NUMBER;
   I3 NUMBER;
-  BID NUMBER; EID NUMBER;
+  BID NUMBER; EID NUMBER; ELA NUMBER;
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
   PARA VARCHAR2(3); VERSN VARCHAR(17); HOST_NAME VARCHAR(64);
   LHTR NUMBER; BFWT NUMBER; TRAN NUMBER; CHNG NUMBER; UCAL NUMBER; UROL NUMBER;
@@ -119,7 +119,8 @@ DECLARE
            NVL(b.ucomment,'&nbsp;') begin_snap_comment,
 	   e.snap_id end_snap_id,to_char(e.snap_time,'dd.mm.yyyy hh24:mi') end_snap_time,
 	   NVL(e.ucomment,'&nbsp;') end_snap_comment,
-	   to_char(round(((e.snap_time - b.snap_time) * 1440 * 60),0)/60,'9,990.00') elapsed
+	   to_char(round(((e.snap_time - b.snap_time) * 1440 * 60),0)/60,'9,990.00') elapsed,
+	   (e.snap_time - b.snap_time)*1440*60 ela
       FROM stats\$snapshot b, stats\$snapshot e
      WHERE b.snap_id=$START_ID
        AND e.snap_id=$END_ID
@@ -159,7 +160,7 @@ BEGIN
 
   -- Navigation
   L_LINE := TABLE_OPEN||'<TR><TD><FONT SIZE=-2>[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
-            '[ <A HREF="#datafiles">Datafiles</A> ] [ <A HREF="#rbs">Rollback</A> '||
+            '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> '||
             '] [ <A HREF="#memory">Memory</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE :=   ' [ <A HREF="#poolsize">Pool Sizes</A> ] [ <A HREF="#sharedpool">Shared Pool</A>'||
@@ -276,11 +277,95 @@ BEGIN
               Rec_SnapInfo.end_snap_time||'</TD><TD ALIGN="right">'||ELOG||'</TD><TD ALIGN="right">'||
 	      to_char(EOCUR/ELOG,'9,990.00')||'<TD>'||Rec_SnapInfo.end_snap_comment||'</TD></TR>';
     dbms_output.put_line(L_LINE);
+    L_LINE := ' <TR><TD COLSPAN="6" ALIGN="center">Elapsed: '||Rec_SnapInfo.elapsed||
+              ' min</TD></TR>';
+    dbms_output.put_line(L_LINE);
+    ELA := Rec_SnapInfo.ela;
   END LOOP;
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
   dbms_output.put_line('<HR>');
 
+  -- Cache Sizes
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="#cachesizes">Cache Sizes (End)</A></TH></TR>'||CHR(10)||
+            ' <TR><TH CLASS="th_sub">Cache</TH><TH CLASS="th_sub">Size</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD>Buffer Cache</TD><TD ALIGN="right">'||to_char(round(BC/1024/1024),'999,999')||' M</TD></TR>'||
+            ' <TR><TD>Std Block Size</TD><TD ALIGN="right">'||to_char(round(BS/1024),'999,999')||' K</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD>Shared Pool Size</TD><TD ALIGN="right">'||to_char(round(SP/1024/1024),'999,999')||' M</TD></TR>'||
+            ' <TR><TD>Log Buffer</TD><TD ALIGN="right">'||to_char(round(LB/1024),'999,999')||' K</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- Load Profile
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="#loads">Load Profile</A></TH></TR>'||CHR(10)||
+            ' <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Per Second</TH><TH CLASS="th_sub">Per Transaction</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Redo Size</TD><TD ALIGN="right">'||
+            to_char(round(RSIZ/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(RSIZ/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Logical Reads</TD><TD ALIGN="right">'||
+            to_char(round(GETS/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(GETS/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Block Changes</TD><TD ALIGN="right">'||
+            to_char(round(CHNG/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(CHNG/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Physical Reads</TD><TD ALIGN="right">'||
+            to_char(round(PHYR/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(PHYR/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Physical Writes</TD><TD ALIGN="right">'||
+            to_char(round(PHYW/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(PHYW/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">User Calls</TD><TD ALIGN="right">'||
+            to_char(round(UCAL/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(UCAL/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Parses</TD><TD ALIGN="right">'||
+            to_char(round(PRSE/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(PRSE/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Hard Parses</TD><TD ALIGN="right">'||
+            to_char(round(HPRS/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(HPRS/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Sorts</TD><TD ALIGN="right">'||
+            to_char(round((SRTM+SRTD)/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round((SRTM+SRTD)/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Logons</TD><TD ALIGN="right">'||
+            to_char(round(LOGC/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(LOGC/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Executes</TD><TD ALIGN="right">'||
+            to_char(round(EXE/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">'||
+	    to_char(round(EXE/TRAN,2),'9,999,990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD CLASS="td_name">Transactions</TD><TD ALIGN="right">'||
+            to_char(round(TRAN/ELA,2),'99,999,999,990.00')||
+            '</TD><TD ALIGN="right">&nbsp;</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
 
   -- Page Ending
   L_LINE := '<HR>'||CHR(10)||TABLE_OPEN;

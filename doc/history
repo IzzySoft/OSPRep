@@ -7,3 +7,4 @@ v0.0.1 (03.11.2003) initial version
 v0.0.2 (xx.11.2003)
 + collecting statspack report info via statspack.stat_changes
 + added Session and Cursor/Session to SnapShot Info
++ added Cache Sizes and Load Profile
