@@ -285,4 +285,5 @@ v0.3.1
 + snapshot intervals can now dynamically be evaluated as "the last n days up
   to END_ID" (new config keywords MAX_REP_INTERVAL and MAX_CHART_INTERVAL)
 + added some Snapshot Level 7 (segment statistic) information to the report
-  (Oracle 9.2 and higher)
+  (Oracle 9.2 and higher): Top X Logical Reads | Physical Reads | Buffer Busy
+  Waits | Row Lock Waits | ITL Waits per segment
