@@ -44,6 +44,16 @@ PLUGINDIR=$BINDIR/plugins
 
 # -------------------------------------------[ Read the Configuration File ]---
 . $BINDIR/config $*
+#SQLFILE=$TMPDIR/osprep_execfile_$ORACLE_SID.$$
+
+if [ $MK_BGWAITS -eq 1 ]; then
+  BGWAITHEAD=$PLUGINDIR/bgwait_head.pls
+  BGWAITBODY=$PLUGINDIR/bgwait_body.pls
+fi
+if [ $MK_ALLWAITS -eq 1 ]; then
+  ALLWAITHEAD=$PLUGINDIR/allwait_head.pls
+  ALLWAITBODY=$PLUGINDIR/allwait_body.pls
+fi
 
 # ------------------------------------------[ process command line options ]---
 while [ "$1" != "" ] ; do
@@ -148,11 +158,18 @@ Set LINESIZE 300
 Set TRIMSPOOL On 
 Set FEEDBACK OFF
 Set Echo Off
+variable MK_ALLWAITS NUMBER;
+variable MK_BGWAITS NUMBER;
+BEGIN
+  :MK_ALLWAITS := $MK_ALLWAITS;
+  :MK_BGWAITS  := $MK_BGWAITS;
+END;
+/
 SPOOL $REPDIR/${ORACLE_SID}.html
 ENDSQL
 
 . $BINDIR/ospopen
-#cat $SQLSET $SPFILE $BINDIR/ospout.pls >osp.out
-cat $SQLSET $SPFILE $BINDIR/ospout.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
+#cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls >osp.out
+cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
 rm $SQLSET
 rm $TMPOUT

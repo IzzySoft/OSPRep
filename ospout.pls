@@ -280,30 +280,3 @@
   print(L_LINE);
   print('<HR>');
 
-  -- All Wait Events
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="waitevents">All Wait Events</A></TH></TR>'||CHR(10)||
-            ' <TR><TD COLSPAN="6" ALIGN="center">Ordered by Total Wait Time '||
-	    '(desc), Waits (desc); idle events last<BR>';
-  print(L_LINE);
-  L_LINE := 'All events waited for by foreground (server) processes.<BR>'||
-            'Idle events are marked with an Asterisk*; these do not '||
-	    'contribute to performance problems.</TD></TR>';
-  print(L_LINE);
-  L_LINE := ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
-	    '<TH CLASS="th_sub">Timeouts</TH><TH CLASS="th_sub">Total Wt Time (s)</TH>';
-  print(L_LINE);
-  L_LINE := '<TH CLASS="th_sub">Avg Wait Time (ms)</TH><TH CLASS="th_sub">'||
-            'Waits/TXN</TH></TR>';
-  print(L_LINE);
-  FOR R_AllWait IN C_AllWait(DBID,INST_NUM,BID,EID,TRAN) LOOP
-    L_LINE := ' <TR><TD CLASS="td_name">'||R_AllWait.event||R_AllWait.idlemark||
-              '</TD><TD ALIGN="right">'||R_AllWait.waits||'</TD><TD ALIGN="right">'||
-	      R_AllWait.timeouts||'</TD><TD ALIGN="right">'||
-	      R_AllWait.time||'</TD><TD ALIGN="right">'||R_AllWait.wt||'</TD><TD ALIGN="right">'||
-	      R_AllWait.txwaits||'</TD></TR>';
-    print(L_LINE);
-  END LOOP;
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
-  print('<HR>');
-
