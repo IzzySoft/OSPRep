@@ -116,9 +116,9 @@
     CURSOR C_BuffW IS
       SELECT e.class class,
              to_char(e.wait_count - nvl(b.wait_count,0),'99,999,999') icnt,
-             to_char((e.time - nvl(b.time,0))/100,'999,990.00') itim,
-	     to_char((e.time - nvl(b.time,0)) /
-	       (e.wait_count - nvl(b.wait_count,0)) * 10,'999,990.00') iavg,
+             (e.time - nvl(b.time,0))/100 itim,
+	     (e.time - nvl(b.time,0)) /
+	       (e.wait_count - nvl(b.wait_count,0)) * 10 iavg,
              TO_CHAR(DECODE((e.time - nvl(b.time,0))/100,0,NULL,
  	      (e.wait_count - nvl(b.wait_count,0))/((e.time - nvl(b.time,0))/100)),
               '999,990.00') wps
@@ -140,14 +140,14 @@
       print(L_LINE);
       print(' <TR><TD COLSPAN="5" ALIGN="center">Ordered by Wait Time desc, Waits desc</TD></TR>');
       L_LINE := ' <TR><TH CLASS="th_sub">Class</TH><TH CLASS="th_sub">Waits</TH>'||
-                '<TH CLASS="th_sub">Tot Wait Time (s)</TH>'||
-                '<TH CLASS="th_sub">Avg Wait Time (s)</TH>'||
+                '<TH CLASS="th_sub">Tot Wait Time</TH>'||
+                '<TH CLASS="th_sub">Avg Wait Time</TH>'||
 	        '<TH CLASS="th_sub">Waits/s</TH></TR>';
       print(L_LINE);
       FOR R_Buff IN C_BuffW LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.class||'</TD><TD ALIGN="right">'||
-                  R_Buff.icnt||'</TD><TD ALIGN="right">'||R_Buff.itim||
-	          '</TD><TD ALIGN="right">'||R_Buff.iavg;
+                  R_Buff.icnt||'</TD><TD ALIGN="right">'||format_stime(R_Buff.itim,1)||
+	          '</TD><TD ALIGN="right">'||format_stime(R_Buff.iavg,1);
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||R_Buff.wps||'</TD></TR>';
         print(L_LINE);

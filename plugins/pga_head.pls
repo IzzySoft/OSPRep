@@ -7,7 +7,7 @@
              mu.PGA_inuse       tot_pga_used,
 	     (mu.PGA_used_auto + mu.PGA_used_man)  tot_tun_used,
              mu.onepr           onepr,
-	     nvl(to_char(s.opt_pct,'990.00'),'&nbsp;')           opt_pct,
+             DECODE(s.opt_pct,NULL,'&nbsp;',TO_CHAR(s.opt_pct,'990.00')||'%') opt_pct,
              to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
 	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
              to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
@@ -46,7 +46,7 @@
              mu.PGA_inuse       tot_pga_used,
 	     (mu.PGA_used_auto + mu.PGA_used_man)  tot_tun_used,
              mu.onepr           onepr,
-	     nvl(to_char(s.opt_pct,'990.00'),'&nbsp;')           opt_pct,
+             DECODE(s.opt_pct,NULL,'&nbsp;',TO_CHAR(s.opt_pct,'990.00')||'%') opt_pct,
 	     to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
 	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
              to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
@@ -88,9 +88,9 @@
                 '<TH CLASS="th_sub">PGA in Use</TH><TH CLASS="th_sub">W/A PGA in Use</TH>'||
 	        '<TH CLASS="th_sub">1-Pass Mem Req</TH>';
       print(L_LINE);
-      L_LINE:= '<TH CLASS="th_sub">% Optim W/A Execs</TH><TH CLASS="th_sub">% Non-W/A PGA Memory</TH>'||
-               '<TH CLASS="th_sub">% Auto W/A PGA Mem</TH>'||
-	       '<TH CLASS="th_sub">% Manual W/A PGA Mem</TH></TR>';
+      L_LINE:= '<TH CLASS="th_sub">Optim W/A Execs</TH><TH CLASS="th_sub">Non-W/A PGA Memory</TH>'||
+               '<TH CLASS="th_sub">Auto W/A PGA Mem</TH>'||
+	       '<TH CLASS="th_sub">Manual W/A PGA Mem</TH></TR>';
       print(L_LINE);
       FOR R_PGAA IN C_PGAA LOOP
         PAT    := format_fsize(R_PGAA.pgaat);
@@ -103,8 +103,8 @@
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||OPR||'</TD><TD ALIGN="right">'||
                   R_PGAA.opt_pct||'</TD><TD ALIGN="right">'||R_PGAA.pct_unt||
-	          '</TD><TD ALIGN="right">'||R_PGAA.pct_auto_tun||
-                  '</TD><TD ALIGN="right">'||R_PGAA.pct_man_tun||'</TD></TR>';
+	          '%</TD><TD ALIGN="right">'||R_PGAA.pct_auto_tun||
+                  '%</TD><TD ALIGN="right">'||R_PGAA.pct_man_tun||'%</TD></TR>';
         print(L_LINE);
       END LOOP;
       print(TABLE_CLOSE);
@@ -118,9 +118,9 @@
       SELECT b.name  st,
              b.value snap1,
              e.value snap2,
-	     nvl(to_char(decode(b.value,0,NULL,
-	                    100*((e.value - nvl(b.value,0))/b.value)),
-	                '9,999,999,990.00'),'&nbsp') diff
+             DECODE(b.value,0,'&nbsp;',
+	     TO_CHAR(100*((e.value - nvl(b.value,0))/b.value),
+	                '9,999,999,990.00')||'%') diff
         FROM stats$pgastat b, stats$pgastat e
        WHERE b.snap_id = BID
          AND e.snap_id = EID
@@ -136,7 +136,7 @@
              e.value snap2,
              to_char(decode(b.value,0,100* (e.value - nvl(b.value,0)),
 	                            100*((e.value - nvl(b.value,0))/b.value)),
-		   '990.00') diff
+		   '9,999,999,990.00')||'%' diff
         FROM stats$sysstat b, stats$sysstat e
        WHERE b.snap_id = BID
          AND e.snap_id = EID
@@ -153,7 +153,7 @@
                 ' <TR><TD COLSPAN="4" ALIGN="center">WorkArea (W/A) memory is used for: sort, bitmap merge, and hash join ops</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Begin</TH>'||
-                '<TH CLASS="th_sub">End</TH><TH CLASS="th_sub">% Diff</TH></TR>';
+                '<TH CLASS="th_sub">End</TH><TH CLASS="th_sub">Diff</TH></TR>';
       print(L_LINE);
       FOR R_PGAM IN C_PGAM LOOP
         IF R_PGAM.st = 'cache hit percentage' THEN

@@ -4,7 +4,7 @@
       SELECT event, waits, time, pctwtt
         FROM ( SELECT e.event event,
                     to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
-		    to_char((e.time_waited_micro - nvl(b.time_waited_micro,0))/1000000,'9,999,990.00') time,
+		    (e.time_waited_micro - nvl(b.time_waited_micro,0))/1000 time,
 		    decode(twt,0,'0.00',
 		      to_char(100*((e.time_waited_micro - NVL(b.time_waited_micro,0))/TWT),'9,990.00')) pctwtt
                  FROM stats$system_event b, stats$system_event e
@@ -41,12 +41,12 @@
       L_LINE := 'with the next block, <A HREF="#waitevents">All Wait Events</A></DIV></TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
-                '<TH CLASS="th_sub">Wait Time (s)</TH><TH CLASS="th_sub">% Total Wt Time (ms)</TH></TR>';
+                '<TH CLASS="th_sub">Wait Time</TH><TH CLASS="th_sub">Total Wt Time</TH></TR>';
       print(L_LINE);
       FOR R_Top5 IN C_Top5 LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_Top5.event||'</TD><TD ALIGN="right">'||R_Top5.waits||
-                  '</TD><TD ALIGN="right">'||R_Top5.time||'</TD><TD ALIGN="right">'||R_Top5.pctwtt||
-	          '</TD></TR>';
+                  '</TD><TD ALIGN="right">'||format_stime(R_Top5.time,1000)||
+                  '</TD><TD ALIGN="right">'||R_Top5.pctwtt||'%</TD></TR>';
         print(L_LINE);
       END LOOP;
       print(TABLE_CLOSE);

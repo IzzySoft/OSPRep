@@ -31,13 +31,12 @@
              to_char(100*((e.failed_req# - nvl(b.failed_req#,0))/
                    (e.total_req# - nvl(b.total_req#,0))),'990.00') pctfail,
 	     to_char(e.total_wait# - nvl(b.total_wait#,0),'999,999') waits,
-             to_char(decode( (e.total_wait# - nvl(b.total_wait#,0)),
+             decode( (e.total_wait# - nvl(b.total_wait#,0)),
 	                   0, to_number(NULL),
 			   (  (e.cum_wait_time - nvl(b.cum_wait_time,0))
 			    / (e.total_wait# - nvl(b.total_wait#,0))
-			   ) ),'999,999,990.00') awttm,
-	     to_char((e.cum_wait_time - nvl(b.cum_wait_time,0))/1000,
-	            '999,999') wttm
+			   ) ) awttm,
+	     (e.cum_wait_time - nvl(b.cum_wait_time,0)) wttm
         FROM stats$enqueue_stat b, stats$enqueue_stat e
        WHERE b.snap_id(+) = BID
          AND e.snap_id    = EID
@@ -62,8 +61,8 @@
                 '<TH CLASS="th_sub">Succ Gets</TH><TH CLASS="th_sub">Failed Gets</TH>'||
 	        '<TH CLASS="th_sub">PctFail</TH>';
       print(L_LINE);
-      L_LINE := '<TH CLASS="th_sub">Waits</TH><TH CLASS="th_sub">Avg Wt Time (ms)'||
-                '</TH><TH CLASS="th_sub">Wait Time (s)</TH></TR>';
+      L_LINE := '<TH CLASS="th_sub">Waits</TH><TH CLASS="th_sub">Avg Wt Time'||
+                '</TH><TH CLASS="th_sub">Wait Time</TH></TR>';
       print(L_LINE);
       FOR R_Enq IN C_Enq LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_Enq.name||'</TD><TD ALIGN="right">'||
@@ -71,8 +70,8 @@
 	          '</TD><TD ALIGN="right">'||R_Enq.freq||'</TD>';
         print(L_LINE);
         L_LINE := '<TD ALIGN="right">'||R_Enq.pctfail||'</TD><TD ALIGN="right">'||
-                  R_Enq.waits||'</TD><TD ALIGN="right">'||R_Enq.awttm||
-                  '</TD><TD ALIGN="right">'||R_Enq.wttm||'</TD></TR>';
+                  R_Enq.waits||'</TD><TD ALIGN="right">'||format_stime(R_Enq.awttm,1000)||
+                  '</TD><TD ALIGN="right">'||format_stime(R_Enq.wttm,1000)||'</TD></TR>';
         print(L_LINE);
       END LOOP;
       L_LINE := TABLE_CLOSE;

@@ -4,7 +4,7 @@
       SELECT undotsn,
              to_char(sum(undoblks),'99,999,999') undob,
 	     to_char(sum(txncount),'9,999,999,999,999') txcnt,
-	     to_char(max(maxquerylen),'999,999,999') maxq,
+	     max(maxquerylen) maxq,
 	     to_char(max(maxconcurrency),'999,999') maxc,
 	     to_char(sum(ssolderrcnt),'99,999') snol,
 	     to_char(sum(nospaceerrcnt),'99,999') nosp,
@@ -38,7 +38,7 @@
       FOR R_USS IN C_USS LOOP
         L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_USS.undotsn||'</TD><TD ALIGN="right">'||
                   R_USS.undob||'</TD><TD ALIGN="right">'||R_USS.txcnt||
-	          '</TD><TD ALIGN="right">'||R_USS.maxq||'</TD>';
+	          '</TD><TD ALIGN="right">'||format_stime(R_USS.maxq,1)||'</TD>';
         print(L_LINE);
         L_LINE := '<TD ALIGN="right">'||R_USS.maxc||'</TD><TD ALIGN="right">'||
                   R_USS.snol||'</TD><TD ALIGN="right">'||R_USS.nosp||'</TD><TD ALIGN="right">'||
@@ -57,7 +57,7 @@
                       to_char(end_time,'DD.MM.YYYY HH24:MI') endt,
                       to_char(undoblks,'99,999,999') undob,
                       to_char(txncount,'99,999,999') txcnt,
-		      to_char(maxquerylen,'999,999,999') maxq,
+		      maxquerylen maxq,
 		      to_char(maxconcurrency,'999,999') maxc,
 		      to_char(ssolderrcnt,'99,999') snol,
 		      to_char(nospaceerrcnt,'99,999') nosp,
@@ -89,7 +89,7 @@
       FOR R_USS IN C_UST LOOP
         L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_USS.endt||'</TD><TD ALIGN="right">'||
                   R_USS.undob||'</TD><TD ALIGN="right">'||R_USS.txcnt||
-	          '</TD><TD ALIGN="right">'||R_USS.maxq||'</TD>';
+	          '</TD><TD ALIGN="right">'||format_stime(R_USS.maxq,1)||'</TD>';
         print(L_LINE);
         L_LINE := '<TD ALIGN="right">'||R_USS.maxc||'</TD><TD ALIGN="right">'||
                   R_USS.snol||'</TD><TD ALIGN="right">'||R_USS.nosp||'</TD><TD ALIGN="right">'||
@@ -100,4 +100,3 @@
     EXCEPTION
       WHEN OTHERS THEN print(TABLE_CLOSE);
     END;
-

@@ -267,3 +267,8 @@ v0.2.9 (19.03.2004)
 * some code cleanup, formatting improvements and minor corrections
 ! scripts crashed when specified END_ID was higher then the latest snapshot
 + added alternative StyleSheet: iceage.css
+
+v0.3.0
+-------------------
+* number formatting improvements for time and file/memory sizes
+! some values in Top N SQL where named as "seconds" but represented ms

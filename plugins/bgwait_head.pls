@@ -4,11 +4,11 @@
       SELECT e.event event,
              to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
   	     to_char(e.total_timeouts - NVL(b.total_timeouts,0),'9,999,999,999') timeouts,
-	     to_char((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000000,'99,999,990.00') time,
+	     (e.time_waited_micro - NVL(b.time_waited_micro,0))/1000 time,
 	     decode ((e.total_waits - NVL(b.total_waits,0)),
-	            0,'0.00',to_char(
+	            0,0,
 	  	      ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
-		      / (e.total_waits - NVL(b.total_waits,0)),'9,999,990.00') ) wt,
+		      / (e.total_waits - NVL(b.total_waits,0)) ) wt,
 	     to_char((e.total_waits - NVL(b.total_waits,0))/TRAN,'99,990.00') txwaits,
 	     decode(i.event,NULL,0,99) idle,
 	     decode(i.event,NULL,' ','*') idlemark
@@ -33,16 +33,17 @@
 	        'contribute to performance problems.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
-	        '<TH CLASS="th_sub">Timeouts</TH><TH CLASS="th_sub">Total Wt Time (s)</TH>';
+	        '<TH CLASS="th_sub">Timeouts</TH><TH CLASS="th_sub">Total Wt Time</TH>';
       print(L_LINE);
-      L_LINE := '<TH CLASS="th_sub">Avg Wait Time (ms)</TH><TH CLASS="th_sub">'||
+      L_LINE := '<TH CLASS="th_sub">Avg Wait Time</TH><TH CLASS="th_sub">'||
                 'Waits/TXN</TH></TR>';
       print(L_LINE);
       FOR R_BGWait IN C_BGWait LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_BGWait.event||R_BGWait.idlemark||
                   '</TD><TD ALIGN="right">'||R_BGWait.waits||'</TD><TD ALIGN="right">'||
 	          R_BGWait.timeouts||'</TD><TD ALIGN="right">'||
-	          R_BGWait.time||'</TD><TD ALIGN="right">'||R_BGWait.wt||'</TD><TD ALIGN="right">'||
+	          format_stime(R_BGWait.time,1000)||'</TD><TD ALIGN="right">'||
+                  format_stime(R_BGWait.wt,1000)||'</TD><TD ALIGN="right">'||
 	          R_BGWait.txwaits||'</TD></TR>';
         print(L_LINE);
       END LOOP;

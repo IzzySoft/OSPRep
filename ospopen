@@ -246,31 +246,9 @@ DECLARE
       WHEN OTHERS THEN RETURN '';
     END;
 
-  FUNCTION format_fsize(fs IN NUMBER) RETURN VARCHAR2 IS
-    string VARCHAR2(50);
-    BEGIN
-      IF fs IS NULL THEN
-        RETURN '&nbsp;';
-      END IF;
-      IF fs/1024 > 999 THEN
-        IF fs/1024/1024 > 999 THEN
-          IF fs/1024/1024/1024 > 999 THEN
-            string := to_char(round(fs/1024/1024/1024/1024,1),'990.0')||' T';
-          ELSE
-            string := to_char(round(fs/1024/1024/1024,1),'990.0')||' G';
-          END IF;
-        ELSE
-          string := to_char(round(fs/1024/1024,1),'990.0')||' M';
-        END IF;
-      ELSE
-        string := to_char(round(fs/1024,1),'990.0')||' K';
-      END IF;
-      RETURN string;
-    EXCEPTION
-      WHEN OTHERS THEN RETURN SQLERRM;
-    END;
-
 ENDSQL
+
+cat $PLUGINDIR/formatting.pls>>$SQLSET
 
 . $GETWAITS
 . $GETDF

@@ -1,20 +1,21 @@
 
   PROCEDURE lact IS
+    t1p VARCHAR2(50); t2p VARCHAR2(50);
     CURSOR C_LAA IS
       SELECT b.name name,
              to_char(e.gets - b.gets,'99,999,999,999') gets,
-	     nvl(to_char(decode(e.gets, b.gets, NULL,
-	                    (e.misses - b.misses) * 100 /
-			    (e.gets - b.gets)),'990.00'),'&nbsp;') missed,
+             DECODE(e.gets,b.gets,'&nbsp;',
+                   TO_CHAR((e.misses - b.misses) * 100 /
+                          (e.gets - b.gets),'990.00')||'%') missed,
 	     nvl(to_char(decode(e.misses, b.misses, NULL,
 	                    (e.sleeps - b.sleeps) /
 			    (e.misses - b.misses)),'990.00'),'&nbsp;') sleeps,
-	     to_char((e.wait_time - b.wait_time)/1000000,'99,999') wt,
+	     (e.wait_time - b.wait_time)/1000 wt,
 	     to_char(e.immediate_gets - b.immediate_gets,'99,999,999,999') nowai,
-	     nvl(to_char(decode(e.immediate_gets, b.immediate_gets, NULL,
-	                    (e.immediate_misses - b.immediate_misses) *100 /
-			    (e.immediate_gets - b.immediate_gets)),'990.00'),
-			    '&nbsp;') imiss
+             DECODE(e.immediate_gets, b.immediate_gets,'&nbsp;',
+	            TO_CHAR((e.immediate_misses - b.immediate_misses) *100 /
+			    (e.immediate_gets - b.immediate_gets),'990.00')||'%')
+			    imiss
         FROM stats$latch b, stats$latch e
        WHERE b.snap_id = BID
          AND e.snap_id = EID
@@ -58,27 +59,27 @@
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
 		')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
       print(L_LINE);
-      L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">"Get Requests", "Pct Get Miss"'||
+      L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">"Get Requests", "Get Miss"'||
 	        ' and "Avg Slps/Miss" are statistics for willing-to-wait '||
-                'latch get requests<BR>"NoWait Requests", "Pct NoWait Miss" are ';
+                'latch get requests<BR>"NoWait Requests", "NoWait Miss" are ';
       print(L_LINE);
-      L_LINE := 'for no-wait latch get requests<BR>"Pct Misses" for both should be '||
-	        'very close to 0.0<BR>Ordered by Wait Time desc, Avg Slps/Miss desc, '||
-                'Pct NoWait Miss desc</TD></TR>';
+      L_LINE := 'for no-wait latch get requests<BR>"Misses" for both should be '||
+	        'very close to 0.0%<BR>Ordered by Wait Time desc, Avg Slps/Miss desc, '||
+                'NoWait Miss desc</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Latch</TH><TH CLASS="th_sub">Get Requests</TH>'||
-                '<TH CLASS="th_sub">Pct Get Miss</TH><TH CLASS="th_sub">Avg Slps/Miss</TH>'||
-	        '<TH CLASS="th_sub">Wait Time (s)</TH>';
+                '<TH CLASS="th_sub">Get Miss</TH><TH CLASS="th_sub">Avg Slps/Miss</TH>'||
+	        '<TH CLASS="th_sub">Wait Time</TH>';
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">NoWait Requests</TH><TH CLASS="th_sub">'||
-                'Pct NoWait Miss</TH></TR>';
+                'NoWait Miss</TH></TR>';
       print(L_LINE);
       FOR R_LA IN C_LAA LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_LA.name||'</TD><TD ALIGN="right">'||
                   R_LA.gets||'</TD><TD ALIGN="right">'||R_LA.missed||
 	          '</TD><TD ALIGN="right">'||R_LA.sleeps||'</TD>';
         print(L_LINE);
-        L_LINE := '<TD ALIGN="right">'||R_LA.wt||'</TD><TD ALIGN="right">'||
+        L_LINE := '<TD ALIGN="right">'||format_stime(R_LA.wt,1000)||'</TD><TD ALIGN="right">'||
                   R_LA.nowai||'</TD><TD ALIGN="right">'||R_LA.imiss||'</TD></TR>';
         print(L_LINE);
       END LOOP;
@@ -101,10 +102,10 @@
       FOR R_LA IN C_LAS LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_LA.name||'</TD><TD ALIGN="right">'||
                   R_LA.gets||'</TD><TD ALIGN="right">'||R_LA.misses||
-	          '</TD><TD ALIGN="right">'||R_LA.pctmiss||'</TD>';
+	          '</TD><TD ALIGN="right">'||R_LA.pctmiss||'%</TD>';
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||R_LA.sleeps||'</TD><TD ALIGN="right">'||
-                  R_LA.pctsleep||'<TD ALIGN="center">'||R_LA.sleep4||'</TD></TR>';
+                  R_LA.pctsleep||'%<TD ALIGN="center">'||R_LA.sleep4||'</TD></TR>';
         print(L_LINE);
       END LOOP;
       print(TABLE_CLOSE);

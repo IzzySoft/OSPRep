@@ -48,7 +48,7 @@ PROCEDURE get_waitobj IS
     FOR rec IN cur LOOP
       L_LINE := ' <TR><TD CLASS="td_name">'||rec.owner||'.'||rec.segment_name||'</TD><TD>'||
                 rec.segment_type||'</TD><TD>'||rec.event||'</TD><TD ALIGN="right">'||
-		rec.waited||'</TD><TD ALIGN="right">'||rec.entries||'</TD></TR>';
+		format_stime(rec.waited,1)||'</TD><TD ALIGN="right">'||rec.entries||'</TD></TR>';
       print(L_LINE);
     END LOOP;
     L_LINE := TABLE_CLOSE;

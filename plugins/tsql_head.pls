@@ -100,7 +100,7 @@
   -- Get CPU parse of all sessions
   PROCEDURE get_parsecpupct (oval OUT VARCHAR2) IS
     BEGIN
-     SELECT to_char((100*a.total/b.total),'990.00') INTO oval FROM
+     SELECT to_char((100*a.total/b.total),'990.00')||'%' INTO oval FROM
        ( SELECT (e.value - b.value) total
            FROM stats$sysstat b, stats$sysstat e
           WHERE b.snap_id = BID
@@ -144,10 +144,8 @@
 				 '999,999,990.0') getsperexec,
 	      to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/gets,
 			  '990.0') pcttotal,
-	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0))/1000000,
-			  '99,990.00'),'0.00') cputime,
-	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0))
-			/ 1000000,'999,999,990.00'), '0.00') elapsed,
+	      (e.cpu_time - nvl(b.cpu_time,0))/1000 cputime,
+	      (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
               nvl((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
@@ -181,17 +179,18 @@
                 ' <TR><TH CLASS="th_sub">Buffer Gets</TH><TH CLASS="th_sub">Executions</TH>';
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">Gets per Exec</TH>'||
-                '<TH CLASS="th_sub">% Total</TH><TH CLASS="th_sub">CPU Time (s)</TH>'||
-                '<TH CLASS="th_sub">Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+                '<TH CLASS="th_sub">Total</TH><TH CLASS="th_sub">CPU Time</TH>'||
+                '<TH CLASS="th_sub">Elapsed Time</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByGets(GETS) LOOP
         WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
         L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.bufgets||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.getsperexec||
-	          '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'</TD><TD ALIGN="right">';
+	          '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'%</TD><TD ALIGN="right">';
         print(L_LINE);
-        L_LINE := R_SQL.cputime||'</TD><TD ALIGN="right">'||R_SQL.elapsed||
-                  '</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||CHR(10)||
+        L_LINE := format_stime(R_SQL.cputime,1000)||'</TD><TD ALIGN="right">'||
+                  format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
+                  R_SQL.hashval||'</TD></TR>'||CHR(10)||
 	          ' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="6">';
         print(L_LINE);
 	print_tsql(R_SQL.hashval);
@@ -221,10 +220,8 @@
 				 '999,999,990.0') readsperexec,
 	      to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/phyr,
 			  '990.0') pcttotal,
-	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0))/1000000,
-			  '99,990.00'),'0.00') cputime,
-	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0))
-			/ 1000000,'999,999,999,990.00'), '0.00') elapsed,
+	      (e.cpu_time - nvl(b.cpu_time,0))/1000 cputime,
+	      (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
               nvl((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
@@ -253,19 +250,20 @@
 	        'Gets (CPU)</A>.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Pysical Reads</TH><TH CLASS="th_sub">Executions</TH>'||
-                '<TH CLASS="th_sub">Reads per Exec</TH><TH CLASS="th_sub">% Total</TH>';
+                '<TH CLASS="th_sub">Reads per Exec</TH><TH CLASS="th_sub">Total</TH>';
       print(L_LINE);
-      L_LINE := '<TH CLASS="th_sub">CPU Time (s)</TH><TH CLASS="th_sub">'||
-                'Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+      L_LINE := '<TH CLASS="th_sub">CPU Time</TH><TH CLASS="th_sub">'||
+                'Elapsed Time</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByReads LOOP
         WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
         L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.phyreads||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.readsperexec||
-	          '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'</TD><TD ALIGN="right">';
+	          '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'%</TD><TD ALIGN="right">';
         print(L_LINE);
-        L_LINE := R_SQL.cputime||'</TD><TD ALIGN="right">'||R_SQL.elapsed||
-                  '</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||CHR(10)||
+        L_LINE := format_stime(R_SQL.cputime,1000)||'</TD><TD ALIGN="right">'||
+                  format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
+                  R_SQL.hashval||'</TD></TR>'||CHR(10)||
 	          ' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="6">';
         print(L_LINE);
 	print_tsql(R_SQL.hashval);
@@ -293,14 +291,10 @@
 				 (e.rows_processed - nvl(b.rows_processed,0)) /
 				 (e.executions - nvl(b.executions,0))),
 				 '9,999,999,990.0') rowsperexec,
-	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0)) /
-	                   (e.executions - nvl(b.executions,0)),
-			  '9,999,999,990.00'),'0.00') cputime,
-	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0)) /
-	                   (e.executions - nvl(b.executions,0)),
-			'9,999,999,990.00'), '0.00') elapsed,
-              (e.elapsed_time - nvl(b.elapsed_time,0)) /
-                  (e.executions - nvl(b.executions,0)) ela,
+	      (e.cpu_time - nvl(b.cpu_time,0)) /
+	         (e.executions - nvl(b.executions,0)) / 1000 cputime,
+	      (e.elapsed_time - nvl(b.elapsed_time,0)) /
+	         (e.executions - nvl(b.executions,0)) / 1000 elapsed,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
 	     WHERE b.snap_id(+)  = BID
@@ -326,18 +320,20 @@
       L_LINE := 'statements if your primary goal is to increase the response time.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Rows Processed</TH>'||
-                '<TH CLASS="th_sub">Rows per Exec</TH><TH CLASS="th_sub">CPU per Exec (s)</TH>';
+                '<TH CLASS="th_sub">Rows per Exec</TH><TH CLASS="th_sub">CPU per Exec</TH>';
       print(L_LINE);
-      L_LINE := '<TH CLASS="th_sub">Elap per Exec (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+      L_LINE := '<TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByExec LOOP
-        WARN := alert_gt_warn(R_SQL.ela,AR_ET,WR_ET);
+        WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
         L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.execs||'</TD><TD ALIGN="right">'||
                   R_SQL.rowsproc||'</TD><TD ALIGN="right">'||R_SQL.rowsperexec||
-                  '</TD><TD ALIGN="right">'||R_SQL.cputime||'</TD><TD ALIGN="right">';
+                  '</TD><TD ALIGN="right">'||format_stime(R_SQL.cputime,1000)||
+                  '</TD><TD ALIGN="right">';
         print(L_LINE);
-        L_LINE := R_SQL.elapsed||'</TD><TD ALIGN="right">'||R_SQL.hashval||
-                  '</TD></TR>'||CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="6">';
+        L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
+                  R_SQL.hashval||'</TD></TR>'||CHR(10)||' <TR'||WARN||
+                  '><TD>&nbsp;</TD><TD COLSPAN="6">';
         print(L_LINE);
 	print_tsql(R_SQL.hashval);
         print('</TD></TR>');
@@ -384,12 +380,12 @@
                 'Currently, parsing takes avg. '||S1||'% of all CPU usage by all sessions.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
-                '<TH CLASS="th_sub">% Total Parses</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+                '<TH CLASS="th_sub">Total Parses</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByParse LOOP
         L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.parses||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
-	          '</TD><TD ALIGN="right">'||R_SQL.hashval||
+	          '%</TD><TD ALIGN="right">'||R_SQL.hashval||
                   '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
         print(L_LINE);
 	print_tsql(R_SQL.hashval);
@@ -402,4 +398,3 @@
     EXCEPTION
       WHEN OTHERS THEN NULL;
     END;
-
