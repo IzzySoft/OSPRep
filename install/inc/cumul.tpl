@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>Database Statistic Diagrams</title>
+<LINK REL="stylesheet" TYPE="text/css" HREF="../{css}">
 <link rel=stylesheet type="text/css" href="diagram.css">
 <SCRIPT Language="JavaScript">if ((document.layers)&&(history.length==1)) location.href=location.href+"#";</SCRIPT>
 <SCRIPT Language="JavaScript" src="diagram.js"></SCRIPT>
@@ -8,12 +9,13 @@
 </head>
 <body>
 <DIV STYLE="position:absolute; top:0"></DIV>
-<TABLE BORDER="0" CELLPADDING="2" CELLSPACING="2" WIDTH="620" ALIGN="center"><TR><TD>
+<TABLE BORDER="0" CELLPADDING="2" CELLSPACING="2" WIDTH="620" ALIGN="center"><TR>
 <SCRIPT Language="JavaScript">
 //<!--
-document.write('<H3 ALIGN="center" id="statTitle">Cumulative Statistics for '+parent.sid+'</H3</TD></TR>');
+document.write('<TH>Cumulative Statistics for '+parent.sid+'</TH></TR>');
 document.write('<TR><TD ALIGN="center"><DIV CLASS="small">Begin Snapshot: '+parent.bid+' ('+parent.btime+')<BR>');
-document.write('End Snapshot: '+parent.eid+' ('+parent.etime+')</DIV></TD></TR></TABLE>');
+document.write('End Snapshot: '+parent.eid+' ('+parent.etime+')</DIV></TD></TR>');
+document.write('<TR><TH CLASS="th_sub" ALIGN="center">'+parent.dname+'</TH></TR></TABLE>');
 
 // Create a graph (Array, StartElem, Color)
 function mkline(arr,col) {
@@ -49,7 +51,7 @@ document.close();
 //--></SCRIPT>
 <DIV
  STYLE="position:absolute; top:420">
-<TABLE BORDER="0" CELLPADDING="2" CELLSPACING="2" WIDTH="620" ALIGN="center"><TR><TD>
+<TABLE BORDER="1" ALIGN="center">
 <TR><TD ALIGN="center">
 <SELECT NAME="stat" onChange="drawStat(this.value)">
  <OPTION VALUE="-">-- Select Statistic: --</OPTION>
@@ -61,10 +63,11 @@ document.close();
  <OPTION VALUE="lgwr">LGWR Wait for Redo Copy</OPTION>
  <OPTION VALUE="lgsw">Log File Switch Completion</OPTION>
 </SELECT>
-</TD></TR>
-<TR><TD ALIGN="center"><BR>
+</TD></TR></TABLE><BR>
+<TABLE ALIGN="center" BORDER="1">
+<TR><TD ALIGN="center" CLASS="small">
 <SCRIPT LANGUAGE="JavaScript">//<!--
-  document.write('<DIV CLASS="small">Created by OSPRep v'+parent.vers+' &copy; 2003-2004 by <A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> &amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></DIV>');
+  document.write('Created by OSPRep v'+parent.vers+' &copy; 2003-2004 by <A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> &amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A>');
 //--></SCRIPT>
 </TD></TR>
 </TABLE>
