@@ -5,6 +5,11 @@
 </HEAD><BODY>
 
 <TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
+ <H3>What are Enqueues?</H3>
+ <P>Enqueues are OS specific "Locks" using different modes. If an object
+  protected by an enqueue is requested by another process in an incompatible
+  mode, this request is put in a FiFo queue (if not requested with NOWAIT).
+  Thus all requests are handled in the order of their appearance.</P>
  <H3>What do Enqueue waits stand for?</H3>
  <P>The <code>Enqueue</code> wait event may be an indication that something is
   either wrong with the code (should multiple sessions be serializing

@@ -5,7 +5,16 @@
 </HEAD><BODY>
 
 <TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
- <H3>What is this about?</H3>
+ <H3>What is a "Latch"?</H3>
+ <P>Latches are a kind of very short "Locks" to protect data structures in the
+  SGA. Other than enqueues, for latches there exists no FiFo wait queue - so
+  waiting processes either "spin" (in multi-processor environments only) or
+  "sleep", and retry their request later. As a side-effect, there's no special
+  order in processing of requests: in fact, the first process encountering a
+  special latch wait could be the last one getting the latch. Connected with
+  each latch is its level - to avoid deadlocks, a process already holding a
+  latch cannot obtain another latch of the same or subordinate level.</P>
+ <H3>What is this table about?</H3>
  <P><I>Pct Get Miss</I>es and <I>Pct NoWait Miss</I>es should be low. <I>Pct
   Get Miss</I> is the percentage of time a latch was requested (in a
   willing-to-wait mode) and not obtained immediately. For latches requested
