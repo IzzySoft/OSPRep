@@ -35,6 +35,11 @@ function mkline(arr,col) {
      k++;
      continue;
    }
+   if (isNaN(arr[k])) {
+     k++;
+     if (k==i) continue;
+     if (k>i) continue;
+   }
    if (i>bid) {
      delta = (arr[k] - arr[i]) / parts;
      for (f=0;f<parts;f++) {
