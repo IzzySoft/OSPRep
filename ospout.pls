@@ -863,8 +863,11 @@
   print(L_LINE);
 
   -- Latch Sleep Breakdown
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Latch Sleep Breakdown</TH></TR>'||
-            ' <TR><TD COLSPAN="5" ALIGN="center">Ordered by Misses desc</TD></TR>';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Latch Sleep Breakdown'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
+		')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD COLSPAN="5" ALIGN="center">Ordered by Misses desc</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Latch Name</TH><TH CLASS="th_sub">Get Requests</TH>'||
             '<TH CLASS="th_sub">Misses</TH><TH CLASS="th_sub">Sleeps</TH>'||
@@ -882,8 +885,11 @@
   print(L_LINE);
 
   -- Latch Miss Sources
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Latch Miss Sources</TH></TR>'||
-            ' <TR><TD COLSPAN="5" ALIGN="center">Only Latches with Sleeps are '||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Latch Miss Sources'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
+		')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD COLSPAN="5" ALIGN="center">Only Latches with Sleeps are '||
 	    'shown<BR>Ordered by Name, Sleeps desc</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Latch Name</TH><TH CLASS="th_sub">Where</TH>'||
