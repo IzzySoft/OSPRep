@@ -131,6 +131,19 @@ DECLARE
        AND b.startup_time=e.startup_time
        AND b.snap_time < e.snap_time;
 
+  CURSOR C_SPSQL (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT (100*(1-b.single_use_sql/b.total_sql)) AS b_single_sql,
+           (100*(1-e.single_use_sql/e.total_sql)) AS e_single_sql,
+	   (100*(1-b.single_use_sql_mem/b.total_sql_mem)) AS b_single_mem,
+	   (100*(1-e.single_use_sql_mem/e.total_sql_mem)) AS e_single_mem
+      FROM stats\$sql_statistics b, stats\$sql_statistics e
+     WHERE b.snap_id=bid
+       AND e.snap_id=eid
+       AND b.instance_number=instnum
+       AND e.instance_number=instnum
+       AND b.dbid=db_id
+       AND e.dbid=db_id;
+
 BEGIN
   -- Configuration
   BID := $START_ID; EID := $END_ID;
@@ -163,7 +176,7 @@ BEGIN
             '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> '||
             '] [ <A HREF="#efficiency">Efficiency</A> ]';
   dbms_output.put_line(L_LINE);
-  L_LINE :=   ' [ <A HREF="#poolsize">Pool Sizes</A> ] [ <A HREF="#sharedpool">Shared Pool</A>'||
+  L_LINE :=   ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#sharedpool">Shared Pool</A>'||
             ' ] [ <A HREF="#bufferpool">Buffer Pool</A> ] [ <A HREF="#sysstat">SysStat</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#events">Events</A> ] [ <A HREF="#invobj">Invalid Objects</A> ]'||
@@ -415,6 +428,30 @@ BEGIN
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
   dbms_output.put_line('<HR>');
+
+  -- Shared Pool Stats
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="#sharedpool">Shared Pool Statistics</A></TH></TR>'||CHR(10)||
+            ' <TR><TH CLASS="th_sub">Name</TH><TH CLASS="th_sub">Begin</TH>'||
+	    '<TH CLASS="th_sub">End</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TD>Memory Usage %</TD><TD>'||
+            to_char(round(100*(1-BFRM/BSPM),2),'990.00')||'</TD><TD>'||
+	    to_char(round(100*(1-EFRM/ESPM),2),'990.00')||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_SPSQL IN C_SPSQL(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD>% SQL with executions &gt; 1</TD><TD>'||
+              to_char(round(R_SPSQL.b_single_sql,2),'990.00')||'</TD><TD>'||
+	      to_char(round(R_SPSQL.e_single_sql,2),'990.00')||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+    L_LINE := ' <TR><TD>% Memory for SQL with executions &gt; 1</TD><TD>'||
+              to_char(round(R_SPSQL.b_single_mem,2),'990.00')||'</TD><TD>'||
+	      to_char(round(R_SPSQL.e_single_mem,2),'990.00')||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
 
   -- Page Ending
   L_LINE := '<HR>'||CHR(10)||TABLE_OPEN;

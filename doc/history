@@ -4,8 +4,9 @@ v0.0.1 (03.11.2003) initial version
 + Output intro: Common instance information
 + simple SnapShot info (id, time, comment)
 
-v0.0.2 (xx.11.2003)
+v0.0.2 (04.11.2003)
 + collecting statspack report info via statspack.stat_changes
 + added Session and Cursor/Session to SnapShot Info
 + added Cache Sizes and Load Profile
 + added Instance Efficiency Percentages
++ added Shared Pool Stats
