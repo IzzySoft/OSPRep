@@ -26,29 +26,16 @@
    BLOG, ELOG,
    BOCUR, EOCUR,
    DMSD, DMFC,   -- Begin of RAC
---   DFCMS, DFCMR, -- removed with v9.2
    DMSI,
---   DMRV, DYNAL,  -- removed with v9.2
---   DYNARES,      -- dito
    PMRV, PMPT,
    NPMRV, NPMPT,
---   SCMA, SCML,   -- removed with v9.2
---   PINC, PINCRNC,-- dito
---   PICC, PICRRC, -- dito
---   PBC, PBCRC,   -- dito
---   PCBA, PCCRBA, -- dito
---   PCRBPI,       -- dito
---   DYNAPRES, DYNAPSHL, -- dito
---   PRCMA, PRCML, -- dito
---   PWRM, PFPIM,  -- dito
---   PWNM,         -- dito
-   DBFR,       -- needed since v9.2
+   DBFR,
    DPMS, DNPMS,
    GLSG, GLAG,
    GLGT, GLSC,
    GLAC, GLCT,
    GLRL,
-   GCDFR,      -- needed since v9.2
+   GCDFR,
    GCGE, GCGT,
    GCCV, GCCT,
    GCCRRV, GCCRRT,
@@ -57,10 +44,10 @@
    GCCRBT, GCCRFT,
    GCCRST, GCCUSV,
    GCCUPT, GCCUFT,
-   GCCUST
- ,  MSGSQ, MSGSQT,   -- needed since v9.2
-   MSGSQK, MSGSQTK, -- dito
-   MSGRQ, MSGRQT    -- dito
+   GCCUST,
+   MSGSQ, MSGSQT,
+   MSGSQK, MSGSQTK,
+   MSGRQ, MSGRQT
   );
   CALL := UCAL + RECR;
 
