@@ -71,9 +71,9 @@ case :-)
 
 1. Create the directory where the report files (*.html) should be placed in.
    As example, we assume the /var/www/html/oracle/reports directory here.
-2. Below this directory, create another directory named "help". Make sure
-   both directories have the right permissions so your webserver can read all
-   contained files.
+2. Below this directory, create two other directories named "help" and "inc".
+   Make sure the directories have the right permissions so your webserver can
+   read all contained files.
 3. Create a directory to hold the scripts - this should *NOT* be below your
    web servers document root. As example, we use ~/scripts here.
 4. Unpack this archive (including sub directories) to ~/scripts
@@ -86,7 +86,8 @@ case :-)
 6. Go to the ~scripts/install directory and execute mkhelp.sh which creates
    the help files (placement of the stylesheet is adjusted this way) in the
    /var/www/html/oracle/reports/help directory, copies the help icon to this
-   location and sets the file permissions so everybody can read them.
+   location and the chart includes to the /var/www/html/oracle/reports/inc
+   directory plus sets the file permissions so everybody can read them.
 7. In six days G*d created the heavens and the earth - the seventh is Shabbat,
    and He rested. Get yourself a cup of coffee, tea or whatever you like, and
    relax for a moment.
@@ -122,6 +123,11 @@ that caused full table scans (FTS). These are most likely to require some
 optimization - usually creation of new indices or rewrite of the queries (e.g.
 placing index hints). The output is written into the file <ORACLE_SID>_fts.html
 in the report directory.
+
+To visualize the gathered report data, you may want to use the charts.sh script
+(same syntax again). It just generates data files for the JavaScript chart
+generator, plus a controlling HTML file called <ORACLE_SID>_chart.html in the
+REPDIR directory.
 
 ===============================================================================
 

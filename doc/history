@@ -213,4 +213,4 @@ v0.2.4
 -------------------
 + added some hints to the ratio charts
 + made the values for warnings/alerts (Go4Colors) configurable
-* some updates on the HTML documentation
+* some updates on the HTML documentation and the doc/readme.txt file
