@@ -13,7 +13,7 @@
 #                                                              Itzchak Rehberg
 #
 #
-version='0.0.2'
+version='0.0.3'
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
   echo
@@ -144,6 +144,25 @@ DECLARE
        AND b.dbid=db_id
        AND e.dbid=db_id;
 
+  CURSOR C_Top5 (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, twt IN NUMBER) IS
+    SELECT event, waits, time, pctwtt
+      FROM ( SELECT e.event event,
+                    to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
+		    to_char((e.time_waited_micro - nvl(b.time_waited_micro,0))/1000000,'9,999,990.00') time,
+		    decode(twt,0,'0.00',
+		      to_char(100*((e.time_waited_micro - NVL(b.time_waited_micro,0))/twt),'9,990.00')) pctwtt
+	       FROM stats\$system_event b, stats\$system_event e
+	      WHERE b.snap_id(+) = bid
+	        AND e.snap_id    = eid
+		AND b.dbid(+)    = db_id
+		AND e.dbid       = db_id
+		AND b.instance_number(+) = instnum
+		AND e.instance_number    = instnum
+		AND b.event(+)   = e.event
+		AND e.event NOT IN ( SELECT event FROM stats\$idle_event )
+	      ORDER BY time desc, waits desc )
+     WHERE rownum <= 5;
+
 BEGIN
   -- Configuration
   BID := $START_ID; EID := $END_ID;
@@ -176,7 +195,7 @@ BEGIN
             '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> '||
             '] [ <A HREF="#efficiency">Efficiency</A> ]';
   dbms_output.put_line(L_LINE);
-  L_LINE :=   ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#sharedpool">Shared Pool</A>'||
+  L_LINE :=   ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#top5wait">Top 5 Wait</A>'||
             ' ] [ <A HREF="#bufferpool">Buffer Pool</A> ] [ <A HREF="#sysstat">SysStat</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#events">Events</A> ] [ <A HREF="#invobj">Invalid Objects</A> ]'||
@@ -452,6 +471,20 @@ BEGIN
   dbms_output.put_line(L_LINE);
   dbms_output.put_line('<HR>');
 
+  -- Top 5 Wait Events
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#top5wait">Top 5 Wait Events</A></TH></TR>'||CHR(10)||
+            ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
+	    '<TH CLASS="th_sub">Wait Time (s)</TH><TH CLASS="th_sub">% Total Wt Time (ms)</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_Top5 IN C_Top5(DBID,INST_NUM,BID,EID,TWT) LOOP
+    L_LINE := ' <TR><TD>'||R_Top5.event||'</TD><TD ALIGN="right">'||R_Top5.waits||
+              '</TD><TD ALIGN="right">'||R_Top5.time||'</TD><TD ALIGN="right">'||R_Top5.pctwtt||
+	      '</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
 
   -- Page Ending
   L_LINE := '<HR>'||CHR(10)||TABLE_OPEN;

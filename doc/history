@@ -10,3 +10,6 @@ v0.0.2 (04.11.2003)
 + added Cache Sizes and Load Profile
 + added Instance Efficiency Percentages
 + added Shared Pool Stats
+
+v0.0.3 (xx.11.2003)
++ added Top 5 Wait Events
