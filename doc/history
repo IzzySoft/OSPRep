@@ -277,7 +277,7 @@ v0.3.0 (19.04.2004)
 ! report was broken again for Oracle < v9 due to use of CASE (introduced
   with Oracle v9)
 
-v0.3.1
+v0.3.1 (26.07.2004)
 -------------------
 ! when there've been gaps in the snapshot, ratio charts where partly drawn
   outside the diagram area
@@ -287,3 +287,4 @@ v0.3.1
 + added some Snapshot Level 7 (segment statistic) information to the report
   (Oracle 9.2 and higher): Top X Logical Reads | Physical Reads | Buffer Busy
   Waits | Row Lock Waits | ITL Waits per segment
+! fixed a problem in the print routine - now it works also with strings > 255 chars
