@@ -66,6 +66,12 @@ function drawStat(stat) {
     case "cfr"  : parent.dstat = parent.cfr;
                   parent.dname = "Chained-Fetch-Ratio";
 		  break;
+    case "rpp"  : parent.dstat = parent.rpp;
+                  parent.dname = "Pct Library Cache Reloads Per Pin";
+		  break;
+    case "ghr"  : parent.dstat = parent.ghr;
+                  parent.dname = "Pct Library Cache GetHitRatio";
+		  break;
   }
   location.reload();
 }

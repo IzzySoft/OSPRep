@@ -193,7 +193,7 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_librpp(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
+  PROCEDURE get_librpp(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
     CURSOR C_LibR IS
       SELECT arrname||'['||snap_id||'] = '||round(100*sum(reloads)/sum(pins),3)||';' line
         FROM stats\$librarycache
@@ -203,7 +203,23 @@ DECLARE
        GROUP BY snap_id;
     BEGIN
       print(CHR(10)||'var '||arrname||' = new Array();');
-      print('line = '||db_id||','||instnum||','||bid||','||eid||','||event1||','||event2||','||arrname);
+      FOR rec IN C_LibR LOOP
+        print(rec.line);
+      END LOOP;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN NULL;
+    END;
+
+  PROCEDURE get_libghr(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+    CURSOR C_LibR IS
+      SELECT arrname||'['||snap_id||'] = '||round(100*sum(gethits)/sum(gets),3)||';' line
+        FROM stats\$librarycache
+       WHERE instance_number=instnum
+	 AND dbid=db_id
+	 AND snap_id BETWEEN bid AND eid
+       GROUP BY snap_id;
+    BEGIN
+      print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_LibR LOOP
         print(rec.line);
       END LOOP;
@@ -268,7 +284,8 @@ BEGIN
   get_libmiss(DBID,INST_NUM,BID,EID,'libmiss');
   get_sysstat(DBID,INST_NUM,BID,EID,'logons current','logon');
   get_sysstat(DBID,INST_NUM,BID,EID,'opened cursors current','opencur');
-  get_librpp(DBID,INST_NUM,BID,EID,'reloads','pins','rpp');
+  get_librpp(DBID,INST_NUM,BID,EID,'rpp');
+  get_libghr(DBID,INST_NUM,BID,EID,'ghr');
 
 END;
 /
