@@ -272,3 +272,5 @@ v0.3.0
 -------------------
 * number formatting improvements for time and file/memory sizes
 ! some values in Top N SQL where named as "seconds" but represented ms
+! formatting updates for "inner tables" (here: execution plans) broke ColorCode
++ fts_plans.sh now supports the "-c" command line switch
