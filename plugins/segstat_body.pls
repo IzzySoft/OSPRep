@@ -11,5 +11,8 @@
     IF MK_SEG_BUSY = 1 THEN
       seg_bw;
     END IF;
+    IF MK_SEG_LOCK = 1 THEN
+      seg_lw;
+    END IF;
     print('<HR>');
 --  END IF;
