@@ -25,7 +25,7 @@ v0.0.4 (06.11.2003)
 + added TableSpace IO Summary Stats
 + added FileIO Summary Stats
 
-v0.0.5 (xx.11.2003)
+v0.0.5 (07.11.2003)
 + added Buffer Pool Stats
 + added Instance Recovery Statistics
 + added Buffer Wait Statistics
@@ -35,3 +35,6 @@ v0.0.5 (xx.11.2003)
 + added Undo Stats
 + added Latch Stats
 + added Cache Stats
+
+v0.0.6 (xx.11.2003)
++ added SGA stats
