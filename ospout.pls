@@ -572,7 +572,11 @@
   print(L_LINE);
   L_LINE := 'With data blocks, increasing the size of the database buffer cache '||
             'can reduce these waits. Segment header waits generally point to the '||
-	    'need to add freelists to the affected table.</DIV></TD></TR>';
+	    'need to add freelists to the affected table. ';
+  print(L_LINE);
+  L_LINE := 'Freelist block waits indicate that the affected segment needs a '||
+            'higher number of freelists - for the Oracle Parallel Server, make '||
+	    'sure each instance has its own freelist groups.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Class</TH><TH CLASS="th_sub">Waits</TH>'||
             '<TH CLASS="th_sub">Tot Wait Time (s)</TH>'||
