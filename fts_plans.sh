@@ -94,26 +94,26 @@ DECLARE
   R_TITLE VARCHAR2(200);
   TABLE_OPEN VARCHAR2(100); -- Table Attributes
   TABLE_CLOSE VARCHAR2(100);
-  DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
-  EID NUMBER; BID NUMBER; OSPVER VARCHAR2(10);
+  DB_ID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
+  EID NUMBER; BID NUMBER; OSPVER VARCHAR2(10); I1 NUMBER;
 
-  CURSOR C_MaxSnap(db_id IN NUMBER, instnum IN NUMBER) IS
+  CURSOR C_MaxSnap IS
     SELECT MAX(snap_id) maxid FROM stats\$snapshot
-     WHERE dbid = db_id AND instance_number = instnum;
+     WHERE dbid = DB_ID AND instance_number = INST_NUM;
 
-  CURSOR C_MinSnap(db_id IN NUMBER, instnum IN NUMBER, maxsnap IN NUMBER) IS
+  CURSOR C_MinSnap IS
     SELECT MIN(snap_id) minid FROM stats\$snapshot
-     WHERE dbid = db_id AND instance_number = instnum
+     WHERE dbid = DB_ID AND instance_number = INST_NUM
        AND startup_time = (SELECT startup_time FROM stats\$snapshot
-                            WHERE dbid = db_id AND instance_number = instnum
-			      AND snap_id = maxsnap);
+                            WHERE dbid = DB_ID AND instance_number = INST_NUM
+			      AND snap_id = EID);
 
   CURSOR C_GetSQL (hv IN NUMBER) IS
     SELECT replace(replace(sql_text,'<','&lt;'),'>','&gt;') AS sql_text
       FROM stats\$sqltext WHERE hash_value=hv
      ORDER BY piece;
 
-  CURSOR C_GetHashes(bid IN NUMBER, eid IN NUMBER) IS
+  CURSOR C_GetHashes IS
     SELECT DISTINCT a.plan_hash_value AS phashval,
            b.hash_value AS hashval,
 	   b.cost,
@@ -121,8 +121,8 @@ DECLARE
       FROM stats\$sql_plan a, stats\$sql_plan_usage b, stats\$snapshot c
      WHERE a.operation='TABLE ACCESS'
        AND a.options='FULL'
-       AND a.snap_id BETWEEN bid AND eid
-       AND b.snap_id BETWEEN bid AND eid
+       AND a.snap_id BETWEEN BID AND EID
+       AND b.snap_id BETWEEN BID AND EID
        AND a.plan_hash_value=b.plan_hash_value
        AND b.snap_id=c.snap_id
        AND a.object_owner NOT IN ($EXCLUDE_OWNERS)
@@ -136,16 +136,17 @@ DECLARE
         dbms_output.put_line('*!* Problem in print() *!*');
     END;
 
-  PROCEDURE get_plan (bid IN NUMBER, eid IN NUMBER, hashval IN VARCHAR2) IS
+  PROCEDURE get_plan (hashval IN VARCHAR2) IS
     HASHID NUMBER; CI NUMBER; SI NUMBER; OSIZE VARCHAR2(50); IND VARCHAR2(255);
     CW NUMBER; S1 VARCHAR2(50);
-    CURSOR C_PGet (bid IN NUMBER, eid IN NUMBER, hash_val IN VARCHAR2) IS
+    CURSOR C_PGet (hash_val IN VARCHAR2) IS
       SELECT operation,options,object_owner,object_name,optimizer,
              NVL(TO_CHAR(cost,'999,990'),'&nbsp;') cost,
+             cost ncost,
              bytes,cpu_cost,io_cost,depth
         FROM stats\$sql_plan,
 	     ( SELECT MAX(snap_id) maxid FROM stats\$sql_plan
-	        WHERE snap_id BETWEEN bid AND eid
+	        WHERE snap_id BETWEEN BID AND EID
 		  AND plan_hash_value = hash_val ) id
        WHERE plan_hash_value = hash_val
 	 ORDER BY id;
@@ -154,7 +155,7 @@ DECLARE
         FROM ( SELECT plan_hash_value,snap_id
                  FROM stats\$sql_plan_usage
                 WHERE hash_value = hashval
-                  AND snap_id BETWEEN bid AND eid );
+                  AND snap_id BETWEEN BID AND EID );
       SELECT MAX(plan_hash_value) INTO HASHID
         FROM ( SELECT plan_hash_value,snap_id
                  FROM stats\$sql_plan_usage
@@ -173,12 +174,10 @@ DECLARE
         print('Optimizer</TH><TH CLASS="th_sub">Cost</TH><TH CLASS="th_sub">'||
               'CPUCost</TH><TH CLASS="th_sub">IOCost</TH><TH CLASS="th_sub">'||
               'Size</TH></TR>');
-        FOR rplan IN C_PGet(bid,eid,HASHID) LOOP
-          IF NVL(rplan.bytes,0) < 1024
-          THEN
+        FOR rplan IN C_PGet(HASHID) LOOP
+          IF NVL(rplan.bytes,0) < 1024 THEN
             OSIZE := TO_CHAR(rplan.bytes,'9,990');
-            IF NVL(OSIZE,'X') = 'X'
-            THEN
+            IF NVL(OSIZE,'X') = 'X' THEN
               OSIZE := '&nbsp;';
             ELSE
               OSIZE := OSIZE||' b';
@@ -194,7 +193,7 @@ DECLARE
 	  CI := 3*(LENGTH(OSIZE)+1)/10;
 	  IF SI > CW THEN CW := SI; END IF;
 	  IF rplan.operation||' '||rplan.options = 'TABLE ACCESS FULL' THEN
-	    IF rplan.cost > AR_EP_FTS THEN
+	    IF NVL(rplan.ncost,0) > $AR_EP_FTS THEN
 	      S1 := ' CLASS="alert"';
 	    ELSE
 	      S1 := ' CLASS="warn"';
@@ -224,20 +223,24 @@ BEGIN
   TABLE_CLOSE := '</TABLE>'||CHR(10)||'<BR CLEAR="all">'||CHR(10);
 
   SELECT d.dbid,d.name,i.instance_number,i.instance_name
-    INTO DBID,DB_NAME,INST_NUM,INST_NAME
+    INTO DB_ID,DB_NAME,INST_NUM,INST_NAME
     FROM v\$database d,v\$instance i;
 
-  IF NVL($END_ID,0) = 0
-    THEN
-      FOR R_SnapID IN C_MaxSnap(DBID,INST_NUM) LOOP
-      EID := R_SnapID.maxid;
-    END LOOP;
+  FOR R_SnapID IN C_MaxSnap LOOP
+    I1 := R_SnapID.maxid;
+  END LOOP;
+
+  IF NVL($END_ID,0) = 0 THEN
+    EID := I1;
   ELSE
-    EID := $END_ID;
+    IF $END_ID > I1 THEN
+      EID := I1;
+    ELSE
+      EID := $END_ID;
+    END IF;
   END IF;
-  IF NVL($START_ID,0) = 0
-  THEN
-    FOR R_SnapID IN C_MinSnap(DBID,INST_NUM,EID) LOOP
+  IF NVL($START_ID,0) = 0 THEN
+    FOR R_SnapID IN C_MinSnap LOOP
       BID := R_SnapID.minid;
     END LOOP;
   ELSE
@@ -266,13 +269,13 @@ BEGIN
 
   -- Make the Plan tables
   print(TABLE_OPEN||' <TR><TH>LastRec</TH><TH>Statement</TH></TR>');
-  FOR recHash in C_GetHashes(BID,EID) LOOP
+  FOR recHash in C_GetHashes LOOP
     print('<TR><TD CLASS="td_name">'||recHash.snapdate||'</TD><TD CLASS="td_name">');
     FOR recSQL IN C_GetSQL(recHash.hashval) LOOP
       print(recSQL.sql_text);
     END LOOP;
     print('</TD></TR>');
-    get_plan(BID,EID,recHash.hashval);
+    get_plan(recHash.hashval);
   END LOOP;
   print(TABLE_CLOSE);
 

@@ -103,21 +103,21 @@ Set Echo Off
 SPOOL $REPDIR/${ORACLE_SID}_chart.js
 DECLARE
   L_LINE VARCHAR2(4000);
-  DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
+  DB_ID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
   EID NUMBER; BID NUMBER; OSPVER VARCHAR2(10);
   BTIME VARCHAR2(20); ETIME VARCHAR2(20); DBUP_ID NUMBER;
-  DB_BLOCKSIZE NUMBER;
+  DB_BLOCKSIZE NUMBER; I1 NUMBER;
 
-  CURSOR C_MaxSnap(db_id IN NUMBER, instnum IN NUMBER) IS
+  CURSOR C_MaxSnap IS
     SELECT MAX(snap_id) maxid FROM stats\$snapshot
-     WHERE dbid = db_id AND instance_number = instnum;
+     WHERE dbid = DB_ID AND instance_number = INST_NUM;
 
-  CURSOR C_MinSnap(db_id IN NUMBER, instnum IN NUMBER, maxsnap IN NUMBER) IS
+  CURSOR C_MinSnap IS
     SELECT MIN(snap_id) minid FROM stats\$snapshot
-     WHERE dbid = db_id AND instance_number = instnum
+     WHERE dbid = DB_ID AND instance_number = INST_NUM
        AND startup_time = (SELECT startup_time FROM stats\$snapshot
-                            WHERE dbid = db_id AND instance_number = instnum
-			      AND snap_id = maxsnap);
+                            WHERE dbid = db_id AND instance_number = INST_NUM
+			      AND snap_id = EID);
 
   PROCEDURE print(line IN VARCHAR2) IS
     BEGIN
@@ -127,16 +127,16 @@ DECLARE
         dbms_output.put_line('*!* Problem in print() *!*');
     END;
 
-  PROCEDURE get_sysevent(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, eventname IN VARCHAR2, arrname IN VARCHAR2) IS
+  PROCEDURE get_sysevent(eventname IN VARCHAR2, arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
     CURSOR C_Sev IS
       SELECT arrname||'['||snap_id||'] = '||total_timeouts||';' line,
              NVL(total_timeouts,0) value, snap_id
         FROM stats\$system_event
        WHERE event=eventname
-         AND instance_number=instnum
-	 AND dbid=db_id
-	 AND snap_id BETWEEN bid AND eid;
+         AND instance_number=INST_NUM
+	 AND dbid=DB_ID
+	 AND snap_id BETWEEN BID AND EID;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
@@ -162,15 +162,15 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_sysstat(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, eventname IN VARCHAR2, arrname IN VARCHAR2) IS
+  PROCEDURE get_sysstat(eventname IN VARCHAR2, arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
     CURSOR C_Sys IS
       SELECT arrname||'['||snap_id||'] = '||value||';' line, value, snap_id
         FROM stats\$sysstat
        WHERE name=eventname
-         AND instance_number=instnum
-	 AND dbid=db_id
-	 AND snap_id BETWEEN bid AND eid;
+         AND instance_number=INST_NUM
+	 AND dbid=DB_ID
+	 AND snap_id BETWEEN BID AND EID;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
@@ -196,15 +196,15 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_sysstat2_ps(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
+  PROCEDURE get_sysstat2_ps(event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
     MAXVAL NUMBER; LASTVAL NUMBER; ACTVAL NUMBER; VALUE NUMBER;
     CURSOR C_Sys IS
       SELECT arrname||'['||snap_id||'] = '||SUM(value)||';' line,snap_id,SUM(value) val
         FROM stats\$sysstat
        WHERE name IN (event1,event2)
-         AND instance_number=instnum
-	 AND dbid=db_id
-	 AND snap_id BETWEEN bid AND eid
+         AND instance_number=INST_NUM
+	 AND dbid=DB_ID
+	 AND snap_id BETWEEN BID AND EID
        GROUP BY snap_id;
     BEGIN
       MAXVAL := 0; LASTVAL := 0;
@@ -225,7 +225,7 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_sysstat_per(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2, factor IN NUMBER) IS
+  PROCEDURE get_sysstat_per(event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2, factor IN NUMBER) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
     CURSOR C_Sys IS
       SELECT arrname||'['||a.snap_id||'] = '||round(factor*a.value/b.value,5)||';' line,
@@ -233,11 +233,11 @@ DECLARE
         FROM stats\$sysstat a, stats\$sysstat b
        WHERE a.name=event1
          AND b.name=event2
-         AND a.instance_number=instnum
-         AND b.instance_number=instnum
-	 AND a.dbid=db_id
-	 AND b.dbid=db_id
-	 AND a.snap_id BETWEEN bid AND eid
+         AND a.instance_number=INST_NUM
+         AND b.instance_number=INST_NUM
+	 AND a.dbid=DB_ID
+	 AND b.dbid=DB_ID
+	 AND a.snap_id BETWEEN BID AND EID
 	 AND a.snap_id=b.snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
@@ -254,7 +254,7 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_libmiss(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+  PROCEDURE get_libmiss(arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
     CURSOR C_Lib IS
       SELECT arrname||'['||snap_id||'] = '||
@@ -262,9 +262,9 @@ DECLARE
 	     ';' line, snap_id,
              decode(nvl(sum(gets),0),0,0,100-nvl((sum(gethits)/sum(gets)),0)*100) value
         FROM stats\$librarycache
-       WHERE snap_id BETWEEN bid AND eid
-         AND dbid = db_id
-         AND instance_number = instnum
+       WHERE snap_id BETWEEN BID AND EID
+         AND dbid = DB_ID
+         AND instance_number = INST_NUM
        GROUP BY snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
@@ -291,15 +291,15 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_librpp(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+  PROCEDURE get_librpp(arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
     CURSOR C_LibR IS
       SELECT arrname||'['||snap_id||'] = '||round(100*sum(reloads)/sum(pins),3)||';' line,
              snap_id, round(100*sum(reloads)/sum(pins),3) value
         FROM stats\$librarycache
-       WHERE instance_number=instnum
-	 AND dbid=db_id
-	 AND snap_id BETWEEN bid AND eid
+       WHERE instance_number=INST_NUM
+	 AND dbid=DB_ID
+	 AND snap_id BETWEEN BID AND EID
        GROUP BY snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
@@ -316,15 +316,15 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_libghr(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+  PROCEDURE get_libghr(arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
     CURSOR C_LibR IS
       SELECT arrname||'['||snap_id||'] = '||round(100*sum(gethits)/sum(gets),3)||';' line,
              snap_id, round(100*sum(gethits)/sum(gets),3) value
         FROM stats\$librarycache
-       WHERE instance_number=instnum
-	 AND dbid=db_id
-	 AND snap_id BETWEEN bid AND eid
+       WHERE instance_number=INST_NUM
+	 AND dbid=DB_ID
+	 AND snap_id BETWEEN BID AND EID
        GROUP BY snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
@@ -341,15 +341,15 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_rowcacheratio(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+  PROCEDURE get_rowcacheratio(arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
     CURSOR C_RowR IS
       SELECT arrname||'['||snap_id||'] = '||round(100*sum(getmisses)/sum(gets),3)||';' line,
              snap_id, round(100*sum(getmisses)/sum(gets),3) value
         FROM stats\$rowcache_summary
-       WHERE instance_number=instnum
-	 AND dbid=db_id
-	 AND snap_id BETWEEN bid AND eid
+       WHERE instance_number=INST_NUM
+	 AND dbid=DB_ID
+	 AND snap_id BETWEEN BID AND EID
        GROUP BY snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
@@ -366,15 +366,19 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_filereads(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+  PROCEDURE get_filereads(arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
     CURSOR C_Read IS
       SELECT arrname||'['||b.snap_id||'] = '||round(sum(e.phyblkrd - b.phyblkrd)*DB_BLOCKSIZE/1024/1024,2)||';' line,
              b.snap_id snap_id,
 	     round(sum(e.phyblkrd - b.phyblkrd)*DB_BLOCKSIZE/1024/1024,2) value
         FROM stats\$filestatxs b, stats\$filestatxs e
-       WHERE e.snap_id = b.snap_id +1
-         AND b.snap_id BETWEEN bid AND eid -1
+       WHERE e.dbid = DB_ID
+         AND b.dbid = DB_ID
+         AND e.instance_number = INST_NUM
+         AND b.instance_number = INST_NUM
+         AND e.snap_id = b.snap_id +1
+         AND b.snap_id BETWEEN BID AND EID -1
          AND b.tsname = e.tsname
          AND b.filename = e.filename
        GROUP BY b.snap_id;
@@ -393,14 +397,18 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-  PROCEDURE get_filewrites(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+  PROCEDURE get_filewrites(arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
     CURSOR C_Read IS
       SELECT arrname||'['||b.snap_id||'] = '||round(sum(e.phyblkwrt - b.phyblkwrt)*DB_BLOCKSIZE/1024/1024,2)||';' line,
              b.snap_id snap_id,
 	     round(sum(e.phyblkwrt - b.phyblkwrt)*DB_BLOCKSIZE/1024/1024,2) value
         FROM stats\$filestatxs b, stats\$filestatxs e
-       WHERE e.snap_id = b.snap_id +1
+       WHERE e.dbid = DB_ID
+         AND b.dbid = DB_ID
+         AND e.instance_number = INST_NUM
+         AND b.instance_number = INST_NUM
+         AND e.snap_id = b.snap_id +1
          AND b.snap_id BETWEEN bid AND eid -1
          AND b.tsname = e.tsname
          AND b.filename = e.filename
@@ -424,18 +432,23 @@ BEGIN
   dbms_output.enable(1000000);
 
   SELECT d.dbid,d.name,i.instance_number,i.instance_name
-    INTO DBID,DB_NAME,INST_NUM,INST_NAME
+    INTO DB_ID,DB_NAME,INST_NUM,INST_NAME
     FROM v\$database d,v\$instance i;
 
-  IF NVL($END_ID,0) = 0
-    THEN
-      FOR R_SnapID IN C_MaxSnap(DBID,INST_NUM) LOOP
-      EID := R_SnapID.maxid;
-    END LOOP;
+  FOR R_SnapID IN C_MaxSnap LOOP
+    I1 := R_SnapID.maxid;
+  END LOOP;
+
+  IF NVL($END_ID,0) = 0 THEN
+    EID := I1;
   ELSE
-    EID := $END_ID;
+    IF $END_ID > I1 THEN
+      EID := I1;
+    ELSE
+      EID := $END_ID;
+    END IF;
   END IF;
-  FOR R_SnapID IN C_MinSnap(DBID,INST_NUM,EID) LOOP
+  FOR R_SnapID IN C_MinSnap LOOP
     DBUP_ID := R_SnapID.minid;
   END LOOP;
   IF NVL($START_ID,0) = 0
@@ -474,26 +487,26 @@ BEGIN
   print('var amaxavedelta = new Array();');
 
   -- Chart statistics
-  get_sysevent(DBID,INST_NUM,BID,EID,'free buffer waits','freebuff');
-  get_sysevent(DBID,INST_NUM,BID,EID,'buffer busy waits','busybuff');
-  get_sysevent(DBID,INST_NUM,BID,EID,'db file sequential read','fileseq');
-  get_sysevent(DBID,INST_NUM,BID,EID,'db file scattered read','filescat');
-  get_sysevent(DBID,INST_NUM,BID,EID,'enqueue','enq');
-  get_sysevent(DBID,INST_NUM,BID,EID,'LGWR wait for redo copy','lgwr');
-  get_sysevent(DBID,INST_NUM,BID,EID,'log file switch completion','lgsw');
-  get_sysstat(DBID,INST_NUM,BID,EID,'redo log space requests','redoreq');
-  get_sysstat_per(DBID,INST_NUM,BID,EID,'enqueue timeouts','enqueue requests','enqper',1);
-  get_sysstat_per(DBID,INST_NUM,BID,EID,'free buffer inspected','free buffer requested','fbp',1);
-  get_sysstat_per(DBID,INST_NUM,BID,EID,'table fetch continued row','table fetch by rowid','cfr',100);
-  get_libmiss(DBID,INST_NUM,BID,EID,'libmiss');
-  get_sysstat(DBID,INST_NUM,BID,EID,'logons current','logon');
-  get_sysstat(DBID,INST_NUM,BID,EID,'opened cursors current','opencur');
-  get_librpp(DBID,INST_NUM,BID,EID,'rpp');
-  get_libghr(DBID,INST_NUM,BID,EID,'ghr');
-  get_rowcacheratio(DBID,INST_NUM,BID,EID,'rcr');
-  get_filereads(DBID,INST_NUM,BID,EID,'phyrd');
-  get_filewrites(DBID,INST_NUM,BID,EID,'phywrt');
-  get_sysstat2_ps(DBID,INST_NUM,BID,EID,'user commits','transaction rollbacks','tx');
+  get_sysevent('free buffer waits','freebuff');
+  get_sysevent('buffer busy waits','busybuff');
+  get_sysevent('db file sequential read','fileseq');
+  get_sysevent('db file scattered read','filescat');
+  get_sysevent('enqueue','enq');
+  get_sysevent('LGWR wait for redo copy','lgwr');
+  get_sysevent('log file switch completion','lgsw');
+  get_sysstat('redo log space requests','redoreq');
+  get_sysstat_per('enqueue timeouts','enqueue requests','enqper',1);
+  get_sysstat_per('free buffer inspected','free buffer requested','fbp',1);
+  get_sysstat_per('table fetch continued row','table fetch by rowid','cfr',100);
+  get_libmiss('libmiss');
+  get_sysstat('logons current','logon');
+  get_sysstat('opened cursors current','opencur');
+  get_librpp('rpp');
+  get_libghr('ghr');
+  get_rowcacheratio('rcr');
+  get_filereads('phyrd');
+  get_filewrites('phywrt');
+  get_sysstat2_ps('user commits','transaction rollbacks','tx');
 
 END;
 /
