@@ -209,7 +209,7 @@ v0.2.3 (24.02.2004)
   charts
 + applied Go4Colors to fts_plans.sh
 
-v0.2.4
+v0.2.4 (27.02.2004)
 -------------------
 + added some hints to the ratio charts
 + made the values for warnings/alerts (Go4Colors) configurable
