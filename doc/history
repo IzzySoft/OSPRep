@@ -15,8 +15,9 @@ v0.0.3 (05.11.2003)
 + added Top 5 Wait Events
 + added All Wait Events
 + added BG Wait Events
-+ added Top 10 SQL by Gets
++ added Top n SQL by Gets
 
 v0.0.4 (xx.11.2003)
 * a little code cleanup
-+ added Top 10 SQL by Reads
++ added Top n SQL by Reads
++ added Top n SQL by Exec (and made "n" a config var)

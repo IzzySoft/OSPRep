@@ -40,6 +40,8 @@ CSS=../main.css
 # login information
 user=perfstat
 password="pyha#"
+# Top settings
+TOP_N_SQL=5
 
 #--- temporary settings:
 START_ID=1
@@ -66,7 +68,7 @@ Set Echo Off
 SPOOL $REPDIR/${ORACLE_SID}.html
 
 DECLARE
-  L_LINE VARCHAR(4000);
+  L_LINE VARCHAR2(4000);
   R_TITLE VARCHAR(200);
   TABLE_OPEN VARCHAR(100); -- Table Attributes
   TABLE_CLOSE VARCHAR(100);
@@ -78,7 +80,7 @@ DECLARE
   I1 NUMBER;
   I2 NUMBER;
   I3 NUMBER;
-  BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER; EDRT NUMBER;
+  BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER; EDRT NUMBER; EET NUMBER;
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
   PARA VARCHAR2(3); VERSN VARCHAR(17); HOST_NAME VARCHAR(64);
   LHTR NUMBER; BFWT NUMBER; TRAN NUMBER; CHNG NUMBER; UCAL NUMBER; UROL NUMBER;
@@ -122,7 +124,8 @@ DECLARE
 	   to_char(round(((e.snap_time - b.snap_time) * 1440 * 60),0)/60,'9,990.00') elapsed,
 	   (e.snap_time - b.snap_time)*1440*60 ela,
 	   e.buffer_gets_th ebgt,
-	   e.disk_reads_th edrt
+	   e.disk_reads_th edrt,
+	   e.executions_th eet
       FROM stats\$snapshot b, stats\$snapshot e
      WHERE b.snap_id=$START_ID
        AND e.snap_id=$END_ID
@@ -244,7 +247,7 @@ DECLARE
 	     ORDER BY (e.buffer_gets - nvl(b.buffer_gets,0)) desc,
 	              e.hash_value
 	   )
-     WHERE rownum <= 10;
+     WHERE rownum <= $TOP_N_SQL;
 
   CURSOR C_SQLByReads (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, phyr IN NUMBER) IS
     SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,hashval
@@ -278,7 +281,42 @@ DECLARE
 	     ORDER BY (e.disk_reads - nvl(b.disk_reads,0)) desc,
 	              e.hash_value
 	   )
-     WHERE rownum <= 10;
+     WHERE rownum <= $TOP_N_SQL;
+
+  CURSOR C_SQLByExec (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval
+      FROM ( SELECT /*+ ordered use_nl (b st) */
+	      to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
+	      to_char((nvl(e.rows_processed,0) - nvl(b.rows_processed,0)),
+	             '99,999,999,999') rowsproc,
+	      to_char(decode(nvl(e.rows_processed,0) - nvl(b.rows_processed,0),
+			         0, 0,
+				 (e.rows_processed - nvl(b.rows_processed,0)) /
+				 (e.executions - nvl(b.executions,0))),
+				 '9,999,999,990.0') rowsperexec,
+	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0)) /
+	                   (e.executions - nvl(b.executions,0)),
+			  '9,999,999,990.00'),'0.00') cputime,
+	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0)) /
+	                   (e.executions - nvl(b.executions,0)),
+			'999,990.00'), '0.00') elapsed,
+	      NVL ( e.hash_value,0 ) hashval
+	      FROM stats\$sql_summary e, stats\$sql_summary b
+	     WHERE b.snap_id(+)  = bid
+	       AND b.dbid(+)     = e.dbid
+	       AND b.instance_number(+) = e.instance_number
+	       AND b.hash_value(+)      = e.hash_value
+	       AND b.address(+)  = e.address
+	       AND b.text_subset(+)     = e.text_subset
+	       AND e.snap_id     = eid
+	       AND e.dbid        = db_id
+	       AND e.instance_number    = instnum
+	       AND e.executions  > nvl(b.executions,0)
+	       AND phyr          > 0
+	     ORDER BY (e.executions - nvl(b.executions,0)) desc,
+	              e.hash_value
+	   )
+     WHERE rownum <= $TOP_N_SQL;
 
   CURSOR C_GetSQL (hv IN NUMBER) IS
     SELECT sql_text FROM stats\$sqltext WHERE hash_value=hv
@@ -321,7 +359,7 @@ BEGIN
             ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#bgwaitevents">Background Waits</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||
-	    ' [ <A HREF="#misc">Misc</A> ]</TD></TR>';
+	    ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -437,6 +475,7 @@ BEGIN
     ELA  := Rec_SnapInfo.ela;
     EBGT := Rec_SnapInfo.ebgt;
     EDRT := Rec_SnapInfo.edrt;
+    EET  := Rec_SnapInfo.eet;
   END LOOP;
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -709,7 +748,35 @@ BEGIN
 	      ' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
     dbms_output.put_line(L_LINE);
     FOR R_Statement IN C_GetSQL(R_SQL.hashval) LOOP
-      L_LINE := R_Statement.sql_text;
+      L_LINE := trim(R_Statement.sql_text);
+      dbms_output.put_line(L_LINE);
+    END LOOP;
+    L_LINE := '</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- SQL by Executions
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#sqlbyexecs">SQL ordered by Executions</A></TH></TR>'||CHR(10)||
+            ' <TR><TD COLSPAN="7" ALIGN="center">End Executions Treshold: '||EET||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Rows Processed</TH>'||
+	    '<TH CLASS="th_sub">Rows per Exec</TH><TH CLASS="th_sub">CPU per Exec (s)</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">Elap per Exec (s)</TH><TH CLASS="th_sub">Hash Value</TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_SQL IN C_SQLByExec(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.execs||'</TD><TD ALIGN="right">'||
+              R_SQL.rowsproc||'</TD><TD ALIGN="right">'||R_SQL.rowsperexec||
+	      '</TD><TD ALIGN="right">'||R_SQL.cputime||'</TD><TD ALIGN="right">';
+    dbms_output.put_line(L_LINE);
+    L_LINE := R_SQL.elapsed||'</TD><TD ALIGN="right">'||R_SQL.hashval||
+              '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
+    dbms_output.put_line(L_LINE);
+    FOR R_Statement IN C_GetSQL(R_SQL.hashval) LOOP
+      L_LINE := trim(R_Statement.sql_text);
       dbms_output.put_line(L_LINE);
     END LOOP;
     L_LINE := '</TD></TR>';
