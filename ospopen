@@ -759,12 +759,19 @@ DECLARE
 	   nvl(to_char(decode(e.gets,b.gets,NULL,
 	                100 - (e.gethits - b.gethits) * 100 /
 			(e.gets - b.gets)),'990.00'),'&nbsp;') getm,
+           decode(e.gets,b.gets,NULL,
+	                100 - (e.gethits - b.gethits) * 100 /
+			(e.gets - b.gets)) ngetm,
 	   to_char(e.pins - b.pins,'9,999,999,990') pins,
 	   nvl(to_char(decode(e.pins,b.pins,NULL,
 	                100 - (e.pinhits - b.pinhits) *100 /
 			(e.pins - b.pins)),'990.00'),'&nbsp;') pinm,
 	   to_char(e.reloads - b.reloads,'9,999,990') reloads,
-	   to_char(e.invalidations - b.invalidations,'999,999,990') inv
+	   to_char(e.invalidations - b.invalidations,'999,999,990') inv,
+	   decode(e.gets,b.gets,NULL,
+	          (e.reloads - b.reloads) / (e.gets - b.gets)) rpg,
+	   decode(e.gets,b.gets,NULL,
+	          (e.invalidations - b.invalidations) / (e.gets - b.gets)) ipg
       FROM stats\$librarycache b, stats\$librarycache e
      WHERE b.snap_id = bid
        AND e.snap_id = eid

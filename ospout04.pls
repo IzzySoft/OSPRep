@@ -42,12 +42,15 @@
   L_LINE := '<TH CLASS="th_sub">Reloads</TH><TH CLASS="th_sub">Invalidations</TH></TR>';
   print(L_LINE);
   FOR R_CA IN C_CAM(DBID,INST_NUM,BID,EID) LOOP
+    S1 := alert_gt_warn(R_CA.ngetm,40,15);
+    S2 := alert_gt_warn(R_CA.rpg,30,10);
+    S3 := alert_gt_warn(R_CA.ipg,20,10);
     L_LINE := ' <TR><TD CLASS="td_name">'||R_CA.namespace||'</TD><TD ALIGN="right">'||
-              R_CA.gets||'</TD><TD ALIGN="right">'||R_CA.getm||
+              R_CA.gets||'</TD><TD ALIGN="right"'||S1||'>'||R_CA.getm||
 	      '</TD><TD ALIGN="right">'||R_CA.pins||'</TD>';
     print(L_LINE);
-    L_LINE := '<TD ALIGN="right">'||R_CA.pinm||'</TD><TD ALIGN="right">'||
-              R_CA.reloads||'</TD><TD ALIGN="right">'||R_CA.inv||'</TD></TR>';
+    L_LINE := '<TD ALIGN="right">'||R_CA.pinm||'</TD><TD ALIGN="right"'||S2||'>'||
+              R_CA.reloads||'</TD><TD ALIGN="right"'||S3||'>'||R_CA.inv||'</TD></TR>';
     print(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
