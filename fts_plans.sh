@@ -25,7 +25,15 @@ if [ -z "$1" ]; then
   echo StatsPack. Look inside the script header for closer details, and
   echo check for the configuration in the separate 'config' file.
   echo ----------------------------------------------------------------------------
-  echo "Syntax: ${SCRIPT} <ORACLE_SID> [StartID EndID]"
+  echo "Syntax: ${SCRIPT} <ORACLE_SID> [Options]"
+  echo "  Options:"
+  echo "     -b <BEGIN_ID (Snapshot)"
+  echo "     -e <END_ID (Snapshot)>"
+  echo "     -p <Password>"
+  echo "     -s <ORACLE_SID/Connection String for Target DB>"
+  echo "     -u <username>"
+  echo "  Example: generate report for oradb up to snapshot ID 1800:"
+  echo "   ${SCRIPT} oradb -e 1800"
   echo ============================================================================
   echo
   exit 1
@@ -34,15 +42,27 @@ fi
 # =================================================[ Configuration Section ]===
 # -------------------------------------------[ Read the Configuration File ]---
 . ./config $*
-SQLSET=$TMPDIR/osprep_fts_$1.$$
+# ------------------------------------------[ process command line options ]---
+while [ "$1" != "" ] ; do
+  case "$1" in
+    -s) shift; ORACLE_CONNECT=$1;;
+    -u) shift; user=$1;;
+    -p) shift; password=$1;;
+    -e) shift; END_ID=$1;;
+    -b) shift; START_ID=$1;;
+  esac
+  shift
+done
+if [ -z "$ORACLE_CONNECT" ]; then
+  ORACLE_CONNECT=$ORACLE_SID
+fi
+if [ -n $START_ID ]; then
+  if [ -z $END_ID ]; then
+    END_ID=$START_ID
+  fi
+fi
 
-# If Start/End ID are specified on CmdLine, override internal settings:
-if [ -n "$2" ]; then
-  START_ID=$2
-fi
-if [ -n "$3" ]; then
-  END_ID=$3
-fi
+SQLSET=$TMPDIR/osprep_fts_$ORACLE_SID.$$
 
 # ---------------------------------------------------[ Setup some Settings ]---
 if [ "$EXC_PERF_FOR" = "" ];
@@ -58,7 +78,7 @@ fi
 
 # -------------------------------[ Prepare and run the final report script ]---
 cat >$SQLSET<<ENDSQLFTS
-CONNECT $user/$password@$1
+CONNECT $user/$password@$ORACLE_SID
 Set TERMOUT OFF
 Set SCAN OFF
 Set SERVEROUTPUT On Size 1000000
