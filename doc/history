@@ -232,7 +232,7 @@ v0.2.6
   were turned off via the config
 + Modularization: Dictionary- and Library Cache Statistics, RBS Stats and RBS
   Storage, Undo Segment Summary, Enqueue Activities, PGA Aggregat, PGA Memory,
-  Buffer Pool, Buffer Waits and Instance Recovery Stats can now be switched off
-  (see config)
+  Buffer Pool, Buffer Waits, Instance Recovery Stats, TS and File IO Stats can
+  now be switched off (see config)
 * sorted the entries in the "features" block of the config file to represent
   the order the segments appear in the report (same for the HTML documentation)

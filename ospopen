@@ -31,6 +31,8 @@ DECLARE
   MK_BUFFP NUMBER;
   MK_BUFFW NUMBER;
   MK_RECO NUMBER;
+  MK_TSIO NUMBER;
+  MK_FIO NUMBER;
   WR_IE_BUFFNW NUMBER;
   AR_IE_BUFFNW NUMBER;
   WR_IE_REDONW NUMBER;
@@ -300,179 +302,6 @@ DECLARE
       FROM stats\$sqltext WHERE hash_value=hv
      ORDER BY piece;
 
-  CURSOR C_TSIO (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER) IS
-    SELECT e.tsname tsname,
-           to_char(sum(e.phyrds - nvl(b.phyrds,0)),'9,999,999,990') reads,
-	   to_char(sum(e.phyrds - nvl(b.phyrds,0))/ela,'9,990.00') rps,
-	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
-	           0,0,
-	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10),
-		   '9,990.0') avgrd,
-           decode(sum(e.phyrds - nvl(b.phyrds,0)),
-	           0,0,
-	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10) avems,
-	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
-	           0, to_number(NULL),
-		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
-		   sum(e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
-           decode(sum(e.phyrds - nvl(b.phyrds,0)),
-	           0, to_number(NULL),
-		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
-		   sum(e.phyrds - nvl(b.phyrds,0)) ) bprn,
-	   to_char(sum(e.phywrts - nvl(b.phywrts,0)),'9,999,999,990') writes,
-	   to_char(sum(e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
-	   to_char(sum(e.wait_count - nvl(b.wait_count,0)),'99,999,990') waits,
-	   to_char(decode(sum(e.wait_count - nvl(b.wait_count,0)),
-	           0,0,
-		   (sum(e.time - nvl(b.time,0)) /
-		    sum(e.wait_count - nvl(b.wait_count,0)))*10),
-		   '9,990.0') avgbw,
-	   sum(e.phywrts - nvl(b.phywrts,0)) +
-	   sum(e.phyrds - nvl(b.phyrds,0)) ios
-      FROM stats\$filestatxs e, stats\$filestatxs b
-     WHERE b.snap_id(+) = bid
-       AND e.snap_id    = eid
-       AND b.dbid(+)    = db_id
-       AND e.dbid       = db_id
-       AND b.dbid(+)    = e.dbid
-       AND b.instance_number(+) = instnum
-       AND e.instance_number    = instnum
-       AND b.instance_number(+) = e.instance_number
-       AND b.tsname(+)  = e.tsname
-       AND b.filename(+)= e.filename
-       AND ( (e.phyrds - nvl(b.phyrds,0) ) +
-             (e.phywrts - nvl(b.phywrts,0) ) ) > 0
-     GROUP BY e.tsname
-    UNION SELECT e.tsname tsname,
-           to_char(sum(e.phyrds - nvl(b.phyrds,0)),'9,999,999,990') reads,
-	   to_char(sum(e.phyrds - nvl(b.phyrds,0))/ela,'9,990.00') rps,
-	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
-	           0,0,
-	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10),
-		   '9,990.0') avgrd,
-           decode(sum(e.phyrds - nvl(b.phyrds,0)),
-	           0,0,
-	           (sum(e.readtim - nvl(b.readtim,0)) / sum(e.phyrds - nvl(b.phyrds,0))) * 10) avems,
-	   to_char(decode(sum(e.phyrds - nvl(b.phyrds,0)),
-	           0, to_number(NULL),
-		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
-		   sum(e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
-           decode(sum(e.phyrds - nvl(b.phyrds,0)),
-	           0, to_number(NULL),
-		   sum(e.phyblkrd - nvl(b.phyblkrd,0)) /
-		   sum(e.phyrds - nvl(b.phyrds,0)) ) bprn,
-	   to_char(sum(e.phywrts - nvl(b.phywrts,0)),'9,999,999,990') writes,
-	   to_char(sum(e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
-	   to_char(sum(e.wait_count - nvl(b.wait_count,0)),'9,999,990') waits,
-	   to_char(decode(sum(e.wait_count - nvl(b.wait_count,0)),
-	           0,0,
-		   (sum(e.time - nvl(b.time,0)) /
-		    sum(e.wait_count - nvl(b.wait_count,0)))*10),
-		   '9,990.0') avgbw,
-	   sum(e.phywrts - nvl(b.phywrts,0)) +
-	   sum(e.phyrds - nvl(b.phyrds,0)) ios
-      FROM stats\$tempstatxs e, stats\$tempstatxs b
-     WHERE b.snap_id(+) = bid
-       AND e.snap_id    = eid
-       AND b.dbid(+)    = db_id
-       AND e.dbid       = db_id
-       AND b.dbid(+)    = e.dbid
-       AND b.instance_number(+) = instnum
-       AND e.instance_number    = instnum
-       AND b.instance_number(+) = e.instance_number
-       AND b.tsname(+)  = e.tsname
-       AND b.filename(+)= e.filename
-       AND ( (e.phyrds - nvl(b.phyrds,0) ) +
-             (e.phywrts - nvl(b.phywrts,0) ) ) > 0
-     GROUP BY e.tsname
-     ORDER BY ios desc;
-
-  CURSOR C_FileIO (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER) IS
-    SELECT e.tsname tsname,
-           e.filename filename,
-           to_char(e.phyrds - nvl(b.phyrds,0),'9,999,999,990') reads,
-	   to_char((e.phyrds - nvl(b.phyrds,0))/ela,'9,990.00') rps,
-	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
-	           0,0,
-	           ((e.readtim - nvl(b.readtim,0)) / 
-		    (e.phyrds - nvl(b.phyrds,0))) * 10),
-		   '9,990.0') avgrd,
-           decode(e.phyrds - nvl(b.phyrds,0),
-	           0,0,
-	           ((e.readtim - nvl(b.readtim,0)) / 
-		    (e.phyrds - nvl(b.phyrds,0))) * 10) avems,
-	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
-	           0, to_number(NULL),
-		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
-		   (e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
-           decode(e.phyrds - nvl(b.phyrds,0),
-	           0, to_number(NULL),
-		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
-		   (e.phyrds - nvl(b.phyrds,0)) ) bprn,
-	   to_char(e.phywrts - nvl(b.phywrts,0),'9,999,999,990') writes,
-	   to_char((e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
-	   to_char(e.wait_count - nvl(b.wait_count,0),'999,999,990') waits,
-	   to_char(decode(e.wait_count - nvl(b.wait_count,0),
-	           0,0,
-		   ((e.time - nvl(b.time,0)) /
-		    (e.wait_count - nvl(b.wait_count,0)))*10),
-		   '9,990.0') avgbw
-      FROM stats\$filestatxs e, stats\$filestatxs b
-     WHERE b.snap_id(+) = bid
-       AND e.snap_id    = eid
-       AND b.dbid(+)    = db_id
-       AND e.dbid       = db_id
-       AND b.dbid(+)    = e.dbid
-       AND b.instance_number(+) = instnum
-       AND e.instance_number    = instnum
-       AND b.instance_number(+) = e.instance_number
-       AND b.tsname(+)  = e.tsname
-       AND b.filename(+)= e.filename
-       AND ( (e.phyrds - nvl(b.phyrds,0) ) +
-             (e.phywrts - nvl(b.phywrts,0) ) ) > 0
-    UNION SELECT e.tsname tsname,
-           e.filename filename,
-           to_char(e.phyrds - nvl(b.phyrds,0),'9,999,999,990') reads,
-	   to_char((e.phyrds - nvl(b.phyrds,0))/ela,'9,990.00') rps,
-	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
-	           0,0,
-	           ((e.readtim - nvl(b.readtim,0)) / (e.phyrds - nvl(b.phyrds,0))) * 10),
-		   '9,990.0') avgrd,
-           decode(e.phyrds - nvl(b.phyrds,0),
-	           0,0,
-	           ((e.readtim - nvl(b.readtim,0)) / 
-		    (e.phyrds - nvl(b.phyrds,0))) * 10) avems,
-	   to_char(decode(e.phyrds - nvl(b.phyrds,0),
-	           0, to_number(NULL),
-		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
-		   (e.phyrds - nvl(b.phyrds,0)) ), '9,990.0') bpr,
-           decode(e.phyrds - nvl(b.phyrds,0),
-	           0, to_number(NULL),
-		   (e.phyblkrd - nvl(b.phyblkrd,0)) /
-		   (e.phyrds - nvl(b.phyrds,0)) ) bprn,
-	   to_char(e.phywrts - nvl(b.phywrts,0),'9,999,999,990') writes,
-	   to_char((e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
-	   to_char(e.wait_count - nvl(b.wait_count,0),'999,999,990') waits,
-	   to_char(decode(e.wait_count - nvl(b.wait_count,0),
-	           0,0,
-		   ((e.time - nvl(b.time,0)) /
-		    (e.wait_count - nvl(b.wait_count,0)))*10),
-		   '9,990.0') avgbw
-      FROM stats\$tempstatxs e, stats\$tempstatxs b
-     WHERE b.snap_id(+) = bid
-       AND e.snap_id    = eid
-       AND b.dbid(+)    = db_id
-       AND e.dbid       = db_id
-       AND b.dbid(+)    = e.dbid
-       AND b.instance_number(+) = instnum
-       AND e.instance_number    = instnum
-       AND b.instance_number(+) = e.instance_number
-       AND b.tsname(+)  = e.tsname
-       AND b.filename(+)= e.filename
-       AND ( (e.phyrds - nvl(b.phyrds,0) ) +
-             (e.phywrts - nvl(b.phywrts,0) ) ) > 0
-     ORDER BY tsname,filename;
-
   CURSOR C_RLim (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT resource_name rname,
            to_char(current_utilization,'999,999,990') curu,
@@ -696,6 +525,9 @@ fi
 if [ -n "$BGWAITHEAD" ]; then
   cat $BGWAITHEAD>>$SQLSET
 fi
+if [ -n "$IOHEAD" ]; then
+  cat $IOHEAD>>$SQLSET
+fi
 if [ -n "$INSTACTHEAD" ]; then
   cat $INSTACTHEAD>>$SQLSET
 fi
@@ -758,6 +590,8 @@ BEGIN
   MK_BUFFP    := :MK_BUFFP;
   MK_BUFFW    := :MK_BUFFW;
   MK_RECO     := :MK_RECO;
+  MK_TSIO     := :MK_TSIO;
+  MK_FIO      := :MK_FIO;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
   WR_IE_REDONW := :WR_IE_REDONW;
@@ -875,7 +709,14 @@ BEGIN
     L_LINE := L_LINE||' [ <A HREF="#instact">Instance Activity</A> ]';
   END IF;
   print(L_LINE);
-  L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]';
+  IF MK_TSIO = 1 THEN
+    L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ]';
+  ELSE
+    L_LINE := '';
+  END IF;
+  IF MK_FIO = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#fileio">File IO</A> ]';
+  END IF;
   IF MK_RECO = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#recover">Instance Recovery</A> ]';
   END IF;

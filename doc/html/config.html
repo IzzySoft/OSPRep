@@ -119,6 +119,15 @@
            normal cases, you will not need the "All Wait Events" and "Background Waits"
            segments (that's why they are turned off by the default configuration),
            but they may be useful for closer investigations.</td></tr>
+   <tr><td class="td_name"><code>MK_TSIO</code></td>
+       <td class="text" rowspan="2">The "TableSpace IO Summary Statistics" and
+           "File IO Summary Statistics" generally list up the same values, as long
+           as each TableSpace consists of exactly one datafile. In this case, you
+           may want to turn off one of these two stats (which normally will be the
+           TSIO, since FIO additionally lists up the file names).<br>
+           The only other difference is: TSIO stats are ordered by IOs, while FIO
+           stats are ordered by TS and file names.</td></tr>
+   <tr><td class="td_name"><code>MK_FIO</code></td></tr>
    <tr><td class="td_name"><code>MK_INSTACT</code></td>
        <td class="text">The "Instance Activity" segment of the report can be boring
            sometimes, so you may suppress it here and just activate it if you

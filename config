@@ -49,6 +49,9 @@ END_ID=0
 MK_ALLWAITS=0
 # Include Background Waits? [0|1]
 MK_BGWAITS=0
+# Include the TS and File I/O Stats? [0|1]
+MK_TSIO=1
+MK_FIO=1
 # Include Instance Activity? [0|1]
 MK_INSTACT=0
 # Include Instance REcovery Stats? [0|1]
