@@ -231,6 +231,9 @@ BEGIN
   print('var eid   = '||eid||';');
   print('var btime = "'||BTIME||'";');
   print('var etime = "'||ETIME||'";');
+  FOR R_SnapID IN C_MinSnap(DBID,INST_NUM,EID) LOOP
+    print('var dbup_id = '||R_SnapID.minid||';');
+  END LOOP;
 
   -- Chart statistics
   get_sysevent(DBID,INST_NUM,BID,EID,'free buffer waits','freebuff');
