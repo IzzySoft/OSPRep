@@ -47,6 +47,12 @@ function drawStat(stat) {
     case "redoreq" :  parent.dstat = parent.redoreq;
                   parent.dname = "Redo Log Space Requests";
 		  break;
+    case "enqper" :  parent.dstat = parent.enqper;
+                  parent.dname = "Enqueue Timeouts per Request";
+		  break;
+    case "libmiss" :  parent.dstat = parent.libmiss;
+                  parent.dname = "Pct Library Cache HitMisses";
+		  break;
   }
   location.reload();
 }

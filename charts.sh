@@ -171,9 +171,28 @@ DECLARE
         print(rec.line);
       END LOOP;
     EXCEPTION
-      WHEN NO_DATA_FOUND THEN print('no_data');
-      -- NULL;
+      WHEN NO_DATA_FOUND THEN NULL;
     END;
+
+  PROCEDURE get_libmiss(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+    CURSOR C_Lib(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+      SELECT arrname||'['||snap_id||'] = '||
+             decode(nvl(sum(gets),0),0,0,100-nvl((sum(gethits)/sum(gets)),0)*100)||
+	     ';' line
+        FROM stats\$librarycache
+       WHERE snap_id BETWEEN bid AND eid
+         AND dbid = db_id
+         AND instance_number = instnum
+       GROUP BY snap_id;
+    BEGIN
+      print(CHR(10)||'var '||arrname||' = new Array();');
+      FOR rec IN C_Lib(db_id,instnum,bid,eid,arrname) LOOP
+        print(rec.line);
+      END LOOP;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN NULL;
+    END;
+
 
 BEGIN
   OSPVER := '$version';
@@ -223,6 +242,7 @@ BEGIN
   get_sysevent(DBID,INST_NUM,BID,EID,'log file switch completion','lgsw');
   get_sysstat(DBID,INST_NUM,BID,EID,'redo log space requests','redoreq');
   get_sysstat_per(DBID,INST_NUM,BID,EID,'enqueue timeouts','enqueue requests','enqper');
+  get_libmiss(DBID,INST_NUM,BID,EID,'libmiss');
 
 END;
 /
