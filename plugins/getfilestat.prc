@@ -20,6 +20,7 @@ PROCEDURE get_filestats(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid I
          TO_CHAR(100*(1-(e.bytes_free/e.bytes)),'990.00') e_freepct,
 	 TO_CHAR((e.bytes - b.bytes)/1024/1024,'99,999,990.0') byte_diff,
 	 TO_CHAR((100*e.bytes/b.bytes)-100,'9,990.00') pct_diff,
+	 (100*e.bytes/b.bytes)-100 num_pctdiff,
 	 s.minsnap min_snap,s.maxsnap max_snap
     FROM istats\$datafiles b,istats\$datafiles e,
 	 ( SELECT MIN(snap_id) minsnap, MAX(snap_id) maxsnap
@@ -49,14 +50,15 @@ PROCEDURE get_filestats(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid I
 	      '<TH CLASS="th_sub">% Change</TH></TR>';
     print(L_LINE);
     FOR rec IN cur LOOP
+      S1 := alert_gt_warn(7*rec.num_pctdiff/DB_UPTIME,100,50);
       L_LINE := ' <TR><TD CLASS="td_name">'||rec.tsname||'</TD><TD CLASS="td_name">'||
                 rec.dfname||'</TD><TD ALIGN="right">'||rec.b_bytes||
                 ' M</TD><TD ALIGN="right">'||rec.b_freebytes||' M</TD><TD ALIGN="right">';
       print(L_LINE);
       L_LINE := rec.b_freepct||'</TD><TD ALIGN="right">'||rec.e_bytes||
 		' M</TD><TD ALIGN="right">'||rec.e_freebytes||' M</TD><TD ALIGN="right">'||
-		rec.e_freepct||'</TD><TD ALIGN="right">'||rec.byte_diff||
-		' M</TD><TD ALIGN="right">'||rec.pct_diff||'</TR>';
+		rec.e_freepct||'</TD><TD ALIGN="right"'||S1||'>'||rec.byte_diff||
+		' M</TD><TD ALIGN="right"'||S1||'>'||rec.pct_diff||'</TD></TR>';
       print(L_LINE);
     END LOOP;
     L_LINE := TABLE_CLOSE;

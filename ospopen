@@ -17,6 +17,7 @@ DECLARE
   MK_USSTAT NUMBER;
   MK_LACT NUMBER;
   MK_LMS NUMBER;
+  DB_UPTIME NUMBER;
   L_LINE VARCHAR2(4000);
   R_TITLE VARCHAR(200);
   TABLE_OPEN VARCHAR(100); -- Table Attributes
@@ -958,6 +959,44 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
+  FUNCTION num_cp(small IN NUMBER, big IN NUMBER, level IN STRING) RETURN VARCHAR2 IS
+    level2 VARCHAR2(100);
+    BEGIN
+      IF small > big THEN
+        level2 := to_char(small,'9999.99')||'_gt_'||to_char(big,'9999.99');
+--        RETURN ' CLASS="'||small||'_gt_'||big||'"';
+        RETURN ' CLASS="'||level||'"';
+      ELSE
+        RETURN '';
+      END IF;
+    EXCEPTION
+      WHEN OTHERS THEN RETURN '';
+    END;
+
+  FUNCTION alert_gt_warn(val IN NUMBER, alert IN NUMBER,warn IN NUMBER) RETURN VARCHAR2 IS
+    htmlcode VARCHAR2(30);
+    BEGIN
+      htmlcode := num_cp(val,alert,'alert');
+      IF htmlcode = '' THEN
+        htmlcode := num_cp(val,warn,'warn');
+      END IF;
+      RETURN htmlcode;
+    EXCEPTION
+      WHEN OTHERS THEN RETURN '';
+    END;
+
+  FUNCTION alert_lt_warn(val IN NUMBER, alert IN NUMBER,warn IN NUMBER) RETURN VARCHAR2 IS
+    htmlcode VARCHAR2(30);
+    BEGIN
+      htmlcode := num_cp(warn,val,'warn');
+      IF htmlcode = '' THEN
+        htmlcode := num_cp(alert,val,'alert');
+      END IF;
+      RETURN htmlcode;
+    EXCEPTION
+      WHEN OTHERS THEN RETURN '';
+    END;
+
 ENDSQL
 
 . $GETWAITS
@@ -1113,8 +1152,10 @@ BEGIN
   SELECT SUM(bytes) INTO I2 from v\$datafile;
   I3 := (I1+I2)/1048576;
   S1 := to_char(I3,'999,999,999.99');
-  SELECT to_char(startup_time,'DD.MM.YYYY HH24:MI'),to_char(sysdate - startup_time,'9990.00')
-    INTO S2,S3 FROM v\$instance;
+  SELECT to_char(startup_time,'DD.MM.YYYY HH24:MI'),
+         to_char(sysdate - startup_time,'9990.00'),
+	 sysdate - startup_time
+    INTO S2,S3,DB_UPTIME FROM v\$instance;
   L_LINE := ' <TR><TD class="td_name">FileSize (Data+Log)</TD><TD>'||S1||' MB</TD></TR>'||CHR(10)||
             ' <TR><TD class="td_name">Startup / Uptime</TD><TD>'||S2||' / '||S3||' d</TD></TR>';
   print(L_LINE);
