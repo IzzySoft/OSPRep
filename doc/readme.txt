@@ -68,9 +68,28 @@ case :-)
 4) Installation
 ---------------
 
-Just copy all files from the root directory of this archive to a suitable
-place and adjust the file "config" to reflect your settings. That file is the
-only one you need to edit, leave the others untouched.
+1. Create the directory where the report files (*.html) should be placed in.
+   As example, we assume the /var/www/html/oracle/reports directory here.
+2. Below this directory, create another directory named "help". Make sure
+   both directories have the right permissions so your webserver can read all
+   contained files.
+3. Create a directory to hold the scripts - this should *NOT* be below your
+   web servers document root. As example, we use ~/scripts here.
+4. Unpack this archive (including sub directories) to ~/scripts
+   (since you read this file, you may already have the archive unpacked; in
+   this case just move the files there).
+5. Edit the ~/scripts/config file to reflect your settings. That file is the
+   only one you need to edit, leave the others untouched. Important to change
+   are at least the settings for user, password, REPDIR (if other than in our
+   example) and the location of the style sheet (which you need to copy there)
+6. Go to the ~scripts/install directory and execute mkhelp.sh which creates
+   the help files (placement of the stylesheet is adjusted this way) in the
+   /var/www/html/oracle/reports/help directory, copies the help icon to this
+   location and sets the file permissions so everybody can read them.
+7. In six days G*d created the heavens and the earth - the seventh is Shabbat,
+   and He rested. Get yourself a cup of coffee, tea or whatever you like, and
+   relax for a moment.
+
 To run the script, start spreport.sh - calling it with no parameters tells
 you its syntax. It will run with just giving it the ORACLE_SID of the database
 to report on as only parameter - provided, your Oracle environment is set up

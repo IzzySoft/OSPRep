@@ -121,7 +121,7 @@ v0.1.4 (10.12.2003)
 + added enqueue type descs plus tuning hints
 + enhanced description for wait events
 
-v0.1.5
+v0.1.5 (19.12.2003)
 -------------------
 + new AddOn for datafile growth statistics
 ! fixed another bug in get_plan() that broke the job if a statement had multiple
@@ -130,3 +130,4 @@ v0.1.5
 * increased number length for buffer waits
 * outsourced verbose hints to external help files (and made them even more
   verbose ;)
++ updated the doc/readme.txt concerning the installation instructions
