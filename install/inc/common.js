@@ -53,6 +53,12 @@ function drawStat(stat) {
     case "libmiss" :  parent.dstat = parent.libmiss;
                   parent.dname = "Pct Library Cache HitMisses";
 		  break;
+    case "logon" :  parent.dstat = parent.logon;
+                  parent.dname = "Logons";
+		  break;
+    case "opencur" :  parent.dstat = parent.opencur;
+                  parent.dname = "Open Cursors";
+		  break;
   }
   location.reload();
 }

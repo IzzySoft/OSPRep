@@ -84,12 +84,8 @@ document.close();
  <OPTION VALUE="-">-- Select Statistic: --</OPTION>
  <OPTION VALUE="enqper">Enqueue Timeouts per Request</OPTION>
  <OPTION VALUE="libmiss">Library Cache HitMisses</OPTION>
- <!--OPTION VALUE="busybuff">Buffer Busy Waits</OPTION>
- <OPTION VALUE="fileseq">DB file Sequential Reads</OPTION>
- <OPTION VALUE="filescat">DB file Scattered Reads</OPTION>
- <OPTION VALUE="lgwr">LGWR Wait for Redo Copy</OPTION>
- <OPTION VALUE="lgsw">Log File Switch Completion</OPTION>
- <OPTION VALUE="redoreq">Redo Log Space Requests</OPTION -->
+ <OPTION VALUE="logon">Logons</OPTION>
+ <OPTION VALUE="opencur">Open Cursors</OPTION>
 </SELECT>
 </TD></TR></TABLE><BR>
 <TABLE ALIGN="center" BORDER="1">
