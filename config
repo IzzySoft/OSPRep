@@ -51,6 +51,8 @@ MK_ALLWAITS=0
 MK_BGWAITS=0
 # Include Instance Activity? [0|1]
 MK_INSTACT=0
+# Include Instance REcovery Stats? [0|1]
+MK_RECO=1
 # Include Buffer Stats (Pool & Waits)? [0|1]
 MK_BUFFP=0
 MK_BUFFW=1

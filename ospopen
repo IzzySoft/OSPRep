@@ -30,6 +30,7 @@ DECLARE
   MK_PGAM NUMBER;
   MK_BUFFP NUMBER;
   MK_BUFFW NUMBER;
+  MK_RECO NUMBER;
   WR_IE_BUFFNW NUMBER;
   AR_IE_BUFFNW NUMBER;
   WR_IE_REDONW NUMBER;
@@ -472,37 +473,6 @@ DECLARE
              (e.phywrts - nvl(b.phywrts,0) ) ) > 0
      ORDER BY tsname,filename;
 
-  CURSOR C_Recover (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT 'B' name,
-           to_char(target_mttr,'999,999') tm,
-	   to_char(estimated_mttr,'999,999') em,
-	   to_char(recovery_estimated_ios,'9,999,999') rei,
-	   to_char(actual_redo_blks,'99,999,999') arb,
-	   to_char(target_redo_blks,'99,999,999') trb,
-	   to_char(log_file_size_redo_blks,'99,999,999') lfrb,
-	   to_char(log_chkpt_timeout_redo_blks,'99,999,999') lctrb,
-	   to_char(log_chkpt_interval_redo_blks,'99,999,999,999') lcirb,
-	   snap_id snid
-      FROM stats\$instance_recovery b
-     WHERE b.snap_id = bid
-       AND b.dbid    = db_id
-       AND b.instance_number = instnum
-    UNION SELECT 'E' name,
-           to_char(target_mttr,'999,999') tm,
-	   to_char(estimated_mttr,'999,999') em,
-	   to_char(recovery_estimated_ios,'9,999,999') rei,
-	   to_char(actual_redo_blks,'99,999,999') arb,
-	   to_char(target_redo_blks,'99,999,999') trb,
-	   to_char(log_file_size_redo_blks,'99,999,999') lfrb,
-	   to_char(log_chkpt_timeout_redo_blks,'99,999,999') lctrb,
-	   to_char(log_chkpt_interval_redo_blks,'99,999,999,999') lcirb,
-	   snap_id snid
-      FROM stats\$instance_recovery e
-     WHERE e.snap_id = eid
-       AND e.dbid    = db_id
-       AND e.instance_number = instnum
-     ORDER BY snid;
-
   CURSOR C_RLim (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT resource_name rname,
            to_char(current_utilization,'999,999,990') curu,
@@ -729,6 +699,9 @@ fi
 if [ -n "$INSTACTHEAD" ]; then
   cat $INSTACTHEAD>>$SQLSET
 fi
+if [ -n "$RECOHEAD" ]; then
+  cat $RECOHEAD>>$SQLSET
+fi
 if [ -n "$BUFFHEAD" ]; then
   cat $BUFFHEAD>>$SQLSET
 fi
@@ -784,6 +757,7 @@ BEGIN
   MK_PGAM     := :MK_PGAM;
   MK_BUFFP    := :MK_BUFFP;
   MK_BUFFW    := :MK_BUFFW;
+  MK_RECO     := :MK_RECO;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
   WR_IE_REDONW := :WR_IE_REDONW;
@@ -901,8 +875,10 @@ BEGIN
     L_LINE := L_LINE||' [ <A HREF="#instact">Instance Activity</A> ]';
   END IF;
   print(L_LINE);
-  L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]'||
-            ' [ <A HREF="#recover">Instance Recovery</A> ]';
+  L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]';
+  IF MK_RECO = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#recover">Instance Recovery</A> ]';
+  END IF;
   IF MK_BUFFP + MK_BUFFW > 0 THEN
     L_LINE := L_LINE||' [ <A HREF="#buffstat">Buffer Stats</A> ]';
   END IF;
