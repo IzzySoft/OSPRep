@@ -493,17 +493,28 @@
   print('<HR>');
 
   -- Buffer Waits
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="bufwait">Buffer Wait Statistics</A></TH></TR>'||
-            ' <TR><TD COLSPAN="4" ALIGN="center">Ordered by Wait Time desc, Waits desc</TD></TR>';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="bufwait">Buffer Wait Statistics</A></TH></TR>'||
+            ' <TR><TD COLSPAN="5" ALIGN="center">Ordered by Wait Time desc, Waits desc';
+  print(L_LINE);
+  L_LINE := '<DIV ALIGN="justify">If Waits/s are high for a given class, you may '||
+            'consider some tuning: For the undo headers/blocks, adding more rollback '||
+	    'segments can help.';
+  print(L_LINE);
+  L_LINE := 'With data blocks, increasing the size of the database buffer cache '||
+            'can reduce these waits. Segment header waits generally point to the '||
+	    'need to add freelists to the affected table.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Class</TH><TH CLASS="th_sub">Waits</TH>'||
             '<TH CLASS="th_sub">Tot Wait Time (s)</TH>'||
-	    '<TH CLASS="th_sub">Avg Wait Time (s)</TH></TR>';
+	    '<TH CLASS="th_sub">Avg Wait Time (s)</TH>'||
+	    '<TH CLASS="th_sub">Waits/s</TH></TR>';
   print(L_LINE);
   FOR R_Buff IN C_BuffW(DBID,INST_NUM,BID,EID) LOOP
     L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.class||'</TD><TD ALIGN="right">'||
               R_Buff.icnt||'</TD><TD ALIGN="right">'||R_Buff.itim||
-	      '</TD><TD ALIGN="right">'||R_Buff.iavg||'</TD></TR>';
+	      '</TD><TD ALIGN="right">'||R_Buff.iavg;
+    print(L_LINE);
+    L_LINE := '</TD><TD ALIGN="right">'||R_Buff.wps||'</TD></TR>';
     print(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;

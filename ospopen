@@ -530,10 +530,13 @@ DECLARE
 
   CURSOR C_BuffW (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT e.class class,
-           to_char(e.wait_count - nvl(b.wait_count,0),'999,999') icnt,
+           to_char(e.wait_count - nvl(b.wait_count,0),'99,999,999') icnt,
 	   to_char((e.time - nvl(b.time,0))/100,'999,990.00') itim,
 	   to_char((e.time - nvl(b.time,0)) /
-	   (e.wait_count - nvl(b.wait_count,0)) * 10,'999,990.00') iavg
+	   (e.wait_count - nvl(b.wait_count,0)) * 10,'999,990.00') iavg,
+	   TO_CHAR(DECODE((e.time - nvl(b.time,0))/100,0,NULL,
+ 	    (e.wait_count - nvl(b.wait_count,0))/((e.time - nvl(b.time,0))/100)),
+	    '999,990.00') wps
       FROM stats\$waitstat b, stats\$waitstat e
      WHERE b.snap_id = bid
        AND e.snap_id = eid
