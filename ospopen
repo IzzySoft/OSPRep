@@ -674,6 +674,8 @@ DECLARE
            to_char(e.total_req# - nvl(b.total_req#,0),'99,999,999') reqs,
 	   to_char(e.succ_req#  - nvl(b.succ_req#,0),'99,999,999') sreq,
 	   to_char(e.failed_req# - nvl(b.failed_req#,0),'99,999,999') freq,
+	   to_char(100*((e.failed_req# - nvl(b.failed_req#,0))/
+                   (e.total_req# - nvl(b.total_req#,0))),'990.00') pctfail,
 	   to_char(e.total_wait# - nvl(b.total_wait#,0),'999,999') waits,
 	   to_char(decode( (e.total_wait# - nvl(b.total_wait#,0)),
 	                   0, to_number(NULL),
@@ -887,7 +889,7 @@ DECLARE
 	                100 - (e.pinhits - b.pinhits) *100 /
 			(e.pins - b.pins)),'990.00'),'&nbsp;') pinm,
 	   to_char(e.reloads - b.reloads,'9,999,990') reloads,
-	   to_char(e.invalidations - b.invalidations,'999,990') inv
+	   to_char(e.invalidations - b.invalidations,'999,999,990') inv
       FROM stats\$librarycache b, stats\$librarycache e
      WHERE b.snap_id = bid
        AND e.snap_id = eid

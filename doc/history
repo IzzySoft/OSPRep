@@ -154,3 +154,4 @@ v0.1.8
 -------------------
 + added some enqueue types to help file
 + added PctMiss and PctSleep to Latch Sleep Breakdown block
++ added PctFail to Enqueue Activity block

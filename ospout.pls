@@ -680,27 +680,28 @@
   print('<HR>');
 
   -- Enqueue Activity
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="enq">Enqueue Activity</A>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="enq">Enqueue Activity</A>'||
             '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'enqwaits'||CHR(39)||
 	    ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
   print(L_LINE);
-  L_LINE:=  ' <TR><TD COLSPAN="7" ALIGN="center">Enqueue Stats gathered prior to 9i '||
+  L_LINE:=  ' <TR><TD COLSPAN="8" ALIGN="center">Enqueue Stats gathered prior to 9i '||
 	    'should not be compared with 9i data<BR>Ordered by Waits desc, Requests desc';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Eq</TH><TH CLASS="th_sub">Requests</TH>'||
             '<TH CLASS="th_sub">Succ Gets</TH><TH CLASS="th_sub">Failed Gets</TH>'||
-	    '<TH CLASS="th_sub">Waits</TH>';
+	    '<TH CLASS="th_sub">PctFail</TH>';
   print(L_LINE);
-  L_LINE := '<TH CLASS="th_sub">Avg Wt Time (ms)</TH><TH CLASS="th_sub">'||
-            'Wait Time (s)</TH></TR>';
+  L_LINE := '<TH CLASS="th_sub">Waits</TH><TH CLASS="th_sub">Avg Wt Time (ms)'||
+            '</TH><TH CLASS="th_sub">Wait Time (s)</TH></TR>';
   print(L_LINE);
   FOR R_Enq IN C_Enq(DBID,INST_NUM,BID,EID) LOOP
     L_LINE := ' <TR><TD CLASS="td_name">'||R_Enq.name||'</TD><TD ALIGN="right">'||
               R_Enq.reqs||'</TD><TD ALIGN="right">'||R_Enq.sreq||
 	      '</TD><TD ALIGN="right">'||R_Enq.freq||'</TD>';
     print(L_LINE);
-    L_LINE := '<TD ALIGN="right">'||R_Enq.waits||'</TD><TD ALIGN="right">'||
-              R_Enq.awttm||'</TD><TD ALIGN="right">'||R_Enq.wttm||'</TD></TR>';
+    L_LINE := '<TD ALIGN="right">'||R_Enq.pctfail||'</TD><TD ALIGN="right">'||
+              R_Enq.waits||'</TD><TD ALIGN="right">'||R_Enq.awttm||
+              '</TD><TD ALIGN="right">'||R_Enq.wttm||'</TD></TR>';
     print(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
