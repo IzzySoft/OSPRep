@@ -93,8 +93,8 @@ case :-)
 To run the script, start spreport.sh - calling it with no parameters tells
 you its syntax. It will run with just giving it the ORACLE_SID of the database
 to report on as only parameter - provided, your Oracle environment is set up
-correctly. For the two optional parameters, see the config file on START_ID and
-END_ID.
+correctly. For the optional parameters -b (BEGIN_SNAP_ID) and -e (END_SNAP_ID),
+see the config file on START_ID and END_ID.
 
 ===============================================================================
 
