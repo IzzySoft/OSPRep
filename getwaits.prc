@@ -1,3 +1,14 @@
+#!/bin/bash
+# =============================================================================
+# Oracle StatsPack Report 2 HTML       (c) 2003 by IzzySoft (devel@izzysoft.de)
+# -----------------------------------------------------------------------------
+# $Id$
+# -----------------------------------------------------------------------------
+# Wait Object Stats. This procedure is only included if the according objects
+# exist in the perfstat users schema
+# =============================================================================
+
+cat>>$SQLSET<<ENDSQL
 PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
  CURSOR cur IS
   SELECT owner,segment_name,segment_type,event,waited,entries FROM (
@@ -5,7 +16,8 @@ PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN 
      FROM ( SELECT snap_id,owner,segment_name,segment_type,event,
                    DECODE(wait_time,0,seconds_in_wait,wait_time) waited,
  		   instance_number,dbid
- 	      FROM istats$waitobjects )
+ 	      FROM istats\$waitobjects
+	     WHERE owner NOT IN ($EXCLUDE_OWNERS) )
     WHERE dbid = db_id
       AND instance_number = instnum
       AND snap_id BETWEEN bid AND eid
@@ -31,7 +43,7 @@ PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN 
 	      '<TH CLASS="th_sub">Entries</TH></TR>';
     print(L_LINE);
     FOR rec IN cur LOOP
-      L_LINE := ' <TR><TD>'||rec.owner||'.'||rec.segment_name||'</TD><TD>'||
+      L_LINE := ' <TR><TD CLASS="td_name">'||rec.owner||'.'||rec.segment_name||'</TD><TD>'||
                 rec.segment_type||'</TD><TD>'||rec.event||'</TD><TD ALIGN="right">'||
 		rec.waited||'</TD><TD ALIGN="right">'||rec.entries||'</TD></TR>';
       print(L_LINE);
@@ -42,3 +54,5 @@ PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN 
  EXCEPTION
    WHEN OTHERS THEN NULL;
  END;
+
+ENDSQL

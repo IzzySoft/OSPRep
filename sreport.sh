@@ -66,15 +66,21 @@ cat $SQLSET checkwt.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
 WTEXISTS=`cat $TMPOUT`
 if [ "$WTEXISTS" = "1" ];
 then
-  GETWAITS=`cat getwaits.prc`
+  GETWAITS="./getwaits.prc"
 else
-  cat >$TMPOUT<<ENDSQL
-  PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-  BEGIN
-    NULL;
-  END;
-ENDSQL
-  GETWAITS=`cat $TMPOUT`
+  GETWAITS="ls >/dev/null"
+fi
+
+# ---------------------------------------------------[ Setup some Settings ]---
+if [ "$EXC_PERF_FOR" = "" ];
+then EXCLUDE_OWNERS="'NULL'"
+else
+  for i in $EXC_PERF_FOR; do
+    if [ "$EXCLUDE_OWNERS" = "" ];
+    then EXCLUDE_OWNERS="'$i'"
+    else EXCLUDE_OWNERS="$EXCLUDE_OWNERS,'$i'"
+    fi
+  done
 fi
 
 # -------------------------------[ Prepare and run the final report script ]---

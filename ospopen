@@ -1085,8 +1085,11 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
-$GETWAITS
+ENDSQL
 
+. $GETWAITS
+
+cat>>$SQLSET<<ENDSQL
 BEGIN
   -- Configuration
   OSPVER := '$version';
