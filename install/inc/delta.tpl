@@ -30,16 +30,19 @@ function mkline(arr,col) {
    parts = Math.ceil(620/(eid - bid));
    inc   = 1;
  }
+ odelta = 0; delta = 0;
  for (i=bid,k=bid+1; i<=eid; i=i+inc,k=k+inc) {
    if (isNaN(arr[i]) || isNaN(arr[k])) {
      k++; i++;
      continue;
    }
    if (i>bid) {
-     delta = (arr[k] - arr[i]) / parts;
+//     delta = (arr[k] - arr[i]) / parts;
+     delta = (arr[k] - arr[i]);
      for (f=1;f<=parts;f++) {
        x = D.ScreenX(i + f/parts);
-       j = D.ScreenY(Math.abs(f*delta));
+       diff = odelta - delta;
+       j = D.ScreenY(Math.abs(odelta + f*diff/parts));
        new Pixel(x, j, col);
      }
    } else {
@@ -47,12 +50,14 @@ function mkline(arr,col) {
      j = D.ScreenY(Math.abs(arr[k] - arr[i]));
      new Pixel(x, j, col);
    }
+   if (!isNaN(delta)) odelta = delta;
  }
 }
 
 document.open();
 var D=new Diagram();
 maxval = parent.amaxdelta[parent.arrname];
+//maxval = 2000;
 if (maxval == 0 || isNaN(maxval)) maxval = 1;
 mkdiag();
 mkline(parent.dstat,'#0000FF');

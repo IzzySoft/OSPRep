@@ -222,3 +222,4 @@ v0.2.5
 -------------------
 ! cumulative charts drew out-of-range lines when there were gaps in the
   snapshot range
+* made the delta charts more accurate
