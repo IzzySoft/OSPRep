@@ -138,7 +138,7 @@ DECLARE
 
   PROCEDURE get_plan (bid IN NUMBER, eid IN NUMBER, hashval IN VARCHAR2) IS
     HASHID NUMBER; CI NUMBER; SI NUMBER; OSIZE VARCHAR2(50); IND VARCHAR2(255);
-    CW NUMBER;
+    CW NUMBER; S1 VARCHAR2(50);
     CURSOR C_PGet (bid IN NUMBER, eid IN NUMBER, hash_val IN VARCHAR2) IS
       SELECT operation,options,object_owner,object_name,optimizer,
              NVL(TO_CHAR(cost,'999,990'),'&nbsp;') cost,
@@ -193,7 +193,16 @@ DECLARE
 	  SI := 11*(LENGTH(rplan.operation) + LENGTH(rplan.options) + 2*rplan.depth)/9;
 	  CI := 3*(LENGTH(OSIZE)+1)/10;
 	  IF SI > CW THEN CW := SI; END IF;
-          print('<TR><TD><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
+	  IF rplan.operation||' '||rplan.options = 'TABLE ACCESS FULL' THEN
+	    IF rplan.cost > 1000 THEN
+	      S1 := ' CLASS="alert"';
+	    ELSE
+	      S1 := ' CLASS="warn"';
+	    END IF;
+	  ELSE
+	    S1 := '';
+	  END IF;
+          print('<TR'||S1||'><TD><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
                 '</CODE></DIV></TD><TD>'||rplan.object_owner||'.'||rplan.object_name||
                 '</TD><TD>'||NVL(rplan.optimizer,'&nbsp;'));
           print('</TD><TD ALIGN="right">'||rplan.cost||'</TD><TD ALIGN="right">'||
@@ -270,7 +279,7 @@ BEGIN
   -- Page Ending
   L_LINE := '<HR>'||CHR(10)||TABLE_OPEN;
   print(L_LINE);
-  L_LINE := '<TR><TD><DIV CLASS="small">Created by OSPRep_FTS v'||OSPVER||' &copy; 2003-2004 by '||
+  L_LINE := '<TR><TD><DIV CLASS="small">Created by OSPRep v'||OSPVER||' (FTS module) &copy; 2003-2004 by '||
 	    '<A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> '||
             '&amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></DIV></TD></TR>';
   print(L_LINE);
