@@ -1041,6 +1041,7 @@ DECLARE
        WHERE plan_hash_value = HASHID
          AND cost IS NOT NULL
 	 AND object_owner IS NOT NULL
+	 AND object_owner NOT IN ('SYS','SYSTEM')
          AND snap_id BETWEEN bid AND eid;
       IF CI > 0
       THEN
