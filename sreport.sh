@@ -724,6 +724,32 @@ DECLARE
        AND e.value  >= b.value
        AND e.value  >  0;
 
+  CURSOR C_Enq (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT e.eq_type name,
+           to_char(e.total_req# - nvl(b.total_req#,0),'99,999,999') reqs,
+	   to_char(e.succ_req#  - nvl(b.succ_req#,0),'99,999,999') sreq,
+	   to_char(e.failed_req# - nvl(b.failed_req#,0),'99,999,999') freq,
+	   to_char(e.total_wait# - nvl(b.total_wait#,0),'999,999') waits,
+	   to_char(decode( (e.total_wait# - nvl(b.total_wait#,0)),
+	                   0, to_number(NULL),
+			   (  (e.cum_wait_time - nvl(b.cum_wait_time,0))
+			    / (e.total_wait# - nvl(b.total_wait#,0))
+			   ) ),'999,999,990.00') awttm,
+	   to_char((e.cum_wait_time - nvl(b.cum_wait_time,0))/1000,
+	            '999,999') wttm
+      FROM stats\$enqueue_stat b, stats\$enqueue_stat e
+     WHERE b.snap_id(+) = bid
+       AND e.snap_id    = eid
+       AND b.dbid(+)    = db_id
+       AND e.dbid       = db_id
+       AND b.dbid(+)    = e.dbid
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.instance_number(+) = e.instance_number
+       AND b.eq_type(+) = e.eq_type
+       AND e.total_wait# - nvl(b.total_wait#,0) > 0
+     ORDER BY waits desc, reqs desc;
+
 
 BEGIN
   -- Configuration
@@ -768,7 +794,7 @@ BEGIN
             ' [ <A HREF="#bufpool">Buffer Pool</A> ] [ <A HREF="#recover">Instance Recovery</A> ]'||
 	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]';
   dbms_output.put_line(L_LINE);
-  L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ]</TD></TR>';
+  L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ] [ <A HREF="#enq">Enqueue Activity</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1389,7 +1415,7 @@ BEGIN
   dbms_output.put_line(L_LINE);
 
   -- PGA Memory
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#pga">PGA Memory Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4">PGA Memory Statistics</A></TH></TR>'||
             ' <TR><TD COLSPAN="4" ALIGN="center">WorkArea (W/A) memory is used for: sort, bitmap merge, and hash join ops</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Begin (M)</TH>'||
@@ -1399,6 +1425,31 @@ BEGIN
     L_LINE := ' <TR><TD CLASS="td_name">'||R_PGAM.st||'</TD><TD ALIGN="right">'||
               R_PGAM.snap1||'</TD><TD ALIGN="right">'||R_PGAM.snap2||
 	      '</TD><TD ALIGN="right">'||R_PGAM.diff||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- Enqueue Activity
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#enq">Enqueue Activity</A></TH></TR>'||
+            ' <TR><TD COLSPAN="7" ALIGN="center">Enqueue Stats gathered prior to 9i '||
+	    'should not be compared with 9i data<BR>Ordered by Waits desc, Requests desc</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Eq</TH><TH CLASS="th_sub">Requests</TH>'||
+            '<TH CLASS="th_sub">Succ Gets</TH><TH CLASS="th_sub">Failed Gets</TH>'||
+	    '<TH CLASS="th_sub">Waits</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">Avg Wt Time (ms)</TH><TH CLASS="th_sub">'||
+            'Wait Time (s)</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_Enq IN C_Enq(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_Enq.name||'</TD><TD ALIGN="right">'||
+              R_Enq.reqs||'</TD><TD ALIGN="right">'||R_Enq.sreq||
+	      '</TD><TD ALIGN="right">'||R_Enq.freq||'</TD>';
+    dbms_output.put_line(L_LINE);
+    L_LINE := '<TD ALIGN="right">'||R_Enq.waits||'</TD><TD ALIGN="right">'||
+              R_Enq.awttm||'</TD><TD ALIGN="right">'||R_Enq.wttm||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
