@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+	<title>OSPRep Dokumentation: Introduction</title>
+    <meta name="Author" content="Andreas Itzchak Rehberg (devel@izzysoft.de)">
+    <meta name="Description" content="OraRep Documentation: Introduction to OSPRep">
+    <meta name="Keywords" content="Oracle, Statspack, Report, Documentation">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+<table align="center" width="95%" border="0">
+ <tr><th>Introduction to OSPRep</th></tr>
+ <tr><th class="th_sub"><a name="whatis"></a>What is OSPRep?</th></tr>
+ <tr><td class="text">
+  OSPRep is an Oracle Statspack Report Generator, used to create reports about your
+  database activity statistics in a nice, human readable format - which in this
+  case is HTML -, based on the data collected by Oracle Statspack. The generated
+  report provides you with information on the physical database design (tablespaces,
+  datafiles, memory), statistical values on your databases efficiency and more.
+  It is highly configurable concerning the report elements you need. Due to its
+  modular design, only the needed code (depending on the options you chose in
+  the config file) will be build and executed, to save your database from
+  unnecessary load.
+ </td></tr>
+ <tr><th class="th_sub"><a name="whatdoes"></a>What does OSPRep do?</th></tr>
+ <tr><td class="text">
+  OSPRep reads its data out of the (level 5 and 6) statistics gathered by the
+  <code>statspack.snap()</code> procedure of Oracle Statspack. Analogue to the
+  ASCII report one may generate using Oracle Statspack's <code>spreport.sql</code>,
+  OSPrep generates HTML reports out of these data. Additional to this, there are
+  some plugins available (located within the <code>install/</code> directory of
+  the distribution) to gather more information (which is not provided by Oracle
+  Statspack itself) and report on those, e.g. datafile growth and wait events.<br>
+  Together with these data, OSPRep gives some descriptions on their meaning as
+  well as ideas what they may point to or what actions are required from the DBA
+  in order to bring the instance to a more efficient state. For some issues,
+  even code pieces for possible required actions are given.<br>
+  Another useful thing to mention here is the <code>fts_plans.sh</code> script
+  provided by OSPrep, which can be used to gather execution plans for all SQL
+  statements executed during a certain period of time, having caused full table
+  scans (FTS). This way OSPRep gives you the statements on your finger tips to
+  start the tuning of your applications.
+ </td></tr>
+ <tr><th class="th_sub"><a name="whatnot"></a>What does OSPRep <strong>NOT</strong> do?</th></tr>
+ <tr><td class="text">
+  OSPRep will take no (write) actions to the database (only things that
+  OSPRep writes are the HTML report pages and some temporary files; the latter
+  ones are automatically removed when the script finishes). It only does report
+  what it finds in the database plus some general description on those values. It
+  gives no "perfect solution" to problems that may exist with your instance, just
+  hints to what may be helpful. It will not repair or tune your database for you:
+  in order to have this done, you must draw your own conclusions out of the report
+  results.
+ </td></tr>
+</td></tr></table>
+
+</body>
+</html>

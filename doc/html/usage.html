@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+	<title>OSPRep Dokumentation: Usage</title>
+    <meta name="Author" content="Andreas Itzchak Rehberg (devel@izzysoft.de)">
+    <meta name="Description" content="OSPRep Documentation: Usage">
+    <meta name="Keywords" content="Oracle, Statspack, Report, Documentation">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+<table align="center" width="95%" border="0">
+ <tr><th>Usage</th></tr>
+ <tr><th class="th_sub"><a name="cmdline"></a>Command line</th></tr>
+ <tr><td class="text">
+  Called without any parameter, <code>sreport.sh</code> displays a short help
+  page concerning its command line parameters. A normal, successful run can
+  be done with just passing it the <code>ORACLE_SID</code> of the instance to
+  report on as only parameter - provided your Oracle environment is set up to
+  support a connect with the syntax "<code>CONNECT user/password@ORACLE_SID</code>".
+  More command line parameters are available and listed in the table below:
+ </td></tr>
+ <tr><td class="text">
+  <table align="center" width="95%">
+   <tr><th class="th_sub2">Parameter</th><th class="th_sub2">Description</th></tr>
+    <tr><td class="td_name"><code>-b</code></td>
+        <td class="text" rowspan="2"><code>BEGIN_SNAP_ID</code> and
+            <code>END_SNAP_ID</code> for the report. See
+            <a href="config.html#opt">configuration section</a> on
+            <code>START_ID</code> and <code>END_ID</code> for details.</td></tr>
+   <tr><td class="td_name"><code>-e</code></td></tr>
+   <tr><td class="td_name"><code>-c</code></td>
+       <td class="text">alternative configuration file to use. You may create
+           different configurations according to e.g. special cases (such
+           as e.g. running a complete report containing all blocks just once
+           a week, while having a shorter everyday report), or for groups of
+           instances you want to monitor the same blocks or having the same
+           user/password combinations in, and then just specify the corresponding
+           config file at the command line.</td></tr>
+    <tr><td class="td_name"><code>-u</code></td>
+        <td class="text">User name for the SQL <code>CONNECT</code> statement</td></tr>
+    <tr><td class="td_name"><code>-p</code></td>
+        <td class="text">Password for the SQL <code>CONNECT</code> statement</td></tr>
+    <tr><td class="td_name"><code>-s</code></td>
+        <td class="text">Connection string for the SQL <code>CONNECT</code>
+            statement (if different from the <code>ORACLE_SID</code>). This
+            is used for the SQL <code>CONNECT</code> string only, while the
+            <code>ORACLE_SID</code> is also used for the report's file name.</td></tr>
+  </table>
+ </td></tr>
+ <tr><td class="text">
+  An example command line could look like this:
+  <table align="center" border="0"><tr><td>
+  <div class="code" style="width:40em">
+    ./sreport.sh oradb -c maint.config -d /var/www/reports/oradb
+  </div>
+  </td></tr></table>
+ </td></tr>
+ <tr><th class="th_sub"><a name="eval"></a>Evaluation of results</th></tr>
+ <tr><td class="text">
+  Since database design and usage can differ a lot between different systems,
+  there is no general recipe to success on the evaluation of the reports (not
+  even on the configuration of OSPRep). Nevertheless, there are several places
+  of the report that may deserve closer attention even on the first evaluation
+  and/or by the novice admin.
+ </td></tr>
+ <tr><td class="text">
+  A good point to start is to see the "Instance Efficiency Percentage". In this
+  section you can get a general idea on your database instances performance.
+  Most items in this table provide you a link to the part of the report to
+  continue with if problems are indicated by the efficiency percentage of the
+  entry concerned.
+ </td></tr>
+ <tr><td class="text">
+  Next, you may wish to evaluate the "Top 5 wait events". Again, here are links
+  provided to guide you to other segments of the report giving you closer/further
+  information on relevant topics.
+ </td></tr>
+ <tr><td class="text">
+  These are just some <b><i>ideas</i></b> of where to start and what to keep in
+  mind. Of course, there are many more things to consider - but either you already
+  know about these, you will learn about these, or you will find somebody else
+  to tell you: this documentation is not intended to be a seminary on Oracle
+  Performance Tuning, there are other sources on this. If OSPRep (with its
+  documentation, reports and hints) got you started on this topic, or gave you
+  new/more ideas about it, I did a good job :-)
+ </td></tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+	<title>OSPRep Dokumentation: Installation</title>
+    <meta name="Author" content="Andreas Itzchak Rehberg (devel@izzysoft.de)">
+    <meta name="Description" content="OSPRep Documentation: Installation of OSPRep">
+    <meta name="Keywords" content="Oracle, Statspack, Report, Documentation">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+<table align="center" width="95%" border="0">
+ <tr><th>Installation</th></tr>
+ <tr><td class="text">
+  The following instructions assume that all requirements mentioned in the
+  <a href="tech.html#require">Requirements</a> section of this documentation are
+  met. Especially: an Oracle Database Server up and running, having Oracle
+  Statspack installed.
+ </td></tr>
+ <tr><td class="text">
+  <ol>
+   <li><b>Create a directory where the generated reports shall be stored in.</b>
+       This directory should be below your web servers <code>DOCUMENT_ROOT</code>,
+       if you intend to serve the reports using an IntraNet or InterNet web site.</li>
+   <li><b>Create a directory for the Online Help pages.</b> This directory must
+       be located below the one created in step 1 and must be named <code>help</code>.</li>
+   <li><b>Create a directory for the scripts.</b> This directory must <b>NOT</b>
+       be below your web servers document root but in a somehow safe place, only
+       accessible by authorized users. This directory is referenced to as
+       "<code>~/scripts</code>" from now on.</li>
+   <li><b>Unpack the archive</b> into the <code>~/scripts</code> directory. Make sure
+       to retain the directory structure inside the archive. A safe way to do so
+       is to copy the <code>osprep*.tgz</code> file to the target directory,
+       change into this directory and run the command <code>tar xzf osprep*.tgz</code>.</li>
+   <li><b>Edit the configuration file</b> to reflect your systems settings. The
+       default configuration file is named <code>config</code> and to be found
+       within the <code>~/scripts</code> directory. For details on this step, see
+       the chapter on <a href="config.html">configuration</a>.</li>
+   <li><b>Create the help pages.</b> To do so, change to the <code>~/scripts/install</code>
+       directory and run the <code>mkhelp.sh</code> script located there. This
+       will process the template (<code>*.tpl</code>) files and generate HTML
+       files out of them, which will be placed into the <code>help/</code>
+       directory created in step 2. Other files needed there (as e.g. the help
+       icon) will be copied as well. Optionally set up the
+       <a href="tech.html#plugins">Collector Plugins</a> from this directory
+       as well.</li>
+   <li>In six days G*d created the heavens and the earth (see Gen 1+2) - the
+       seventh day is Shabbat, and He rested. So get yourself a cup of coffee,
+       tea, or whatever drink you like, and <b>relax</b> for a moment - your
+       (installation) work is done!</li>
+  </ol>
+ </td></tr>
+ <tr><td class="text">
+  Now that you succeeded up to this point, continue with the
+  <a href="usage.html">usage</a> page to read important things about how to
+  call the <code>~/scripts/sreport.sh</code> and <code>~/scripts/fts_plans.sh</code>
+  scripts. Maybe after a while you want to fine-tune your setup: read more about
+  that on the <a href="config.html">configuration</a> page.
+ </td></tr>
+</table>
+
+</body>
+</html>
