@@ -166,3 +166,6 @@ v0.1.9
 * adapted new command line syntax on fts_plans.sh
 * if user provided BEGIN_SNAP_ID (with "-b") but no END_SNAP_ID (with "-e")
   the report could go nuts; prevented this assuming EID=BID for these cases
+* some CleanUp of directory structure (moving all files from the plugins/
+  directory to install/ [since only needed for install], and all "plugins" to
+  the plugins/ directory for cleaner structs and preparation of modularization

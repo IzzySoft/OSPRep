@@ -39,8 +39,11 @@ if [ -z "$1" ]; then
 fi
 
 # =================================================[ Configuration Section ]===
+BINDIR=${0%/*}
+PLUGINDIR=$BINDIR/plugins
+
 # -------------------------------------------[ Read the Configuration File ]---
-. ./config $*
+. $BINDIR/config $*
 
 # ------------------------------------------[ process command line options ]---
 while [ "$1" != "" ] ; do
@@ -62,7 +65,7 @@ if [ -n $START_ID ]; then
   fi
 fi
 
-. ./version
+. $BINDIR/version
 SQLSET=$TMPDIR/osprep_sqlset_$ORACLE_SID.$$
 TMPOUT=$TMPDIR/osprep_tmpout_$ORACLE_SID.$$
 GWDUMMY=$TMPDIR/osprep_gwdummy_$ORACLE_SID.$$
@@ -82,16 +85,16 @@ Set PAGESIZE 0
 SPOOL $TMPOUT
 ENDSQL
 
-cat $SQLSET getver.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
+cat $SQLSET $PLUGINDIR/getver.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
 DBVER=`cat $TMPOUT`
-SPFILE=sp$DBVER.pls
+SPFILE=$PLUGINDIR/sp$DBVER.pls
 
 # ----------------------------------[ Check for the AddOns and set them up ]---
-cat $SQLSET checkwt.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
+cat $SQLSET $PLUGINDIR/checkwt.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
 WTEXISTS=`cat $TMPOUT`
 if [ "$WTEXISTS" = "1" ];
 then
-  GETWAITS="./getwaits.prc"
+  GETWAITS="$PLUGINDIR/getwaits.prc"
 else
   cat >$GWDUMMY<<ENDSQL
   cat>>$SQLSET<<ENDDUMMY
@@ -105,11 +108,11 @@ ENDSQL
   GETWAITS=$GWDUMMY
 fi
 
-cat $SQLSET checkdf.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
+cat $SQLSET $PLUGINDIR/checkdf.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
 DFEXISTS=`cat $TMPOUT`
 if [ "$DFEXISTS" = "1" ];
 then
-  GETDF="./getfilestat.prc"
+  GETDF="$PLUGINDIR/getfilestat.prc"
 else
   cat >$DFDUMMY<<ENDSQL
   cat>>$SQLSET<<ENDDUMMY
@@ -148,8 +151,8 @@ Set Echo Off
 SPOOL $REPDIR/${ORACLE_SID}.html
 ENDSQL
 
-. ./ospopen
-#cat $SQLSET $SPFILE ospout.pls >osp.out
-cat $SQLSET $SPFILE ospout.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
+. $BINDIR/ospopen
+#cat $SQLSET $SPFILE $BINDIR/ospout.pls >osp.out
+cat $SQLSET $SPFILE $BINDIR/ospout.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
 rm $SQLSET
 rm $TMPOUT

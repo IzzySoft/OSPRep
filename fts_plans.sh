@@ -281,6 +281,6 @@ END;
 
 ENDSQLFTS
 
-cat $SQLSET >osp_fts.out
+#cat $SQLSET >osp_fts.out
 cat $SQLSET | $ORACLE_HOME/bin/sqlplus -s /NOLOG
 rm $SQLSET
