@@ -263,4 +263,5 @@ v0.2.8 (12.03.2004)
 v0.2.9
 -------------------
 + added "Transactions per Snapshot" to ratio charts
-* some cleanup to charts.sh
+* some code cleanup, formatting improvements and minor corrections
+! sreport.sh crashed when specified END_ID was higher then the latest snapshot
