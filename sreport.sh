@@ -81,7 +81,7 @@ DECLARE
   I2 NUMBER;
   I3 NUMBER;
   BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER; EDRT NUMBER; EET NUMBER;
-  EPC NUMBER;
+  EPC NUMBER; BTIME VARCHAR2(20); ETIME VARCHAR2(20);
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
   PARA VARCHAR2(3); VERSN VARCHAR(17); HOST_NAME VARCHAR(64);
   LHTR NUMBER; BFWT NUMBER; TRAN NUMBER; CHNG NUMBER; UCAL NUMBER; UROL NUMBER;
@@ -791,6 +791,24 @@ DECLARE
        AND e.usn     = b.usn
      ORDER BY e.usn;
 
+  CURSOR C_USS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
+    SELECT undotsn,
+           to_char(sum(undoblks),'99,999,999') undob,
+	   to_char(sum(txncount),'99,999,999') txcnt,
+	   to_char(max(maxquerylen),'999,999,999') maxq,
+	   to_char(max(maxconcurrency),'999,999') maxc,
+	   to_char(sum(ssolderrcnt),'99,999') snol,
+	   to_char(sum(nospaceerrcnt),'99,999') nosp,
+	   sum(unxpstealcnt)||'/'||sum(unxpblkrelcnt)||'/'||
+	   sum(unxpblkreucnt)||' / '||sum(expstealcnt)||'/'||
+	   sum(expblkrelcnt)||'/'||sum(expblkreucnt) blkst
+      FROM stats\$undostat
+     WHERE dbid = db_id
+       AND instance_number = instnum
+       AND end_time > to_date(btime, 'DD.MM.YYYY HH24:MI:SS')
+       AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
+     GROUP BY undotsn;
+
 
 BEGIN
   -- Configuration
@@ -836,7 +854,7 @@ BEGIN
 	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ] [ <A HREF="#enq">Enqueue Activity</A> ]'||
-            ' [ <A HREF="#rbs">RBS</A> ]</TD></TR>';
+            ' [ <A HREF="#rbs">RBS</A> ] [ <A HREF="#undo">Undo Segs</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -954,6 +972,8 @@ BEGIN
     EDRT := Rec_SnapInfo.edrt;
     EET  := Rec_SnapInfo.eet;
     EPC  := Rec_SnapInfo.epc;
+    BTIME:= Rec_SnapInfo.begin_snap_time;
+    ETIME:= Rec_SnapInfo.end_snap_time;
   END LOOP;
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1457,7 +1477,7 @@ BEGIN
   dbms_output.put_line(L_LINE);
 
   -- PGA Memory
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4">PGA Memory Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4">PGA Memory Statistics</TH></TR>'||
             ' <TR><TD COLSPAN="4" ALIGN="center">WorkArea (W/A) memory is used for: sort, bitmap merge, and hash join ops</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Begin (M)</TH>'||
@@ -1526,9 +1546,9 @@ BEGIN
   dbms_output.put_line(L_LINE);
 
   -- RBS Storage
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="#rbs">Rollback Segments Storage</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Rollback Segments Storage</TH></TR>'||
             ' <TR><TD COLSPAN="5" ALIGN="center">Optimal Size should be larger '||
-	    'than Avg Active ';
+	    'than Avg Active</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">RBS#</TH><TH CLASS="th_sub">Segment Size</TH>'||
             '<TH CLASS="th_sub">Avg Active</TH><TH CLASS="th_sub">Optimal Size</TH>'||
@@ -1540,6 +1560,34 @@ BEGIN
 	      '</TD><TD ALIGN="right">'||R_RBS.optsize||'</TD>';
     dbms_output.put_line(L_LINE);
     L_LINE := '<TD ALIGN="right">'||R_RBS.hwmsize||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- Undo Segs
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="#undo">Undo Segment Summary</A></TH></TR>'||
+            ' <TR><TD COLSPAN="8" ALIGN="center">Undo Segment block stats<BR>'||
+	    'uS - unexpired Stolen, uR - unexpired Released, uU - unexpired reUsed<BR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := 'eS - expired Stolen, eR - expired Released, eU - expired reUsed</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Undo TS#</TH><TH CLASS="th_sub">Undo Blocks</TH>'||
+            '<TH CLASS="th_sub"># TXN</TH><TH CLASS="th_sub">Max Qry Len (s)</TH>'||
+	    '<TH CLASS="th_sub">Max Tx Concurcy</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">Snapshot Too Old</TH><TH CLASS="th_sub">'||
+            'Out of Space</TH><TH CLASS="th_sub">uS/ur/uU / eS/eR/eU</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_USS IN C_USS(DBID,INST_NUM,BID,EID,BTIME,ETIME) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_USS.undotsn||'</TD><TD ALIGN="right">'||
+              R_USS.undob||'</TD><TD ALIGN="right">'||R_USS.txcnt||
+	      '</TD><TD ALIGN="right">'||R_USS.maxq||'</TD>';
+    dbms_output.put_line(L_LINE);
+    L_LINE := '<TD ALIGN="right">'||R_USS.maxc||'</TD><TD ALIGN="right">'||
+              R_USS.snol||'</TD><TD ALIGN="right">'||R_USS.nosp||'</TD><TD ALIGN="right">'||
+	      R_USS.blkst||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
