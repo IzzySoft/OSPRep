@@ -1071,7 +1071,7 @@ DECLARE
                 '</TD><TD ALIGN="right">'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
                 '</TD><TD ALIGN="right">'||OSIZE||'</TD></TR>');
         END LOOP;
-        print(TABLE_CLOSE||'</TD></TR>');
+        print('</TABLE></TD></TR>');
       END IF;
     EXCEPTION
       WHEN NO_DATA_FOUND THEN NULL;
