@@ -19,6 +19,10 @@ TD.smallname {
  background-color:#f0f0f0;
  border:1px solid #000000;
 }
+UL {
+ margin-top:2;
+ margin-bottom:2;
+}
 
 .th_sub  {
  text-align:center;
@@ -41,3 +45,23 @@ td.alert {
  background-color:#ff5555;
  font-weight:bold
 }
+td.warn {
+ background-color:Yellow;
+}
+tr.alert {
+ background-color:#ff5555;
+}
+tr.warn {
+ background-color:Yellow;
+}
+.code {
+  font-family: monospace; 
+  font-size: 8pt; 
+  background-color: #FFEEAA;
+  border:  1px solid #000000;
+  margin-bottom: 6px;
+  margin-top: 6px;
+  padding: 4px;
+  color: #660033;
+}
+
