@@ -100,6 +100,7 @@ DECLARE
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
   EID NUMBER; BID NUMBER; OSPVER VARCHAR2(10);
   BTIME VARCHAR2(20); ETIME VARCHAR2(20); DBUP_ID NUMBER;
+  DB_BLOCKSIZE NUMBER;
 
   CURSOR C_MaxSnap(db_id IN NUMBER, instnum IN NUMBER) IS
     SELECT MAX(snap_id) maxid FROM stats\$snapshot
@@ -371,6 +372,79 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
+  PROCEDURE get_filereads(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+    MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
+    CURSOR C_Read IS
+      SELECT arrname||'['||b.snap_id||'] = '||round(sum(e.phyblkrd - b.phyblkrd)*DB_BLOCKSIZE/1024/1024,2)||';' line,
+             b.snap_id snap_id,
+	     round(sum(e.phyblkrd - b.phyblkrd)*DB_BLOCKSIZE/1024/1024,2) value
+        FROM stats\$filestatxs b, stats\$filestatxs e
+       WHERE e.snap_id = b.snap_id +1
+         AND b.snap_id BETWEEN bid AND eid -1
+         AND b.tsname = e.tsname
+         AND b.filename = e.filename
+       GROUP BY b.snap_id;
+    BEGIN
+      MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
+      print(CHR(10)||'var '||arrname||' = new Array();');
+      FOR rec IN C_Read LOOP
+        print(rec.line);
+	IF rec.value > MAXVAL THEN
+	  MAXVAL := rec.value;
+	END IF;
+	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
+          IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
+            MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
+          END IF;
+	END IF;
+	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
+	  MAXDELTA := ABS(rec.value - LASTVAL);
+	END IF;
+	LASTVAL := rec.value;
+      END LOOP;
+      print('amaxval["'||arrname||'"] = '||MAXVAL||';');
+      print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
+      print('amaxdelta["'||arrname||'"] = '||MAXDELTA||';');
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN NULL;
+    END;
+
+  PROCEDURE get_filewrites(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+    MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
+    CURSOR C_Read IS
+      SELECT arrname||'['||b.snap_id||'] = '||round(sum(e.phyblkwrt - b.phyblkwrt)*DB_BLOCKSIZE/1024/1024,2)||';' line,
+             b.snap_id snap_id,
+	     round(sum(e.phyblkwrt - b.phyblkwrt)*DB_BLOCKSIZE/1024/1024,2) value
+        FROM stats\$filestatxs b, stats\$filestatxs e
+       WHERE e.snap_id = b.snap_id +1
+         AND b.snap_id BETWEEN bid AND eid -1
+         AND b.tsname = e.tsname
+         AND b.filename = e.filename
+       GROUP BY b.snap_id;
+    BEGIN
+      MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
+      print(CHR(10)||'var '||arrname||' = new Array();');
+      FOR rec IN C_Read LOOP
+        print(rec.line);
+	IF rec.value > MAXVAL THEN
+	  MAXVAL := rec.value;
+	END IF;
+	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
+          IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
+            MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
+          END IF;
+	END IF;
+	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
+	  MAXDELTA := ABS(rec.value - LASTVAL);
+	END IF;
+	LASTVAL := rec.value;
+      END LOOP;
+      print('amaxval["'||arrname||'"] = '||MAXVAL||';');
+      print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
+      print('amaxdelta["'||arrname||'"] = '||MAXDELTA||';');
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN NULL;
+    END;
 
 BEGIN
   OSPVER := '$version';
@@ -405,6 +479,13 @@ BEGIN
     FROM stats\$snapshot
    WHERE snap_id=EID;
 
+  SELECT value INTO DB_BLOCKSIZE
+    FROM stats\$parameter
+   WHERE name='db_block_size'
+     AND snap_id = EID
+     AND instance_number=INST_NUM
+     AND dbid=DBID;
+
   -- General variables
   print('var bid   = '||bid||';');
   print('var eid   = '||eid||';');
@@ -433,6 +514,8 @@ BEGIN
   get_librpp(DBID,INST_NUM,BID,EID,'rpp');
   get_libghr(DBID,INST_NUM,BID,EID,'ghr');
   get_rowcacheratio(DBID,INST_NUM,BID,EID,'rcr');
+  get_filereads(DBID,INST_NUM,BID,EID,'phyrd');
+  get_filewrites(DBID,INST_NUM,BID,EID,'phywrt');
 
 END;
 /

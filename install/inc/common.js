@@ -72,6 +72,12 @@ function drawStat(stat) {
     case "rcr"  : parent.dstat = parent.rcr;
                   parent.dname = "Pct Row Cache Ratio (OK: &lt; 15%)";
 		  break;
+    case "phyrd" : parent.dstat = parent.phyrd;
+                  parent.dname = "Physical Reads per Snapshot (MB)";
+		  break;
+    case "phywrt" : parent.dstat = parent.phywrt;
+                  parent.dname = "Physical Writes per Snapshot (MB)";
+		  break;
   }
   location.reload();
 }

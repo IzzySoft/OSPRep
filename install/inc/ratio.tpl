@@ -74,6 +74,8 @@ document.close();
  <OPTION VALUE="ghr">Library Cache GetHitRatio</OPTION>
  <OPTION VALUE="rcr">Row Cache Ratio</OPTION>
  <OPTION VALUE="cfr">Chained Fetch Ratio</OPTION>
+ <OPTION VALUE="phyrd">Physical Reads</OPTION>
+ <OPTION VALUE="phywrt">Physical Writes</OPTION>
  <OPTION VALUE="logon">Logons</OPTION>
  <OPTION VALUE="opencur">Open Cursors</OPTION>
 </SELECT>

@@ -247,3 +247,7 @@ v0.2.7 (08.03.2004)
   spread across the report)
 * if no Enqueue Activities are reported, we do not draw an empty table anymore
 * some work on formatting (duplicate rulers when excluding certain segments, etc.)
+
+v0.2.8
+-------------------
++ added FileIO to Ratio charts (phys. Reads/Writes per SnapShot)
