@@ -853,7 +853,23 @@
   print(L_LINE);
   L_LINE := ' latch get requests<BR>"NoWait Requests", "Pct NoWait Miss" are '||
             'for no-wait latch get requests<BR>"Pct Misses" for both should be '||
-	    'very close to 0.0<BR>';
+	    'very close to 0.0<DIV ALIGN="justify">';
+  print(L_LINE);
+  L_LINE := 'Potential Fixes for indicated Latch problems are: for the library '||
+            'cache and shared pool latches: adjusting the <CODE>shared_pool_size</CODE> '||
+	    'and use of bind variables / set ';
+  print(L_LINE);
+  L_LINE := '<CODE>cursor_sharing</CODE> parameter in your <CODE>init.ora</CODE>; '||
+            'for redo allocation latches: minimize redo generation and avoid '||
+	    'unnecessary commits; for redo copy latches: ';
+  print(L_LINE);
+  L_LINE := 'increase the <CODE>_log_simultaneous_</CODE> copies; for row cache '||
+            'objects latches: increase the shared pool; for cache buffer chain '||
+	    'latches: adjust <CODE>_db_block_hash_buckets</CODE>; ';
+  print(L_LINE);
+  L_LINE := 'for cache buffer latches: use <CODE>_db_block_lru_lru_latches</CODE> '||
+            'or multiple buffer pools. Again, these are <I>potential</I> fixes, '||
+	    'not general solutions.</DIV>';
   print(L_LINE);
   L_LINE := 'Ordered by Wait Time desc, Avg Slps/Miss, Pct NoWait Miss desc</TD></TR>';
   print(L_LINE);
