@@ -189,3 +189,7 @@ v0.2.1 (16.02.2004)
 * some formatting updates for the help files
 + added (cumulative) charts for selected system events (use charts.sh to create
   them)
+
+v0.2.2
+-------------------
+* M$IE had some problems with formatting of the charts - worked around it
