@@ -230,5 +230,5 @@ v0.2.6
 -------------------
 ! Navigation links for SGA and init.ora Stats have been set even if these stats
   were turned off via the config
-+ Modularization: Dictionary- and Library Cache Statistics can now be switched
-  off (see config)
++ Modularization: Dictionary- and Library Cache Statistics, RBS Stats and RBS
+  Storage can now be switched off (see config)

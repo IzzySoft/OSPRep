@@ -67,6 +67,9 @@ MK_SGABREAK=0
 # Create the statistics for DictionaryCache and LibraryCache? [0|1]
 MK_DC=1
 MK_LC=1
+# Include Rollback Segment Stats & Storage? [0|1]
+MK_RSSTAT=0
+MK_RSSTOR=0
 
 # -------------------------------------------------------------[ Go4Colors ]---
 # WR_* stands for WarnRatio, AR_* for AlertRatio. The next letters indicate the
