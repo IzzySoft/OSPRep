@@ -81,6 +81,7 @@ DECLARE
   I2 NUMBER;
   I3 NUMBER;
   BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER; EDRT NUMBER; EET NUMBER;
+  EPC NUMBER;
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
   PARA VARCHAR2(3); VERSN VARCHAR(17); HOST_NAME VARCHAR(64);
   LHTR NUMBER; BFWT NUMBER; TRAN NUMBER; CHNG NUMBER; UCAL NUMBER; UROL NUMBER;
@@ -125,7 +126,8 @@ DECLARE
 	   (e.snap_time - b.snap_time)*1440*60 ela,
 	   e.buffer_gets_th ebgt,
 	   e.disk_reads_th edrt,
-	   e.executions_th eet
+	   e.executions_th eet,
+	   e.parse_calls_th epc
       FROM stats\$snapshot b, stats\$snapshot e
      WHERE b.snap_id=$START_ID
        AND e.snap_id=$END_ID
@@ -318,6 +320,29 @@ DECLARE
 	   )
      WHERE rownum <= $TOP_N_SQL;
 
+  CURSOR C_SQLByParse (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, prse IN NUMBER) IS
+    SELECT parses,execs,pctparses,hashval
+      FROM ( SELECT /*+ ordered use_nl (b st) */
+              to_char((e.parse_calls - nvl(b.parse_calls,0)),'999,999,990') parses,
+	      to_char((e.executions - nvl(b.executions,0)),'999,999,990') execs,
+	      to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/prse,
+	             '990.00') pctparses,
+	      NVL ( e.hash_value,0 ) hashval
+	      FROM stats\$sql_summary e, stats\$sql_summary b
+	     WHERE b.snap_id(+)  = bid
+	       AND b.dbid(+)     = e.dbid
+	       AND b.instance_number(+) = e.instance_number
+	       AND b.hash_value(+)      = e.hash_value
+	       AND b.address(+)  = e.address
+	       AND b.text_subset(+)     = e.text_subset
+	       AND e.snap_id     = eid
+	       AND e.dbid        = db_id
+	       AND e.instance_number    = instnum
+	     ORDER BY (e.parse_calls - nvl(b.parse_calls,0)) desc,
+	              e.hash_value
+	   )
+     WHERE rownum <= $TOP_N_SQL;
+
   CURSOR C_GetSQL (hv IN NUMBER) IS
     SELECT sql_text FROM stats\$sqltext WHERE hash_value=hv
      ORDER BY piece;
@@ -359,7 +384,7 @@ BEGIN
             ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#bgwaitevents">Background Waits</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||
-	    ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ]</TD></TR>';
+	    ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -476,6 +501,7 @@ BEGIN
     EBGT := Rec_SnapInfo.ebgt;
     EDRT := Rec_SnapInfo.edrt;
     EET  := Rec_SnapInfo.eet;
+    EPC  := Rec_SnapInfo.epc;
   END LOOP;
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -736,7 +762,7 @@ BEGIN
 	    '<TH CLASS="th_sub">Reads per Exec</TH><TH CLASS="th_sub">% Total</TH>';
   dbms_output.put_line(L_LINE);
   L_LINE := '<TH CLASS="th_sub">CPU Time (s)</TH><TH CLASS="th_sub">'||
-            'Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TR>';
+            'Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
   dbms_output.put_line(L_LINE);
   FOR R_SQL IN C_SQLByReads(DBID,INST_NUM,BID,EID,PHYR) LOOP
     L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.phyreads||'</TD><TD ALIGN="right">'||
@@ -759,13 +785,13 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SQL by Executions
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#sqlbyexecs">SQL ordered by Executions</A></TH></TR>'||CHR(10)||
-            ' <TR><TD COLSPAN="7" ALIGN="center">End Executions Treshold: '||EET||'</TD></TR>';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#sqlbyexec">SQL ordered by Executions</A></TH></TR>'||CHR(10)||
+            ' <TR><TD COLSPAN="6" ALIGN="center">End Executions Treshold: '||EET||'</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Rows Processed</TH>'||
 	    '<TH CLASS="th_sub">Rows per Exec</TH><TH CLASS="th_sub">CPU per Exec (s)</TH>';
   dbms_output.put_line(L_LINE);
-  L_LINE := '<TH CLASS="th_sub">Elap per Exec (s)</TH><TH CLASS="th_sub">Hash Value</TR>';
+  L_LINE := '<TH CLASS="th_sub">Elap per Exec (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
   dbms_output.put_line(L_LINE);
   FOR R_SQL IN C_SQLByExec(DBID,INST_NUM,BID,EID) LOOP
     L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.execs||'</TD><TD ALIGN="right">'||
@@ -773,6 +799,30 @@ BEGIN
 	      '</TD><TD ALIGN="right">'||R_SQL.cputime||'</TD><TD ALIGN="right">';
     dbms_output.put_line(L_LINE);
     L_LINE := R_SQL.elapsed||'</TD><TD ALIGN="right">'||R_SQL.hashval||
+              '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
+    dbms_output.put_line(L_LINE);
+    FOR R_Statement IN C_GetSQL(R_SQL.hashval) LOOP
+      L_LINE := trim(R_Statement.sql_text);
+      dbms_output.put_line(L_LINE);
+    END LOOP;
+    L_LINE := '</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- SQL by Parse
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#sqlbyparse">SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
+            ' <TR><TD COLSPAN="4" ALIGN="center">End Parse Calls Treshold: '||EPC||'</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
+	    '<TH CLASS="th_sub">% Total Parses</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_SQL IN C_SQLByParse(DBID,INST_NUM,BID,EID,PRSE) LOOP
+    L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.parses||'</TD><TD ALIGN="right">'||
+              R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
+	      '</TD><TD ALIGN="right">'||R_SQL.hashval||
               '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
     dbms_output.put_line(L_LINE);
     FOR R_Statement IN C_GetSQL(R_SQL.hashval) LOOP
