@@ -26,7 +26,8 @@ if [ -z "$1" ]; then
   echo ----------------------------------------------------------------------------
   echo "Syntax: ${SCRIPT} <ORACLE_SID> [Options]"
   echo "  Options:"
-  echo "     -b <BEGIN_ID (Snapshot)"
+  echo "     -c <alternate ConfigFile>"
+  echo "     -b <BEGIN_ID (Snapshot)>"
   echo "     -e <END_ID (Snapshot)>"
   echo "     -p <Password>"
   echo "     -s <ORACLE_SID/Connection String for Target DB>"
