@@ -78,8 +78,34 @@ DECLARE
   I1 NUMBER;
   I2 NUMBER;
   I3 NUMBER;
+  BID NUMBER; EID NUMBER;
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
-  PARA VARCHAR(3); VERSN VARCHAR(17); HOST_NAME VARCHAR(64);
+  PARA VARCHAR2(3); VERSN VARCHAR(17); HOST_NAME VARCHAR(64);
+  LHTR NUMBER; BFWT NUMBER; TRAN NUMBER; CHNG NUMBER; UCAL NUMBER; UROL NUMBER;
+  UCOM NUMBER; RSIZ NUMBER; PHYR NUMBER; PHYRD NUMBER; PHYRDL NUMBER;
+  PHYW NUMBER; PRSE NUMBER; HPRS NUMBER; RECR NUMBER; GETS NUMBER; RLSR NUMBER;
+  RENT NUMBER; SRTM NUMBER; SRTD NUMBER; SRTR NUMBER; STRN NUMBER; CALL NUMBER;
+  LHR NUMBER; SP VARCHAR2(512); BC VARCHAR2(512); LB VARCHAR2(512); BS VARCHAR2(512);
+  TWT NUMBER; LOGC NUMBER; PRSCPU NUMBER; PRSELA NUMBER; TCPU NUMBER; EXE NUMBER;
+  BSPM NUMBER; ESPM NUMBER; BFRM NUMBER; EFRM NUMBER; BLOG NUMBER; ELOG NUMBER;
+  BOCUR NUMBER; EOCUR NUMBER; DMSD NUMBER; DMFC NUMBER; DMSI NUMBER; PMRV NUMBER;
+  PMPT NUMBER; NPMRV NUMBER; NPMPT NUMBER; DPMS NUMBER; DNPMS NUMBER;
+  GLSG NUMBER; GLAG NUMBER; GLGT NUMBER; GLSC NUMBER; GLAC NUMBER; GLCT NUMBER;
+  GLRL NUMBER; GCGE NUMBER; GCGT NUMBER; GCCV NUMBER; GCCT NUMBER;
+  GCCRRV NUMBER; GCCRRT NUMBER; GCCURV NUMBER; GCCURT NUMBER; GCCRSV NUMBER;
+  GCCRBT NUMBER; GCCRFT NUMBER; GCCRST NUMBER; GCCUSV NUMBER; GCCUPT NUMBER;
+  GCCUFT NUMBER; GCCUST NUMBER;
+  /* StatsPack ab Oracle v9.2 Start
+      DBFR NUMBER; GCDFR NUMBER; MSGSQ NUMBER; MSGSQT NUMBER; MSGSQK NUMBER;
+      MSGSQTK NUMBER; MSGRQ NUMBER; MSGRQT NUMBER;
+     StatsPack ab Oracle v9.2 END */
+  -- StatsPack vor Oracle v9.2 Start
+  DFCMS NUMBER; DFCMR NUMBER; DMRV NUMBER; DYNAL NUMBER; SCMA NUMBER; SCML NUMBER;
+  PINC NUMBER; PINCRNC NUMBER; PICC NUMBER; PICRRC NUMBER; PBC NUMBER;
+  PBCRC NUMBER; PCRBPI NUMBER; DYNAPRES NUMBER; DYNAPSHL NUMBER; PRCMA NUMBER;
+  PRCML NUMBER; PWRM NUMBER; PFPIM NUMBER; PWNM NUMBER; DYNARES NUMBER;
+  PCBA NUMBER; PCCRBA NUMBER;
+  -- StatsPack vor Oracle v9.2 END
 
   CURSOR C_SnapBind1 (db_id IN NUMBER, instnum IN NUMBER) IS
     SELECT parallel,version,host_name
@@ -106,6 +132,7 @@ DECLARE
 
 BEGIN
   -- Configuration
+  BID := $START_ID; EID := $END_ID;
   dbms_output.enable(1000000);
   R_TITLE := 'Report for $ORACLE_SID';
   TABLE_OPEN := '<TABLE ALIGN="center" BORDER="1">';
@@ -167,18 +194,87 @@ BEGIN
   dbms_output.put_line(L_LINE);
   dbms_output.put_line('<HR>');
 
+  -- Collect Changes from statspack
+  statspack.stat_changes (
+   BID, EID,
+   DBID, INST_NUM,
+   PARA,           -- End of IN arguments
+   LHTR, BFWT,
+   TRAN, CHNG,
+   UCAL, UROL,
+   RSIZ,
+   PHYR, PHYRD,
+   PHYRDL,
+   PHYW, UCOM,
+   PRSE, HPRS,
+   RECR, GETS,
+   RLSR, RENT,
+   SRTM, SRTD,
+   SRTR, STRN,
+   LHR, BC,
+   SP, LB,
+   BS, TWT,
+   LOGC, PRSCPU,
+   TCPU, EXE,
+   PRSELA,
+   BSPM, ESPM,
+   BFRM, EFRM,
+   BLOG, ELOG,
+   BOCUR, EOCUR,
+   DMSD, DMFC,   -- Begin of RAC
+   DFCMS, DFCMR, -- entfaellt ab v9.2
+   DMSI,
+   DMRV, DYNAL,  -- entfaellt ab v9.2
+   DYNARES,      -- dito
+   PMRV, PMPT,
+   NPMRV, NPMPT,
+   SCMA, SCML,   -- entfaellt ab v9.2
+   PINC, PINCRNC,-- dito
+   PICC, PICRRC, -- dito
+   PBC, PBCRC,   -- dito
+   PCBA, PCCRBA, -- dito
+   PCRBPI,       -- dito
+   DYNAPRES, DYNAPSHL, -- dito
+   PRCMA, PRCML, -- dito
+   PWRM, PFPIM,  -- dito
+   PWNM,         -- dito
+--   DBFR,       -- ab v9.2 benoetigt
+   DPMS, DNPMS,
+   GLSG, GLAG,
+   GLGT, GLSC,
+   GLAC, GLCT,
+   GLRL,
+--   GCDFR,      -- ab v9.2 benoetigt
+   GCGE, GCGT,
+   GCCV, GCCT,
+   GCCRRV, GCCRRT,
+   GCCURV, GCCURT,
+   GCCRSV,
+   GCCRBT, GCCRFT,
+   GCCRST, GCCUSV,
+   GCCUPT, GCCUFT,
+   GCCUST
+-- ,  MSGSQ, MSGSQT,   -- ab v9.2 benoetigt
+--   MSGSQK, MSGSQTK, -- dito
+--   MSGRQ, MSGRQT    -- dito
+  );
+  CALL := UCAL + RECR;
+
   -- SnapShot Info
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#snapinfo">SnapShot Info</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#snapinfo">SnapShot Info</A></TH></TR>'||CHR(10)||
             ' <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Snap ID</TH>';
   dbms_output.put_line(L_LINE);
-  L_LINE := ' <TH CLASS="th_sub">Snap Time</TH><TH CLASS="th_sub">Comment</TH></TR>';
+  L_LINE := ' <TH CLASS="th_sub">Snap Time</TH><TH CLASS="th_sub">Sessions</TH>'||
+            '<TH CLASS="th_sub">Curs/Sess</TH><TH CLASS="th_sub">Comment</TH></TR>';
   dbms_output.put_line(L_LINE);
   FOR Rec_SnapInfo IN C_SnapInfo LOOP
-    L_LINE := ' <TR><TD>Start</TD><TD>'||Rec_SnapInfo.begin_snap_id||'</TD><TD>'||
-              Rec_SnapInfo.begin_snap_time||'</TD><TD>'||Rec_SnapInfo.begin_snap_comment||'</TD></TR>';
+    L_LINE := ' <TR><TD>Start</TD><TD ALIGN="right">'||Rec_SnapInfo.begin_snap_id||'</TD><TD>'||
+              Rec_SnapInfo.begin_snap_time||'</TD><TD ALIGN="right">'||BLOG||'</TD><TD ALIGN="right">'||
+	      to_char(BOCUR/BLOG,'9,990.00')||'<TD>'||Rec_SnapInfo.begin_snap_comment||'</TD></TR>';
     dbms_output.put_line(L_LINE);
-    L_LINE := ' <TR><TD>End</TD><TD>'||Rec_SnapInfo.end_snap_id||'</TD><TD>'||
-              Rec_SnapInfo.end_snap_time||'</TD><TD>'||Rec_SnapInfo.end_snap_comment||'</TD></TR>';
+    L_LINE := ' <TR><TD>End</TD><TD ALIGN="right">'||Rec_SnapInfo.end_snap_id||'</TD><TD>'||
+              Rec_SnapInfo.end_snap_time||'</TD><TD ALIGN="right">'||ELOG||'</TD><TD ALIGN="right">'||
+	      to_char(EOCUR/ELOG,'9,990.00')||'<TD>'||Rec_SnapInfo.end_snap_comment||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
