@@ -37,16 +37,17 @@
     END;
 
   PROCEDURE buffp IS
+    ratz VARCHAR2(20);
     CURSOR C_BuffP (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, bs IN NUMBER) IS
       SELECT replace(e.block_size/1024||'k',bs/1024||'k',substr(e.name,1,1)) name,
              e.set_msize numbufs,
-             to_char(decode(  e.db_block_gets   - nvl(b.db_block_gets,0)
+             nvl(to_char(decode(  e.db_block_gets   - nvl(b.db_block_gets,0)
 	                  + e.consistent_gets - nvl(b.consistent_gets,0),
 		     0, to_number(NULL),
 		     (100* (1- (  (e.physical_reads  - nvl(b.physical_reads,0))
 		                / (  e.db_block_gets   - nvl(b.db_block_gets,0)
 				   + e.consistent_gets - nvl(b.consistent_gets,0))
-			       ) ) ) ),'990.9' ) hitratio,
+			       ) ) ) ),'990.9' ),'&nbsp;') hitratio,
 	     to_char(  e.db_block_gets   - nvl(b.db_block_gets,0)
 	           + e.consistent_gets - nvl(b.consistent_gets,0),
 		   '99,999,999,999') gets,
@@ -60,14 +61,11 @@
 	           '999,999') wcwait,
              to_char(e.buffer_busy_wait - nvl(b.buffer_busy_wait,0),
 	           '999,999,999') bbwait,
-             to_char( decode(((e.consistent_gets - b.consistent_gets) +
-                           (e.db_block_gets - b.db_block_gets)),
-			   0,to_number(NULL),100*
 	       (((e.consistent_gets - b.consistent_gets) +
 	         (e.db_block_gets - b.db_block_gets)) -
-                 (e.physical_reads - b.physical_reads)) /
+                 (e.physical_reads - b.physical_reads)) ratio_top,
 	        ((e.consistent_gets - b.consistent_gets) +
-	         (e.db_block_gets - b.db_block_gets)),'990.00') )       ratio
+	         (e.db_block_gets - b.db_block_gets)) ratio_but
         FROM stats$buffer_pool_statistics b, stats$buffer_pool_statistics e
        WHERE b.snap_id(+)  = bid
          AND e.snap_id     = eid
@@ -94,6 +92,11 @@
 	       '<TH CLASS="th_sub">HitRatio (%)</TH></TR>';
       print(L_LINE);
       FOR R_Buff IN C_BuffP(DBID,INST_NUM,BID,EID,BS) LOOP
+        IF R_Buff.ratio_but > 0 THEN
+          ratz := to_char(100*R_Buff.ratio_top / R_Buff.ratio_but,'990.00');
+        ELSE
+          ratz := '&nbsp;';
+        END IF;
         L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.name||'</TD><TD ALIGN="right">'||
                   R_Buff.numbufs||'</TD><TD ALIGN="right">'||
                   R_Buff.hitratio||'</TD><TD ALIGN="right">'||R_Buff.gets||
@@ -101,7 +104,7 @@
         print(L_LINE);
         L_LINE := R_Buff.phwrite||'</TD><TD ALIGN="right">'||R_Buff.fbwait||
                   '</TD><TD ALIGN="right">'||R_Buff.wcwait||'</TD><TD ALIGN="right">'||
-	          R_Buff.bbwait||'</TD><TD ALIGN="right">'||R_Buff.ratio||'</TD></TR>';
+	          R_Buff.bbwait||'</TD><TD ALIGN="right">'||ratz||'</TD></TR>';
         print(L_LINE);
       END LOOP;
       print(TABLE_CLOSE);

@@ -253,3 +253,4 @@ v0.2.8
 + added FileIO to Ratio charts (phys. Reads/Writes per SnapShot)
 + charts.sh now also supports the "-c" parameter (alternative config file)
 + added physical IO bytes to FileIO and TSIO segments
+! fixed HitRatio column in Buffer Pool Statistics
