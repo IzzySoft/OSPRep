@@ -13,7 +13,7 @@
 #                                                              Itzchak Rehberg
 #
 #
-version='0.0.5'
+version='0.0.6'
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
   echo
@@ -953,6 +953,16 @@ DECLARE
        AND e.gets - b.gets   > 0
      ORDER BY namespace;
 
+  CURSOR C_SGASum (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT name,
+           to_char(value,'999,999,999,990') val,
+	   value rawval
+      FROM stats\$sga
+     WHERE snap_id = eid
+       AND dbid    = db_id
+       AND instance_number = instnum
+     ORDER BY name;
+
 
 BEGIN
   -- Configuration
@@ -1001,7 +1011,7 @@ BEGIN
             ' [ <A HREF="#rbs">RBS</A> ] [ <A HREF="#undo">Undo Segs</A> ]'||
 	    ' [ <A HREF="#latches">Latches</A> ]';
   dbms_output.put_line(L_LINE);
-  L_LINE := ' [ <A HREF="#caches">Caches</A> ]</TD></TR>';
+  L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1864,7 +1874,7 @@ BEGIN
   dbms_output.put_line(L_LINE);
 
   -- Library Cache
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#caches">Library Cache</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7">Library Cache</TH></TR>'||
             ' <TR><TD COLSPAN="7" ALIGN="center">"Pct Misses" should be very low</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">NameSpace</TH><TH CLASS="th_sub">Get Requests</TH>'||
@@ -1883,6 +1893,22 @@ BEGIN
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- SGA Memory Summary
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="#sga">SGA Memory Summary</A></TH></TR>'||
+            ' <TR><TH CLASS="th_sub">SGA Region</TH><TH CLASS="th_sub">Size in Bytes</TH>';
+  dbms_output.put_line(L_LINE);
+  I1 := 0;
+  FOR R_SGASum in C_SGASum(DBID,INST_NUM,BID,EID) LOOP
+    I1 := I1 + R_SGASum.rawval;
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_SGASum.name||'</TD><TD ALIGN="right">'||
+              R_SGASum.val||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := ' <TR><TD>Sum</TD><TD ALIGN="right">'||to_char(I1,'999,999,999,990')||
+            '</TD></TR>'||TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
   dbms_output.put_line('<HR>');
 
