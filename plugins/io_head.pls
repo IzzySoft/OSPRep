@@ -22,7 +22,7 @@
 		   sum(e.phyrds - nvl(b.phyrds,0)) ) bprn,
              to_char(sum(e.phywrts - nvl(b.phywrts,0)),'9,999,999,990') writes,
 	     to_char(sum(e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
-             to_char(sum(e.wait_count - nvl(b.wait_count,0)),'99,999,990') waits,
+             to_char(sum(e.wait_count - nvl(b.wait_count,0)),'999,999,999,990') waits,
 	     to_char(decode(sum(e.wait_count - nvl(b.wait_count,0)),
 	           0,0,
 		   (sum(e.time - nvl(b.time,0)) /
@@ -66,7 +66,7 @@
 		   sum(e.phyrds - nvl(b.phyrds,0)) ) bprn,
              to_char(sum(e.phywrts - nvl(b.phywrts,0)),'9,999,999,990') writes,
 	     to_char(sum(e.phywrts - nvl(b.phywrts,0))/ela,'9,990.00') wps,
-             to_char(sum(e.wait_count - nvl(b.wait_count,0)),'9,999,990') waits,
+             to_char(sum(e.wait_count - nvl(b.wait_count,0)),'999,999,999,990') waits,
 	     to_char(decode(sum(e.wait_count - nvl(b.wait_count,0)),
 	           0,0,
 		   (sum(e.time - nvl(b.time,0)) /

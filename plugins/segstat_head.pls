@@ -6,7 +6,7 @@
 	          then n.subobject_name
 		  else substr(n.subobject_name,length(n.subobject_name)-9)
 	     end subobject_name,
-             n.object_type,to_char(r.logical_reads,'999,999,999') logical_reads,
+             n.object_type,to_char(r.logical_reads,'999,999,999,999') logical_reads,
              to_char(round(r.ratio * 100, 2),'990.00') ratio
         FROM stats$seg_stat_obj n,
              ( SELECT * FROM
@@ -58,7 +58,7 @@
 	          then n.subobject_name
 		  else substr(n.subobject_name,length(n.subobject_name)-9)
 	     end subobject_name,
-             n.object_type,to_char(r.physical_reads,'999,999,999') physical_reads,
+             n.object_type,to_char(r.physical_reads,'999,999,999,999') physical_reads,
              to_char(round(r.ratio * 100, 2),'990.00') ratio
         FROM stats$seg_stat_obj n,
              ( SELECT * FROM
