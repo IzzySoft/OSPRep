@@ -50,3 +50,4 @@ v0.0.7 (xx.11.2003)
 + -"- up to a specified Snap_End (only Start_ID will be eval'd)
 * some descriptions changed (th)
 + Start/End ID can be specified at / overridden from CmdLine
++ added some more comments to the configuration settings of OSPRep

@@ -31,16 +31,19 @@ if [ -z "$1" ]; then
 fi
 
 # =================================================[ Configuration Section ]===
-# SID of the database to analyse
-export ORACLE_SID=$1
+# -----------------------------------------------------------------[ Files ]---
 # in which directory should the report ($ORACLE_SID.html) be placed
 REPDIR=/var/www/html/statspack
 # StyleSheet to use
 CSS=../main.css
+# --------------------------------------------------------------[ DataBase ]---
+# SID of the database to analyse
+export ORACLE_SID=$1
 # login information
 user=perfstat
 password="pyha#"
-# Top settings
+# -------------------------------------------------------------------[ SQL ]---
+# Top settings: Display Top N Statements
 TOP_N_SQL=5
 
 #--- SnapShot Interval. Set values to 0 for automatic evaluation of latest
@@ -52,7 +55,11 @@ TOP_N_SQL=5
 #--- all cases, only specify existing SnapShot IDs.
 #--- Arguments on the command line override these settings.
 START_ID=0
-END_ID=203
+END_ID=0
+
+#-----------------------------------------------------------------------------
+#---------| End Of Manual Config - don't change anything below here! |--------
+#-----------------------------------------------------------------------------
 
 # If Start/End ID are specified on CmdLine, override internal settings:
 if [ -n "$2" ]; then
