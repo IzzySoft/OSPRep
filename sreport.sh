@@ -598,7 +598,7 @@ DECLARE
 	   to_char( (mu.PGA_used_auto + mu.PGA_used_man)
 	            /1024/1024,'999,990.00')                   tot_tun_used,
 	   to_char(mu.onepr/1024/1024,'999,990.00')            onepr,
-	   to_char(s.opt_pct,'990.00')                         opt_pct,
+	   nvl(to_char(s.opt_pct,'990.00'),'&nbsp;')           opt_pct,
 	   to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
 	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
            to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
@@ -646,7 +646,7 @@ DECLARE
 	   to_char( (mu.PGA_used_auto + mu.PGA_used_man)
 	            /1024/1024,'999,990.00')                   tot_tun_used,
 	   to_char(mu.onepr/1024/1024,'999,990.00')            onepr,
-	   to_char(s.opt_pct,'990.00')                         opt_pct,
+	   nvl(to_char(s.opt_pct,'990.00'),'&nbsp;')           opt_pct,
 	   to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
 	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
            to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
@@ -760,6 +760,25 @@ DECLARE
 	   to_char(e.wraps - b.wraps,'999,999') wraps,
 	   to_char(e.shrinks - b.shrinks,'999,999') shrinks,
 	   to_char(e.extends - b.extends,'999,999') extends
+      FROM stats\$rollstat b, stats\$rollstat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND e.usn     = b.usn
+     ORDER BY e.usn;
+
+  CURSOR C_RBST (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.usn rbs#,
+           to_char(e.rssize,'99,999,999,999') rssize,
+	   to_char(e.aveactive,'999,999,999') active,
+	   nvl(to_char(to_number(decode(e.optsize,-4096,NULL,e.optsize)),
+	           '99,999,999,999'),'&nbsp;') optsize,
+	   to_char(e.hwmsize,'99,999,999,999') hwmsize
       FROM stats\$rollstat b, stats\$rollstat e
      WHERE b.snap_id = bid
        AND e.snap_id = eid
@@ -1495,12 +1514,32 @@ BEGIN
             'Extends</TH></TR>';
   dbms_output.put_line(L_LINE);
   FOR R_RBS IN C_RBS(DBID,INST_NUM,BID,EID) LOOP
-    L_LINE := ' <TR><TD CLASS="td_name">'||R_RBS.rbs#||'</TD><TD ALIGN="right">'||
+    L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_RBS.rbs#||'</TD><TD ALIGN="right">'||
               R_RBS.gets||'</TD><TD ALIGN="right">'||R_RBS.waits||
 	      '</TD><TD ALIGN="right">'||R_RBS.writes||'</TD>';
     dbms_output.put_line(L_LINE);
     L_LINE := '<TD ALIGN="right">'||R_RBS.wraps||'</TD><TD ALIGN="right">'||
               R_RBS.shrinks||'</TD><TD ALIGN="right">'||R_RBS.extends||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+
+  -- RBS Storage
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="#rbs">Rollback Segments Storage</A></TH></TR>'||
+            ' <TR><TD COLSPAN="5" ALIGN="center">Optimal Size should be larger '||
+	    'than Avg Active ';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">RBS#</TH><TH CLASS="th_sub">Segment Size</TH>'||
+            '<TH CLASS="th_sub">Avg Active</TH><TH CLASS="th_sub">Optimal Size</TH>'||
+	    '<TH CLASS="th_sub">Maximum Size</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_RBS IN C_RBST(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_RBS.rbs#||'</TD><TD ALIGN="right">'||
+              R_RBS.rssize||'</TD><TD ALIGN="right">'||R_RBS.active||
+	      '</TD><TD ALIGN="right">'||R_RBS.optsize||'</TD>';
+    dbms_output.put_line(L_LINE);
+    L_LINE := '<TD ALIGN="right">'||R_RBS.hwmsize||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
