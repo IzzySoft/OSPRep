@@ -1044,7 +1044,7 @@ DECLARE
                 WHERE hash_value = hashval
                   AND cost > 0
                   AND snap_id BETWEEN bid AND eid );
-      SELECT plan_hash_value INTO HASHID
+      SELECT MAX(plan_hash_value) INTO HASHID
         FROM ( SELECT plan_hash_value,snap_id
                  FROM stats\$sql_plan_usage
                 WHERE hash_value = hashval
@@ -1106,6 +1106,7 @@ DECLARE
 ENDSQL
 
 . $GETWAITS
+. $GETDF
 
 cat>>$SQLSET<<ENDSQL
 BEGIN
@@ -1158,10 +1159,16 @@ BEGIN
 
   -- Navigation
   L_LINE := TABLE_OPEN||'<TR><TD ALIGN="center"><DIV CLASS="small">[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
-            '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> '||
-            '] [ <A HREF="#efficiency">Efficiency</A> ]';
+            '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> ]';
+  S1 := 'istats\$datafiles'; I1 := 1; I2 := 0;
+  tab_exists(S1,I1,I2);
+  IF I2 = 1
+  THEN
+    L_LINE := L_LINE||(' [ <A HREF="#filestats">Datafiles</A> ]');
+  END IF;
   print(L_LINE);
-  L_LINE :=   ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#top5wait">Top 5 Wait</A>'||
+  L_LINE :=  ' [ <A HREF="#efficiency">Efficiency</A> ]'||
+             ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#top5wait">Top 5 Wait</A>'||
             ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#bgwaitevents">Background Waits</A> ]';
   print(L_LINE);
   S1 := 'istats\$waitobjects'; I1 := 1; I2 := 0;

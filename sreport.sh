@@ -13,7 +13,7 @@
 #                                                              Itzchak Rehberg
 # =============================================================================
 #
-version='0.1.4'
+version='0.1.5'
 # =======================================================[ Header / Syntax ]===
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
@@ -37,6 +37,7 @@ fi
 SQLSET=$TMPDIR/osprep_sqlset_$1.$$
 TMPOUT=$TMPDIR/osprep_tmpout_$1.$$
 GWDUMMY=$TMPDIR/osprep_gwdummy_$1.$$
+DFDUMMY=$TMPDIR/osprep_dfdummy_$1.$$
 
 # If Start/End ID are specified on CmdLine, override internal settings:
 if [ -n "$2" ]; then
@@ -63,6 +64,8 @@ ENDSQL
 cat $SQLSET getver.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
 DBVER=`cat $TMPOUT`
 SPFILE=sp$DBVER.pls
+
+# ----------------------------------[ Check for the AddOns and set them up ]---
 cat $SQLSET checkwt.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
 WTEXISTS=`cat $TMPOUT`
 if [ "$WTEXISTS" = "1" ];
@@ -79,6 +82,24 @@ ENDDUMMY
 ENDSQL
   chmod u+x $GWDUMMY
   GETWAITS=$GWDUMMY
+fi
+
+cat $SQLSET checkdf.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
+DFEXISTS=`cat $TMPOUT`
+if [ "$DFEXISTS" = "1" ];
+then
+  GETDF="./getfilestat.prc"
+else
+  cat >$DFDUMMY<<ENDSQL
+  cat>>$SQLSET<<ENDDUMMY
+  PROCEDURE get_filestats(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+  BEGIN
+    NULL;
+  END;
+ENDDUMMY
+ENDSQL
+  chmod u+x $DFDUMMY
+  GETDF=$DFDUMMY
 fi
 
 # ---------------------------------------------------[ Setup some Settings ]---
@@ -107,7 +128,7 @@ SPOOL $REPDIR/${ORACLE_SID}.html
 ENDSQL
 
 . ./ospopen
-# cat $SQLSET $SPFILE ospout.pls >osp.out
+#cat $SQLSET $SPFILE ospout.pls >osp.out
 cat $SQLSET $SPFILE ospout.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
 rm $SQLSET
 rm $TMPOUT

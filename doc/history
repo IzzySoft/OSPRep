@@ -112,7 +112,7 @@ v0.1.3 (02.12.2003)
   execution plans plus for objects causing waits. In the latter place you
   will find a note what was excluded.
 
-v0.1.4
+v0.1.4 (10.12.2003)
 -------------------
 ! fixed a bug in get_plan() that broke the job if a statement had multiple
   execution plans (in that case, we make sure to display the latest now)
@@ -120,3 +120,9 @@ v0.1.4
 + formating enhancements for plan table
 + added enqueue type descs plus tuning hints
 + enhanced description for wait events
+
+v0.1.5
+-------------------
++ new AddOn for datafile growth statistics
+! fixed another bug in get_plan() that broke the job if a statement had multiple
+  execution plans

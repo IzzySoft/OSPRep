@@ -110,6 +110,14 @@
   print(L_LINE);
   print('<HR>');
 
+  -- Datafile Statistics
+  S1 := 'istats$datafiles'; I1 := 1; I2 := 0;
+  tab_exists(S1,I1,I2);
+  IF I2 = 1
+  THEN
+    get_filestats(DBID,INST_NUM,BID,EID);
+  END IF;
+
   -- Instance Efficiency Percentages
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="efficiency">Instance Efficiency Percentages (Target: 100%)</A></TH></TR>'||CHR(10)||
             ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Efficiency (%)</TH>'||
@@ -792,6 +800,7 @@
             'Management, as RBS may be dynamically ';
   print(L_LINE);
   L_LINE := 'created and dropped as needed</TD></TR>';
+  print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">RBS#</TH><TH CLASS="th_sub">Trans Table Gets</TH>'||
             '<TH CLASS="th_sub">Pct Waits</TH><TH CLASS="th_sub">Undo Bytes Written</TH>'||
 	    '<TH CLASS="th_sub">Wraps</TH>';
