@@ -19,7 +19,18 @@ CREATE OR REPLACE PROCEDURE get_waitevents AUTHID DEFINER IS
 		                    'db file scattered read','free buffer waits')
  		) b, dba_extents a
    WHERE a.file_id = b.file#
-     AND b.block# BETWEEN a.block_id AND (a.block_id + blocks - 1);
+     AND b.block# BETWEEN a.block_id AND (a.block_id + blocks - 1)
+  UNION
+  SELECT d.owner,d.object_name,d.object_type,
+         CHR(BITAND(e.modus,-16777216)/16777215)||
+	 CHR(BITAND(e.modus,16711680)/65535)||
+	 ' '||e.event event,
+         e.wait_time waited,e.seconds_in_wait seconds
+    FROM ( SELECT p1 modus, p2 object_id, event, wait_time, seconds_in_wait
+             FROM v$session_wait
+            WHERE event='enqueue'
+         ) e, dba_objects d
+   WHERE d.object_id = e.object_id;
 
 BEGIN
  SELECT d.dbid,i.instance_number INTO db_id,instnum

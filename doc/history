@@ -193,3 +193,4 @@ v0.2.1 (16.02.2004)
 v0.2.2
 -------------------
 * M$IE had some problems with formatting of the charts - worked around it
++ added enqueue waits to waitobject gatherer
