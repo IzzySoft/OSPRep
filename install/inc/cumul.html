@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>Database Statistic Diagrams</title>
+<link rel=stylesheet type="text/css" href="diagram.css">
+<SCRIPT Language="JavaScript">if ((document.layers)&&(history.length==1)) location.href=location.href+"#";</SCRIPT>
+<SCRIPT Language="JavaScript" src="diagram.js"></SCRIPT>
+<SCRIPT Language="JavaScript" src="common.js"></SCRIPT>
+</head>
+<body>
+<DIV STYLE="position:absolute; top:0"></DIV>
+<TABLE NOBORDER CELLPADDING=2 CELLSPACING=2 WIDTH=620><TR><TD>
+<SCRIPT Language="JavaScript">
+//<!--
+document.write('<H3 ALIGN="center" id="statTitle">Cumulative Statistics for '+parent.sid+'</H3</TD></TR>');
+document.write('<TR><TD ALIGN="center"><DIV CLASS="small">Begin Snapshot: '+parent.bid+' ('+parent.btime+')<BR>');
+document.write('End Snapshot: '+parent.eid+' ('+parent.etime+')</DIV></TD></TR></TABLE>');
+
+// Create a graph (Array, StartElem, Color)
+function mkline(arr,col) {
+ // parts: connect dots (fill the gaps with calculated delta for x pieces)
+ parts = Math.ceil(620/(eid - bid)) +5;
+ for (i=bid,k=bid; i<eid; i++) {
+   if (isNaN(arr[i])) {
+     k++;
+     continue;
+   }
+   if (i>bid) {
+     delta = (arr[k] - arr[i]) / parts;
+     for (f=0;f<parts;f++) {
+       x = D.ScreenX(i - f/parts);
+       j = D.ScreenY(arr[i] + f*delta);
+       new Pixel(x, j, col);
+     }
+     k++;
+   } else {
+     x = D.ScreenX(i);
+     j = D.ScreenY(arr[i]);
+     new Pixel(x, j, col);
+   }
+ }
+}
+
+document.open();
+var D=new Diagram();
+mkdiag();
+mkline(parent.dstat,'#0000FF');
+document.close();
+
+//--></SCRIPT>
+<DIV
+ STYLE="position:absolute; top:420">
+<TABLE NOBORDER CELLPADDING=2 CELLSPACING=2 WIDTH=620><TR><TD>
+<TR><TD ALIGN="center">
+<SELECT NAME="stat" onChange="drawStat(this.value)">
+ <OPTION VALUE="-">-- Select Statistic: --</OPTION>
+ <OPTION VALUE="enq">Enqueues</OPTION>
+ <OPTION VALUE="freebuff">Free Buffer Waits</OPTION>
+ <OPTION VALUE="busybuff">Buffer Busy Waits</OPTION>
+ <OPTION VALUE="fileseq">DB file Sequential Reads</OPTION>
+ <OPTION VALUE="filescat">DB file Scattered Reads</OPTION>
+ <OPTION VALUE="lgwr">LGWR Wait for Redo Copy</OPTION>
+ <OPTION VALUE="lgsw">Log File Switch Completion</OPTION>
+</SELECT>
+</TD></TR>
+<TR><TD ALIGN="center"><BR>
+<SCRIPT LANGUAGE="JavaScript">//<!--
+  document.write('<DIV CLASS="small">Created by OSPRep v'+parent.vers+' &copy; 2003-2004 by <A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> &amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></DIV>');
+//--></SCRIPT>
+</TD></TR>
+</TABLE>
+</DIV>
+</body>
+</html>
