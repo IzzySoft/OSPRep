@@ -158,3 +158,8 @@ v0.1.8 (19.01.2004)
 + enhanced command line syntax: now you can override some of the default
   options from the "config" file (e.g. user, passwd) at the command line
   (thanx to Manuel Soriano for this suggestion incl. code sent for OraRep)
+
+v0.1.9
+-------------------
+! file names could get messed up when different SID/Connect string was specified
+  on commandline with parameter "-s"

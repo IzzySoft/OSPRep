@@ -45,7 +45,7 @@ fi
 # ------------------------------------------[ process command line options ]---
 while [ "$1" != "" ] ; do
   case "$1" in
-    -s) shift; ORACLE_SID=$1;;
+    -s) shift; ORACLE_CONNECT=$1;;
     -u) shift; user=$1;;
     -p) shift; password=$1;;
     -e) shift; END_ID=$1;;
@@ -53,6 +53,9 @@ while [ "$1" != "" ] ; do
   esac
   shift
 done
+if [ -z "$ORACLE_CONNECT" ]; then
+  ORACLE_CONNECT=$ORACLE_SID
+fi
 
 . ./version
 SQLSET=$TMPDIR/osprep_sqlset_$ORACLE_SID.$$
@@ -62,7 +65,7 @@ DFDUMMY=$TMPDIR/osprep_dfdummy_$ORACLE_SID.$$
 
 # --------------------------------[ Get the Oracle version of the DataBase ]---
 cat >$SQLSET<<ENDSQL
-CONNECT $user/$password@$ORACLE_SID
+CONNECT $user/$password@$ORACLE_CONNECT
 Set TERMOUT OFF
 Set SCAN OFF
 Set SERVEROUTPUT On Size 1000000
@@ -129,7 +132,7 @@ fi
 
 # -------------------------------[ Prepare and run the final report script ]---
 cat >$SQLSET<<ENDSQL
-CONNECT $user/$password@$ORACLE_SID
+CONNECT $user/$password@$ORACLE_CONNECT
 Set TERMOUT OFF
 Set SCAN OFF
 Set SERVEROUTPUT On Size 1000000
