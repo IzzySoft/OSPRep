@@ -689,6 +689,41 @@ DECLARE
        AND p.name    = 'pga_aggregate_target'
        AND p.value  != 0;
 
+  CURSOR C_PGAM (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.name st,
+           to_char(b.value/1024/1024,'9,999,990.00') snap1,
+           to_char(e.value/1024/1024,'9,999,990.00') snap2,
+	   to_char(decode(b.value,0,100* (e.value - nvl(b.value,0)),
+	                            100*((e.value - nvl(b.value,0))/b.value)),
+		   '990.00') diff
+      FROM stats\$pgastat b, stats\$pgastat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.name    = e.name
+       AND e.value  >= b.value
+       AND e.value  >  0
+    UNION SELECT b.name st,
+           to_char(b.value/1024/1024,'9,999,990.00') snap1,
+           to_char(e.value/1024/1024,'9,999,990.00') snap2,
+	   to_char(decode(b.value,0,100* (e.value - nvl(b.value,0)),
+	                            100*((e.value - nvl(b.value,0))/b.value)),
+		   '990.00') diff
+      FROM stats\$sysstat b, stats\$sysstat e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.name    = e.name
+       AND e.name    = 'workarea memory allocated'
+       AND e.value  >= b.value
+       AND e.value  >  0;
+
 
 BEGIN
   -- Configuration
@@ -1348,6 +1383,22 @@ BEGIN
               R_PGAA.opt_pct||'</TD><TD ALIGN="right">'||R_PGAA.pct_unt||
 	      '</TD><TD ALIGN="right">'||R_PGAA.pct_auto_tun||
 	      '</TD><TD ALIGN="right">'||R_PGAA.pct_man_tun||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+
+  -- PGA Memory
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#pga">PGA Memory Statistics</A></TH></TR>'||
+            ' <TR><TD COLSPAN="4" ALIGN="center">WorkArea (W/A) memory is used for: sort, bitmap merge, and hash join ops</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Begin (M)</TH>'||
+            '<TH CLASS="th_sub">End (M)</TH><TH CLASS="th_sub">% Diff</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_PGAM IN C_PGAM(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_PGAM.st||'</TD><TD ALIGN="right">'||
+              R_PGAM.snap1||'</TD><TD ALIGN="right">'||R_PGAM.snap2||
+	      '</TD><TD ALIGN="right">'||R_PGAM.diff||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
