@@ -375,8 +375,13 @@
   print('<HR>');
 
   -- SQL by Parse
+  get_parsecpupct(DBID,INST_NUM,BID,EID,S1);
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
-            ' <TR><TD COLSPAN="4" ALIGN="center">End Parse Calls Treshold: '||EPC||'</TD></TR>';
+            ' <TR><TD COLSPAN="4" ALIGN="center">End Parse Calls Treshold: '||EPC||
+	    '<BR>Consider tuning these ';
+  print(L_LINE);
+  L_LINE := 'statements/objects, if the percentage of CPU used for parsing is high. '||
+            'Currently, parsing takes '||S1||'% of all CPU usage by all sessions.</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
 	    '<TH CLASS="th_sub">% Total Parses</TH><TH CLASS="th_sub">Hash Value</TH></TR>';

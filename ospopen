@@ -984,6 +984,35 @@ DECLARE
       WHEN OTHERS THEN is_ok := 0;
     END;
 
+  PROCEDURE get_parsecpupct (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, oval OUT VARCHAR2) IS
+    BEGIN
+     SELECT to_char((100*a.total/b.total),'990.00') INTO oval FROM
+       ( SELECT (e.value - b.value) total
+           FROM stats\$sysstat b, stats\$sysstat e
+          WHERE b.snap_id = bid
+            AND e.snap_id = eid
+            AND b.dbid    = db_id
+            AND e.dbid    = db_id
+            AND b.instance_number = instnum
+            AND e.instance_number = instnum
+            AND b.name    = e.name
+            AND e.name    = 'parse time cpu'
+            AND e.value   > b.value
+            AND e.value   > 0 ) a,
+       ( SELECT (e.value - b.value) total
+           FROM stats\$sysstat b, stats\$sysstat e
+          WHERE b.snap_id = bid
+            AND e.snap_id = eid
+            AND b.dbid    = db_id
+            AND e.dbid    = db_id
+            AND b.instance_number = instnum
+            AND e.instance_number = instnum
+            AND b.name    = e.name
+            AND e.name    = 'CPU used by this session'
+            AND e.value   > b.value
+            AND e.value   > 0 ) b;
+    END;
+
 $GETWAITS
 
 BEGIN
