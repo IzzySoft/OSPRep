@@ -7,9 +7,9 @@
   L_LINE := ' <TR><TD><DIV STYLE="width:13em">Buffer Nowait</DIV></TD><TD ALIGN="right"'||
             S2||'>'||to_char(round(100*(1-BFWT/GETS),2),'990.00');
   print(L_LINE);
-  L_LINE := '</TD><TD><DIV ALIGN="justify">If this ratio is low, check the '||
+  L_LINE := '</TD><TD CLASS="text">If this ratio is low, check the '||
             '<A HREF="#bufwait">Buffer Wait Stats</A> section for more detail '||
-	    'on which type of block is being contended for.</DIV></TD></TR>';
+	    'on which type of block is being contended for.</TD></TR>';
   print(L_LINE);
   IF RENT = 0
   THEN S1 := '&nbsp;';
@@ -17,18 +17,18 @@
        S2 := alert_lt_warn(100*(1-BFWT/GETS),AR_IE_REDONW,WR_IE_REDONW);
   END IF;
   L_LINE := ' <TR><TD>Redo Nowait</TD><TD ALIGN="right"'||S2||'>'||S1||
-            '</TD><TD><DIV ALIGN="justify">A value close to 100% indicates minimal '||
+            '</TD><TD CLASS="text">A value close to 100% indicates minimal '||
 	    'time spent waiting for redo logs ';
   print(L_LINE);
   L_LINE := 'to become available, either because the logs are not filling up '||
             'very often or because the database is able to switch to a new log '||
-	    'quickly whenever the current log fills up.</DIV></TD></TR>';
+	    'quickly whenever the current log fills up.</TD></TR>';
   print(L_LINE);
   S2 := alert_lt_warn(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),AR_IE_BUFFHIT,WR_IE_BUFFHIT);
   L_LINE := ' <TR><TD>Buffer Hit</TD><TD ALIGN="right"'||S2||'>'||
             to_char(round(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),2),'990.00');
   print(L_LINE);
-  L_LINE := '</TD><TD><DIV ALIGN="justify">A low buffer hit ratio does not necessarily '||
+  L_LINE := '</TD><TD CLASS="text">A low buffer hit ratio does not necessarily '||
             'mean the cache is too small: it may very well be that potentially '||
 	    'valid full-table-scans are artificially ';
   print(L_LINE);
@@ -38,7 +38,7 @@
   print(L_LINE);
   L_LINE := '(i.e. blocks still being modified) are aging out of the cache while '||
             'they are still needed; check the <A HREF="#waitevents">Wait Events</A> '||
-	    'list for evidence of this event.</DIV></TD></TR>';
+	    'list for evidence of this event.</TD></TR>';
   print(L_LINE);
   IF (SRTM+SRTD) = 0
   THEN S1 := '&nbsp;';
@@ -46,25 +46,25 @@
        S2 := alert_lt_warn(100*SRTM/(SRTD+SRTM),AR_IE_IMSORT,WR_IE_IMSORT);
   END IF;
   L_LINE := ' <TR><TD>In-Memory Sort</TD><TD ALIGN="right"'||S2||'>'||S1||
-            '</TD><TD><DIV ALIGN="justify">A too low ratio indicates too many '||
+            '</TD><TD CLASS="text">A too low ratio indicates too many '||
 	    'disk sorts appearing. One possible ';
   print(L_LINE);
-  L_LINE := 'solution could be increasing the sort area/SGA size.</DIV></TD></TR>';
+  L_LINE := 'solution could be increasing the sort area/SGA size.</TD></TR>';
   print(L_LINE);
   S2 := alert_lt_warn(100*LHTR,AR_IE_LIBHIT,WR_IE_LIBHIT);
   L_LINE := ' <TR><TD>Library Hit</TD><TD ALIGN="right"'||S2||'>'||
             to_char(round(100*LHTR,2),'990.00');
   print(L_LINE);
-  L_LINE := '</TD><TD><DIV ALIGN="justify">A low library hit ratio could imply that '||
+  L_LINE := '</TD><TD CLASS="text">A low library hit ratio could imply that '||
             'SQL is prematurely aging out of a too-small shared pool, or that '||
 	    'non-shareable SQL is being used. ';
   print(L_LINE);
   L_LINE := 'If the soft parse ratio is also low, check whether there is a '||
-            'parsing issue.</DIV></TD></TR>';
+            'parsing issue.</TD></TR>';
   print(L_LINE);
   S2 := alert_lt_warn(100*(1-HPRS/PRSE),AR_IE_SOFTPRS,WR_IE_SOFTPRS);
   L_LINE := ' <TR><TD>Soft Parse</TD><TD ALIGN="right"'||S2||'>'||
-            to_char(round(100*(1-HPRS/PRSE),2),'990.00')||'</TD><TD><DIV ALIGN="justify">'||
+            to_char(round(100*(1-HPRS/PRSE),2),'990.00')||'</TD><TD CLASS="text">'||
             'When the <A HREF="JavaScript:popup('||CHR(39)||'softparse'||CHR(39)||
 	    ')">soft parse</A> ';
   print(L_LINE);
@@ -74,18 +74,22 @@
   print(L_LINE);
   L_LINE := 'ratio against the actual hard and soft parse rates shown in the '||
             '<A HREF="#loads">Loads Profile</A>. Furthermore, investigate the '||
-            'number of <I>Parse CPU to Parse Elapsed</I> below.</DIV></TD></TR>';
+            'number of <I>Parse CPU to Parse Elapsed</I> below.</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TD>Execute to Parse</TD><TD ALIGN="right">'||
             to_char(round(100*(1-PRSE/EXE),2),'990.00')||
-	    '</TD><TD>A low value here indicates that there is no much '||
-	    're-usable SQL. See <I>Soft Parse</I> for possible actions.</TD></TR>';
+	    '</TD><TD CLASS="text">A low value here indicates that there is no '||
+            'much re-usable SQL (see <I>Soft Parse</I> for possible actions).';
+  print(L_LINE);
+  L_LINE := 'Negative values connote that there are more Parses than Executes, '||
+            'which could point to syntactically incorrect SQL statements (or '||
+            'missing privileges).</TD></TR>';
   print(L_LINE);
   S2 := alert_lt_warn(100*(1-LHR),AR_IE_LAHIT,WR_IE_LAHIT);
   L_LINE := ' <TR><TD>Latch Hit</TD><TD ALIGN="right"'||S2||'>'||
             to_char(round(100*(1-LHR),2),'990.00');
   print(L_LINE);
-  L_LINE := '</TD><TD ALIGN="justify">A low value for this ratio indicates a '||
+  L_LINE := '</TD><TD CLASS="text">A low value for this ratio indicates a '||
             'latching problem, whereas a high value is generally good. However, '||
 	    'a high latch hit ratio can artificially mask a low ';
   print(L_LINE);
