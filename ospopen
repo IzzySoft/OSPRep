@@ -28,6 +28,8 @@ DECLARE
   MK_ENQ NUMBER;
   MK_PGAA NUMBER;
   MK_PGAM NUMBER;
+  MK_BUFFP NUMBER;
+  MK_BUFFW NUMBER;
   WR_IE_BUFFNW NUMBER;
   AR_IE_BUFFNW NUMBER;
   WR_IE_REDONW NUMBER;
@@ -470,48 +472,6 @@ DECLARE
              (e.phywrts - nvl(b.phywrts,0) ) ) > 0
      ORDER BY tsname,filename;
 
-  CURSOR C_BuffP (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, bs IN NUMBER) IS
-    SELECT replace(e.block_size/1024||'k',bs/1024||'k',substr(e.name,1,1)) name,
-           e.set_msize numbufs,
-	   to_char(decode(  e.db_block_gets   - nvl(b.db_block_gets,0)
-	                  + e.consistent_gets - nvl(b.consistent_gets,0),
-		     0, to_number(NULL),
-		     (100* (1- (  (e.physical_reads  - nvl(b.physical_reads,0))
-		                / (  e.db_block_gets   - nvl(b.db_block_gets,0)
-				   + e.consistent_gets - nvl(b.consistent_gets,0))
-			       ) ) ) ),'990.9' ) hitratio,
-	   to_char(  e.db_block_gets   - nvl(b.db_block_gets,0)
-	           + e.consistent_gets - nvl(b.consistent_gets,0),
-		   '99,999,999,999') gets,
-	   to_char(e.physical_reads - nvl(b.physical_reads,0),
-	           '99,999,999,999') phread,
-	   to_char(e.physical_writes - nvl(b.physical_writes,0),
-	           '999,999,999') phwrite,
-	   to_char(e.free_buffer_wait - nvl(b.free_buffer_wait,0),
-	           '999,999') fbwait,
-	   to_char(e.write_complete_wait - nvl(b.write_complete_wait,0),
-	           '999,999') wcwait,
-	   to_char(e.buffer_busy_wait - nvl(b.buffer_busy_wait,0),
-	           '999,999,999') bbwait,
-           to_char( decode(((e.consistent_gets - b.consistent_gets) +
-                           (e.db_block_gets - b.db_block_gets)),
-			   0,to_number(NULL),100*
-	     (((e.consistent_gets - b.consistent_gets) +
-	       (e.db_block_gets - b.db_block_gets)) -
-  	       (e.physical_reads - b.physical_reads)) /
-	     ((e.consistent_gets - b.consistent_gets) +
-	      (e.db_block_gets - b.db_block_gets)),'990.00') )       ratio
-      FROM stats\$buffer_pool_statistics b, stats\$buffer_pool_statistics e
-     WHERE b.snap_id(+)  = bid
-       AND e.snap_id     = eid
-       AND b.dbid(+)     = db_id
-       AND e.dbid        = db_id
-       AND b.instance_number(+) = instnum
-       AND e.instance_number    = instnum
-       AND b.instance_number(+) = e.instance_number
-       AND b.id(+)       = e.id
-     ORDER BY e.name;
-
   CURSOR C_Recover (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT 'B' name,
            to_char(target_mttr,'999,999') tm,
@@ -542,27 +502,6 @@ DECLARE
        AND e.dbid    = db_id
        AND e.instance_number = instnum
      ORDER BY snid;
-
-  CURSOR C_BuffW (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT e.class class,
-           to_char(e.wait_count - nvl(b.wait_count,0),'99,999,999') icnt,
-	   to_char((e.time - nvl(b.time,0))/100,'999,990.00') itim,
-	   to_char((e.time - nvl(b.time,0)) /
-	   (e.wait_count - nvl(b.wait_count,0)) * 10,'999,990.00') iavg,
-	   TO_CHAR(DECODE((e.time - nvl(b.time,0))/100,0,NULL,
- 	    (e.wait_count - nvl(b.wait_count,0))/((e.time - nvl(b.time,0))/100)),
-	    '999,990.00') wps
-      FROM stats\$waitstat b, stats\$waitstat e
-     WHERE b.snap_id = bid
-       AND e.snap_id = eid
-       AND b.dbid    = db_id
-       AND e.dbid    = db_id
-       AND b.instance_number = instnum
-       AND e.instance_number = instnum
-       AND b.instance_number = e.instance_number
-       AND b.class   = e.class
-       AND b.wait_count < e.wait_count
-     ORDER BY itim desc, icnt desc;
 
   CURSOR C_RLim (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT resource_name rname,
@@ -790,6 +729,9 @@ fi
 if [ -n "$INSTACTHEAD" ]; then
   cat $INSTACTHEAD>>$SQLSET
 fi
+if [ -n "$BUFFHEAD" ]; then
+  cat $BUFFHEAD>>$SQLSET
+fi
 if [ -n "$USSTATHEAD" ]; then
   cat $USSTATHEAD>>$SQLSET
 fi
@@ -840,6 +782,8 @@ BEGIN
   MK_ENQ      := :MK_ENQ;
   MK_PGAA     := :MK_PGAA;
   MK_PGAM     := :MK_PGAM;
+  MK_BUFFP    := :MK_BUFFP;
+  MK_BUFFW    := :MK_BUFFW;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
   WR_IE_REDONW := :WR_IE_REDONW;
@@ -958,8 +902,10 @@ BEGIN
   END IF;
   print(L_LINE);
   L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]'||
-            ' [ <A HREF="#bufpool">Buffer Pool</A> ] [ <A HREF="#recover">Instance Recovery</A> ]'||
-	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]';
+            ' [ <A HREF="#recover">Instance Recovery</A> ]';
+  IF MK_BUFFP + MK_BUFFW > 0 THEN
+    L_LINE := L_LINE||' [ <A HREF="#buffstat">Buffer Stats</A> ]';
+  END IF;
   print(L_LINE);
   IF MK_PGAA + MK_PGAM > 0 THEN
     L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ]';

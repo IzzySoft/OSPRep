@@ -51,6 +51,9 @@ MK_ALLWAITS=0
 MK_BGWAITS=0
 # Include Instance Activity? [0|1]
 MK_INSTACT=0
+# Include Buffer Stats (Pool & Waits)? [0|1]
+MK_BUFFP=0
+MK_BUFFW=1
 # Include the PGA Aggret & Memory Stats segment? [0|1]
 MK_PGAA=1
 MK_PGAM=1

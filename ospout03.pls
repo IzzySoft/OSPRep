@@ -72,36 +72,6 @@
   print(L_LINE);
   print('<HR>');
 
-  -- Buffer Pool
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="bufpool">Buffer Pool Statistics</A></TH></TR>'||
-            ' <TR><TD COLSPAN="10" ALIGN="center">Standard Block Size Pools ';
-  print(L_LINE);
-  L_LINE := 'D:Default, K:Keep, R:Recycle<BR>Default Pools for other block '||
-	    'sizes: 2k, 4k, 8k, 16k, 32k</TD></TR>';
-  print(L_LINE);
-  L_LINE := ' <TR><TH CLASS="th_sub">Pool</TH><TH CLASS="th_sub"># of Buffers</TH>'||
-            '<TH CLASS="th_sub">Cache Hit %</TH><TH CLASS="th_sub">Buffer Gets</TH>'||
-	    '<TH CLASS="th_sub">PhyReads</TH>';
-  print(L_LINE);
-  L_LINE:= '<TH CLASS="th_sub">PhyWrites</TH><TH CLASS="th_sub">FreeBuf Waits</TH>'||
-           '<TH CLASS="th_sub">Wrt complete Waits</TH><TH CLASS="th_sub">Buffer Busy Waits</TH>'||
-	   '<TH CLASS="th_sub">HitRatio (%)</TH></TR>';
-  print(L_LINE);
-  FOR R_Buff IN C_BuffP(DBID,INST_NUM,BID,EID,BS) LOOP
-    L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.name||'</TD><TD ALIGN="right">'||
-              R_Buff.numbufs||'</TD><TD ALIGN="right">'||
-              R_Buff.hitratio||'</TD><TD ALIGN="right">'||R_Buff.gets||
-	      '</TD><TD ALIGN="right">'||R_Buff.phread||'</TD><TD ALIGN="right">';
-    print(L_LINE);
-    L_LINE := R_Buff.phwrite||'</TD><TD ALIGN="right">'||R_Buff.fbwait||
-              '</TD><TD ALIGN="right">'||R_Buff.wcwait||'</TD><TD ALIGN="right">'||
-	      R_Buff.bbwait||'</TD><TD ALIGN="right">'||R_Buff.ratio||'</TD></TR>';
-    print(L_LINE);
-  END LOOP;
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
-  print('<HR>');
-
   -- Instance Recovery
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="recover">Instance Recovery Statistics</A></TH></TR>'||
             ' <TR><TD COLSPAN="9" ALIGN="center">B: Begin SnapShot, E: End SnapShot</TD></TR>';
@@ -123,29 +93,6 @@
     L_LINE := R_Reco.trb||'</TD><TD ALIGN="right">'||R_Reco.lfrb||
               '</TD><TD ALIGN="right">'||R_Reco.lctrb||'</TD><TD ALIGN="right">'||
 	      R_Reco.lcirb||'</TD></TR>';
-    print(L_LINE);
-  END LOOP;
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
-  print('<HR>');
-
-  -- Buffer Waits
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="bufwait">Buffer Wait Statistics</A>'||
-            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'buffwaits'||CHR(39)||
-            ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
-  print(L_LINE);
-  print(' <TR><TD COLSPAN="5" ALIGN="center">Ordered by Wait Time desc, Waits desc</TD></TR>');
-  L_LINE := ' <TR><TH CLASS="th_sub">Class</TH><TH CLASS="th_sub">Waits</TH>'||
-            '<TH CLASS="th_sub">Tot Wait Time (s)</TH>'||
-	    '<TH CLASS="th_sub">Avg Wait Time (s)</TH>'||
-	    '<TH CLASS="th_sub">Waits/s</TH></TR>';
-  print(L_LINE);
-  FOR R_Buff IN C_BuffW(DBID,INST_NUM,BID,EID) LOOP
-    L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.class||'</TD><TD ALIGN="right">'||
-              R_Buff.icnt||'</TD><TD ALIGN="right">'||R_Buff.itim||
-	      '</TD><TD ALIGN="right">'||R_Buff.iavg;
-    print(L_LINE);
-    L_LINE := '</TD><TD ALIGN="right">'||R_Buff.wps||'</TD></TR>';
     print(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;

@@ -231,7 +231,7 @@ v0.2.6
 ! Navigation links for SGA and init.ora Stats have been set even if these stats
   were turned off via the config
 + Modularization: Dictionary- and Library Cache Statistics, RBS Stats and RBS
-  Storage, Undo Segment Summary, Enqueue Activities, PGA Aggregat and PGA Memory
-  can now be switched off (see config)
+  Storage, Undo Segment Summary, Enqueue Activities, PGA Aggregat, PGA Memory,
+  Buffer Pool and Buffer Waits can now be switched off (see config)
 * sorted the entries in the "features" block of the config file to represent
   the order the segments appear in the report (same for the HTML documentation)
