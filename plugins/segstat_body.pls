@@ -8,5 +8,8 @@
 --      print ('PR_GO_HERE<br>');
       seg_pr;
     END IF;
+    IF MK_SEG_BUSY = 1 THEN
+      seg_bw;
+    END IF;
     print('<HR>');
 --  END IF;
