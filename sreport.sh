@@ -982,6 +982,20 @@ DECLARE
        AND nvl(b.pool,'a')   = nvl(e.pool,'a')
      ORDER BY b.pool, b.name;
 
+  CURSOR C_RLim (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT resource_name rname,
+           to_char(current_utilization,'999,999,990') curu,
+           to_char(max_utilization,'999,999,990') maxu,
+           to_char(initial_allocation,'999,999,990') inita,
+           to_char(limit_value,'999,999,990') lim
+      FROM stats\$resource_limit
+     WHERE snap_id = eid
+       AND dbid    = db_id
+       AND instance_number = instnum
+       AND (   nvl(current_utilization,0)/limit_value > .8
+            or nvl(max_utilization,0)/limit_value > .8 )
+     ORDER BY rname;
+
 
 BEGIN
   -- Configuration
@@ -1030,7 +1044,8 @@ BEGIN
             ' [ <A HREF="#rbs">RBS</A> ] [ <A HREF="#undo">Undo Segs</A> ]'||
 	    ' [ <A HREF="#latches">Latches</A> ]';
   dbms_output.put_line(L_LINE);
-  L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]</TD></TR>';
+  L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]'||
+            ' [ <A HREF="#resourcelimits">Resource Limits</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1944,6 +1959,25 @@ BEGIN
               R_SGASum.name||'</TD><TD ALIGN="right">'||R_SGASum.snap1||
 	      '</TD><TD ALIGN="right">'||R_SGASum.snap2||'</TD><TD ALIGN="right">'||
 	      R_SGASum.diff||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- Resource Limits
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="#sga">Resource Limits</A></TH></TR>'||
+            ' <TR><TD COLSPAN="5" ALIGN="center">"Current" is the time of the End SnapShot</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Resource</TH><TH CLASS="th_sub">Curr Utilization</TH>'||
+	    '<TH CLASS="th_sub">Max Utilization</TH><TH CLASS="th_sub">'||
+	    'Init Allocation</TH><TH CLASS="th_sub">Limit</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_RLim in C_RLim(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_RLim.rname||'</TD><TD ALIGN="right">'||
+              R_RLim.curu||'</TD><TD ALIGN="right">'||R_RLim.maxu||
+	      '</TD><TD ALIGN="right">'||R_RLim.inita||'</TD><TD ALIGN="right">'||
+	      R_RLim.lim||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
