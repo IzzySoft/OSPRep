@@ -2,11 +2,10 @@
 -- Oracle StatsPack Report 2 Html    (c) 2003 by IzzySoft  (devel@izzysoft.de)
 -- ---------------------------------------------------------------------------
 -- Additional Procedure to collect information on selected wait objects, i.e.
--- objects causing wait events. Due to a problem in Oracle concerning the
--- usage of certain V$ views in PL/SQL by users other than SYS, this procedure
--- has to be created (and owned) by SYS - sorry for that, it isn't my fault...
--- So please, if you want to use this feature, run this script in e.g.
--- SQL*Plus as SYS
+-- objects causing wait events. In order to successfully install and use this
+-- procedure, make sure to GRANT SELECT ANY TABLE TO PERFSTAT first, and then
+-- run this script in e.g.
+ SQL*Plus as PERFSTAT
 -- ---------------------------------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE get_waitevents AUTHID DEFINER IS
@@ -40,4 +39,3 @@ EXCEPTION
 END;
 /
 
-GRANT EXECUTE ON get_waitevents TO perfstat;

@@ -708,8 +708,12 @@
   print('<HR>');
 
   -- RBS Stats
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#rbs">Rollback Segments Stats</A></TH></TR>'||
-            ' <TR><TD COLSPAN="7" ALIGN="justify">A high value for "Pct Waits" '||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="rbs">Rollback Segments Stats</A>'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'rollstat'||CHR(39)||
+	    ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" '||
+	    'VALIGN="middle"></A></TH></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD COLSPAN="7" ALIGN="justify">A high value for "Pct Waits" '||
 	    'suggests more rollback segments may be required. ';
   print(L_LINE);
   L_LINE := 'A large number of transaction table waits also results in high values '||
@@ -742,8 +746,12 @@
   print(L_LINE);
 
   -- RBS Storage
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Rollback Segments Storage</TH></TR>'||
-            ' <TR><TD COLSPAN="5" ALIGN="center">Optimal Size should be larger '||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Rollback Segments Storage'||
+            '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'rollstat'||CHR(39)||
+	    ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" '||
+	    'VALIGN="middle"></A></TH></TR>';
+  print(L_LINE);
+  L_LINE := ' <TR><TD COLSPAN="5" ALIGN="center">Optimal Size should be larger '||
 	    'than Avg Active</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">RBS#</TH><TH CLASS="th_sub">Segment Size</TH>'||
