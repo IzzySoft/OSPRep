@@ -10,6 +10,7 @@
 
 cat>>$SQLSET<<ENDSQL
 DECLARE
+  MK_RLIMS BOOLEAN;
   MK_ALLWAITS NUMBER;
   MK_BGWAITS NUMBER;
   MK_INSTACT NUMBER;
@@ -886,6 +887,24 @@ DECLARE
         dbms_output.put_line('*!* Problem in print() *!*');
     END;
 
+  FUNCTION have_rlims (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) RETURN BOOLEAN IS
+    CI NUMBER; statement VARCHAR2(500);
+    BEGIN
+      statement := 'SELECT COUNT(resource_name) FROM stats\$resource_limit '||
+                   ' WHERE snap_id = eid AND dbid = db_id '||
+		   '   AND instance_number = instnum '||
+		   '   AND (   nvl(current_utilization,0)/limit_value > .8 '||
+                   '        or nvl(max_utilization,0)/limit_value > .8 )';
+      EXECUTE IMMEDIATE statement INTO CI;
+      IF CI > 0 THEN
+        RETURN TRUE;
+      ELSE
+        RETURN FALSE;
+      END IF;
+    EXCEPTION
+      WHEN OTHERS THEN RETURN FALSE;
+    END;
+
   PROCEDURE tab_exists(tab_name IN VARCHAR2,content IN NUMBER,is_ok OUT NUMBER) IS
     temp_count NUMBER; statement VARCHAR2(255);
     BEGIN
@@ -1065,6 +1084,8 @@ BEGIN
     BID := $START_ID;
   END IF;
 
+  MK_RLIMS := have_rlims(DBID,INST_NUM,BID,EID);
+
   FOR R_SnapBind IN C_SnapBind(DBID,INST_NUM,BID) LOOP
     PARA  := R_SnapBind.parallel;
     VERSN := R_SnapBind.version;
@@ -1133,9 +1154,11 @@ BEGIN
             ' [ <A HREF="#rbs">RBS</A> ] [ <A HREF="#undo">Undo Segs</A> ]'||
 	    ' [ <A HREF="#latches">Latches</A> ]';
   print(L_LINE);
-  L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]'||
-            ' [ <A HREF="#resourcelimits">Resource Limits</A> ]'||
-	    ' [ <A HREF="#initora">Init Params</A> ]</DIV></TD></TR>';
+  L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]';
+  IF MK_RLIMS THEN
+    L_LINE := L_LINE||' [ <A HREF="#resourcelimits">Resource Limits</A> ]';
+  END IF;
+  L_LINE := L_LINE||' [ <A HREF="#initora">Init Params</A> ]</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := TABLE_CLOSE;
   print(L_LINE);
