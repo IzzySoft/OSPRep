@@ -4,29 +4,29 @@
  <TITLE>OraHelp: Enqueue Waits</TITLE>
 </HEAD><BODY>
 
-<TABLE WIDTH="95%" ALIGN="center"><TR><TD>
+<TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <P>Below you find a description on selected enqueue types:</P>
  <TABLE BORDER="0">
   <TR><TD CLASS="smallname">BL</TD>
-      <TD><B>Buffer Cache Managment</B></TD></TR>
+      <TD CLASS="text"><B>Buffer Cache Managment</B></TD></TR>
   <TR><TD CLASS="smallname">CF</TD>
-      <TD><B>Control file schema</B> global enqueue</TD></TR>
+      <TD CLASS="text"><B>Control file schema</B> global enqueue</TD></TR>
   <TR><TD CLASS="smallname">CI</TD>
-      <TD><B>Cross Instance</B> call invocation</TD></TR>
+      <TD CLASS="text"><B>Cross Instance</B> call invocation</TD></TR>
   <TR><TD CLASS="smallname">CU</TD>
-      <TD><B>Cursor Bind</B></TD></TR>
+      <TD CLASS="text"><B>Cursor Bind</B></TD></TR>
   <TR><TD CLASS="smallname">DF</TD>
-      <TD><B>Datafile</B></TD></TR>
+      <TD CLASS="text"><B>Datafile</B></TD></TR>
   <TR><TD CLASS="smallname">DL</TD>
-      <TD><B>Direct Loader</B> index creation</TD></TR>
+      <TD CLASS="text"><B>Direct Loader</B> index creation</TD></TR>
   <TR><TD CLASS="smallname">DR</TD>
-      <TD><B>Distributed Recovery</B></TD></TR>
+      <TD CLASS="text"><B>Distributed Recovery</B></TD></TR>
   <TR><TD CLASS="smallname">DX</TD>
-      <TD><B>Distributed Transactions</B></TD></TR>
+      <TD CLASS="text"><B>Distributed Transactions</B></TD></TR>
   <TR><TD CLASS="smallname">IR</TD>
-      <TD><B>Instance Recovery</B></TD></TR>
+      <TD CLASS="text"><B>Instance Recovery</B></TD></TR>
   <TR><TD CLASS="smallname">HW</TD>
-      <TD><B>Space Management</B> operations on a specific
+      <TD CLASS="text"><B>Space Management</B> operations on a specific
           segment. This enqueue is used to serialize the allocation of space
 	  above the high water mark of a segment:<BR>
 	  <CODE>V$SESSION_WAIT.P2 / V$LOCK.ID1</CODE> is the tablespace number<BR>
@@ -35,21 +35,21 @@
 	  If this is a point of contention for an object, then manual allocation
 	  of extents solves the problem.</TD></TR>
   <TR><TD CLASS="smallname">LA..LP</TD>
-      <TD><B>Library Cache</B> Lock</TD></TR>
+      <TD CLASS="text"><B>Library Cache</B> Lock</TD></TR>
   <TR><TD CLASS="smallname">MD</TD>
-      <TD><B>Materialized Views:</B> enqueue for change data capture
-          materialized view log (gotten internally for DDL on a snapshot
-	  log); id1=object# of the snapshot log.</TD></TR>
+      <TD CLASS="text"><B>Materialized Views:</B> enqueue for change data
+          capture materialized view log (gotten internally for DDL on a
+	  snapshot log); id1=object# of the snapshot log.</TD></TR>
   <TR><TD CLASS="smallname">NA..NZ</TD>
-      <TD><B>Library Cache</B> Pin</TD></TR>
+      <TD CLASS="text"><B>Library Cache</B> Pin</TD></TR>
   <TR><TD CLASS="smallname">RT</TD>
-      <TD><B>Redo Log</B></TD></TR>
+      <TD CLASS="text"><B>Redo Log</B></TD></TR>
   <TR><TD CLASS="smallname">SQ</TD>
-      <TD><B>SeQuences</B> not being cached, having a to small
+      <TD CLASS="text"><B>SeQuences</B> not being cached, having a to small
           cache size or being aged out of the shared pool. Consider pinning
 	  sequences or increasing the shared_pool_size.</TD></TR>
   <TR><TD CLASS="smallname">ST</TD>
-      <TD><B>Space management locks</B> could be caused by using
+      <TD CLASS="text"><B>Space management locks</B> could be caused by using
           permanent tablespaces for sorting (rather than temporary), or by
 	  dynamic allocation resulting from inadequate storage clauses (only
 	  with Dictionary Managed TableSpaces). In the latter case, using
@@ -67,14 +67,14 @@
 	  up to Oracle 8i, if you didn't specify it explicitly it was set
 	  to SYSTEM!).</TD></TR>
   <TR><TD CLASS="smallname">TA</TD>
-      <TD><B>Transaction Recovery</B></TD></TR>
+      <TD CLASS="text"><B>Transaction Recovery</B></TD></TR>
   <TR><TD CLASS="smallname">TM</TD>
-      <TD><B>Table locks</B> point to the possibility of e.g.
+      <TD CLASS="text"><B>Table locks</B> point to the possibility of e.g.
           foreign key constraints not being indexed</TD></TR>
   <TR><TD CLASS="smallname">TS</TD>
-      <TD><B>Temporary Segment</B></TD></TR>
+      <TD CLASS="text"><B>Temporary Segment</B></TD></TR>
   <TR><TD CLASS="smallname">TX</TD>
-      <TD><B>Transaction locks</B> indicate multiple users try
+      <TD CLASS="text"><B>Transaction locks</B> indicate multiple users try
           modifying the same row of a table (row-level-lock) or a row that is
 	  covered by the same bitmap index fragment, or a session is waiting
 	  for an ITL (interested transaction list) slot in a block, but one or
@@ -86,7 +86,7 @@
 	  <A HREF="initrans.html"><CODE>INITRANS</CODE> or <CODE>MAXTRANS</CODE></A>
 	  for the table in question.</TD></TR>
   <TR><TD CLASS="smallname">US</TD>
-      <TD><B>Undo Segment</B>, serialization</TD></TR>
+      <TD CLASS="text"><B>Undo Segment</B>, serialization</TD></TR>
  </TABLE>
  <P>For more information on enqueue waits, see <A HREF="enqueue.html">Enqueues</A>.</P>
 
