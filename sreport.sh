@@ -996,6 +996,23 @@ DECLARE
             or nvl(max_utilization,0)/limit_value > .8 )
      ORDER BY rname;
 
+  CURSOR C_IParm (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT e.name,
+           nvl(b.value,'&nbsp;') bval,
+	   decode(b.value,e.value,'&nbsp;',e.value) eval
+      FROM stats\$parameter b, stats\$parameter e
+     WHERE b.snap_id(+) = bid
+       AND e.snap_id    = eid
+       AND b.dbid(+)    = db_id
+       AND e.dbid       = db_id
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.name(+)    = e.name
+       AND (   nvl(b.isdefault,'X')   = 'FALSE'
+            or nvl(b.ismodified,'X') != 'FALSE'
+	    or     e.ismodified      != 'FALSE'
+	    or nvl(e.value,0)        != nvl(b.value,0) );
+
 
 BEGIN
   -- Configuration
@@ -1045,7 +1062,8 @@ BEGIN
 	    ' [ <A HREF="#latches">Latches</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]'||
-            ' [ <A HREF="#resourcelimits">Resource Limits</A> ]</TD></TR>';
+            ' [ <A HREF="#resourcelimits">Resource Limits</A> ]'||
+	    ' [ <A HREF="#initora">Init Params</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1140,7 +1158,7 @@ BEGIN
   CALL := UCAL + RECR;
 
   -- SnapShot Info
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#snapinfo">SnapShot Info</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="snapinfo">SnapShot Info</A></TH></TR>'||CHR(10)||
             ' <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Snap ID</TH>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TH CLASS="th_sub">Snap Time</TH><TH CLASS="th_sub">Sessions</TH>'||
@@ -1171,7 +1189,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Cache Sizes
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="#cachesizes">Cache Sizes (End)</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="cachesizes">Cache Sizes (End)</A></TH></TR>'||CHR(10)||
             ' <TR><TH CLASS="th_sub">Cache</TH><TH CLASS="th_sub">Size</TH></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TD>Buffer Cache</TD><TD ALIGN="right">'||to_char(round(BC/1024/1024),'999,999')||' M</TD></TR>'||
@@ -1185,7 +1203,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Load Profile
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="#loads">Load Profile</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="loads">Load Profile</A></TH></TR>'||CHR(10)||
             ' <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Per Second</TH><TH CLASS="th_sub">Per Transaction</TH></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TD CLASS="td_name">Redo Size</TD><TD ALIGN="right">'||
@@ -1252,7 +1270,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Instance Efficiency Percentages
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="#efficiency">Instance Efficiency Percentages (Target: 100%)</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="efficiency">Instance Efficiency Percentages (Target: 100%)</A></TH></TR>'||CHR(10)||
             ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Efficiency (%)</TH></TR>';
   dbms_output.put_line(L_LINE);
   IF RENT = 0
@@ -1301,7 +1319,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Shared Pool Stats
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="#sharedpool">Shared Pool Statistics</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="sharedpool">Shared Pool Statistics</A></TH></TR>'||CHR(10)||
             ' <TR><TH CLASS="th_sub">Name</TH><TH CLASS="th_sub">Begin</TH>'||
 	    '<TH CLASS="th_sub">End</TH></TR>';
   dbms_output.put_line(L_LINE);
@@ -1324,7 +1342,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Top 5 Wait Events
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#top5wait">Top 5 Wait Events</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="top5wait">Top 5 Wait Events</A></TH></TR>'||CHR(10)||
             ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
 	    '<TH CLASS="th_sub">Wait Time (s)</TH><TH CLASS="th_sub">% Total Wt Time (ms)</TH></TR>';
   dbms_output.put_line(L_LINE);
@@ -1339,7 +1357,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- All Wait Events
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#waitevents">All Wait Events</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="waitevents">All Wait Events</A></TH></TR>'||CHR(10)||
             ' <TR><TD COLSPAN="6" ALIGN="center">Ordered by Total Wait Time '||
 	    '(desc), Waits (desc); idle events last</TD></TR>';
   dbms_output.put_line(L_LINE);
@@ -1383,7 +1401,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SQL by Gets
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#sqlbygets">SQL ordered by Gets</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbygets">SQL ordered by Gets</A></TH></TR>'||CHR(10)||
             ' <TR><TD COLSPAN="7">End Buffer Gets Treshold: '||EBGT||
 	    '<P ALIGN="justify" STYLE="margin-top:4">Note that resources reported for PL/SQL includes the ';
   dbms_output.put_LINE(L_LINE);
@@ -1418,7 +1436,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SQL by Reads
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#sqlbyreads">SQL ordered by Reads</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbyreads">SQL ordered by Reads</A></TH></TR>'||CHR(10)||
             ' <TR><TD COLSPAN="7" ALIGN="center">End Disk Reads Treshold: '||EDRT||'</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Pysical Reads</TH><TH CLASS="th_sub">Executions</TH>'||
@@ -1448,7 +1466,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SQL by Executions
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#sqlbyexec">SQL ordered by Executions</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="sqlbyexec">SQL ordered by Executions</A></TH></TR>'||CHR(10)||
             ' <TR><TD COLSPAN="6" ALIGN="center">End Executions Treshold: '||EET||'</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Rows Processed</TH>'||
@@ -1476,7 +1494,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SQL by Parse
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#sqlbyparse">SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="sqlbyparse">SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
             ' <TR><TD COLSPAN="4" ALIGN="center">End Parse Calls Treshold: '||EPC||'</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
@@ -1500,7 +1518,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Instance Activity
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#instact">Instance Activity Stats</A></TH></TR>';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="instact">Instance Activity Stats</A></TH></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Total</TH>'||
 	    '<TH CLASS="th_sub">per Second</TH><TH CLASS="th_sub">per TXN</TH></TR>';
@@ -1516,7 +1534,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- TS IO Summary
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="#tsio">TableSpace IO Summary Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="tsio">TableSpace IO Summary Statistics</A></TH></TR>'||
             ' <TR><TD COLSPAN="9" ALIGN="center">Ordered by IOs (Reads + Writes) desc</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Reads</TH>'||
@@ -1541,7 +1559,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- File IO Summary
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="#fileio">File IO Summary Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="fileio">File IO Summary Statistics</A></TH></TR>'||
             ' <TR><TD COLSPAN="10" ALIGN="center">Ordered by TableSpace, File</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Filename</TH>'||
@@ -1568,7 +1586,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Buffer Pool
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="#bufpool">Buffer Pool Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="bufpool">Buffer Pool Statistics</A></TH></TR>'||
             ' <TR><TD COLSPAN="9" ALIGN="center">Standard Block Size Pools ';
   dbms_output.put_line(L_LINE);
   L_LINE := 'D:Default, K:Keep, R:Recycle<BR>Default Pools for other block '||
@@ -1597,7 +1615,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Instance Recovery
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="#recover">Instance Recovery Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="recover">Instance Recovery Statistics</A></TH></TR>'||
             ' <TR><TD COLSPAN="9" ALIGN="center">B: Begin SnapShot, E: End SnapShot</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Target MTTR (s)</TH>'||
@@ -1624,7 +1642,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Buffer Waits
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="#bufwait">Buffer Wait Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="bufwait">Buffer Wait Statistics</A></TH></TR>'||
             ' <TR><TD COLSPAN="4" ALIGN="center">Ordered by Wait Time desc, Waits desc</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Class</TH><TH CLASS="th_sub">Waits</TH>'||
@@ -1642,7 +1660,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- PGA Aggreg Target Memory
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="#pga">PGA Aggreg Target Memory Statistics</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="pga">PGA Aggreg Target Memory Statistics</A></TH></TR>'||
             ' <TR><TD COLSPAN="9" ALIGN="center">B: Begin SnapShot, E: End SnapShot</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">PGA Aggreg Target (M)</TH>'||
@@ -1685,7 +1703,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Enqueue Activity
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#enq">Enqueue Activity</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="enq">Enqueue Activity</A></TH></TR>'||
             ' <TR><TD COLSPAN="7" ALIGN="center">Enqueue Stats gathered prior to 9i '||
 	    'should not be compared with 9i data<BR>Ordered by Waits desc, Requests desc</TD></TR>';
   dbms_output.put_line(L_LINE);
@@ -1758,7 +1776,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Undo Segs Summary
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="#undo">Undo Segment Summary</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="undo">Undo Segment Summary</A></TH></TR>'||
             ' <TR><TD COLSPAN="8" ALIGN="center">Undo Segment block stats<BR>'||
 	    'uS - unexpired Stolen, uR - unexpired Released, uU - unexpired reUsed<BR>';
   dbms_output.put_line(L_LINE);
@@ -1810,7 +1828,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Latch Activity
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="#latches">Latch Activity</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="latches">Latch Activity</A></TH></TR>'||
             ' <TR><TD COLSPAN="7" ALIGN="center">"Get Requests", "Pct Get Miss"'||
 	    ' and "Avg Slps/Miss" are statistics for willing-to-wait';
   dbms_output.put_line(L_LINE);
@@ -1880,7 +1898,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Dictionary Cache
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="#caches">Dictionary Cache</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="caches">Dictionary Cache</A></TH></TR>'||
             ' <TR><TD COLSPAN="8" ALIGN="center">"Pct Misses" should be very '||
 	    ' low (&lt; 2% in most cases)<BR>';
   dbms_output.put_line(L_LINE);
@@ -1931,7 +1949,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- SGA Memory Summary
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="#sga">SGA Memory Summary</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="sga">SGA Memory Summary</A></TH></TR>'||
             ' <TR><TD COLSPAN="2" ALIGN="center">Values at the time of the End SnapShot</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">SGA Region</TH><TH CLASS="th_sub">Size in Bytes</TH>';
@@ -1948,7 +1966,7 @@ BEGIN
   dbms_output.put_line(L_LINE);
 
   -- SGA breakdown diff
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="#sga">SGA BreakDown Difference</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">SGA BreakDown Difference</TH></TR>'||
             ' <TR><TH CLASS="th_sub">Pool</TH><TH CLASS="th_sub">Name</TH>'||
 	    '<TH CLASS="th_sub">Begin Value</TH>';
   dbms_output.put_line(L_LINE);
@@ -1966,7 +1984,7 @@ BEGIN
   dbms_output.put_line('<HR>');
 
   -- Resource Limits
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="#sga">Resource Limits</A></TH></TR>'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="resourcelimits">Resource Limits</A></TH></TR>'||
             ' <TR><TD COLSPAN="5" ALIGN="center">"Current" is the time of the End SnapShot</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Resource</TH><TH CLASS="th_sub">Curr Utilization</TH>'||
@@ -1983,6 +2001,19 @@ BEGIN
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
   dbms_output.put_line('<HR>');
+
+  -- Init.Ora Params
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="initora">Initialization Parameters (init.ora)</A></TH></TR>'||
+            ' <TR><TH CLASS="th_sub">Parameter Name</TH><TH CLASS="th_sub">Begin Value</TH>'||
+	    '<TH CLASS="th_sub">End Value (if different)</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_IParm in C_IParm(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_IParm.name||'</TD><TD>'||
+              R_IParm.bval||'</TD><TD>'||R_IParm.eval||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
 
 
   -- Page Ending
