@@ -1202,11 +1202,16 @@ BEGIN
     L_LINE := L_LINE||' [ <A HREF="#latches">Latches</A> ]';
   END IF;
   print(L_LINE);
-  L_LINE := ' [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ]';
+  L_LINE := ' [ <A HREF="#caches">Caches</A> ]';
+  IF MK_SGASUM = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#sga">SGA</A> ]';
+  END IF;
   IF MK_RLIMS THEN
     L_LINE := L_LINE||' [ <A HREF="#resourcelimits">Resource Limits</A> ]';
   END IF;
-  L_LINE := L_LINE||' [ <A HREF="#initora">Init Params</A> ]</DIV></TD></TR>';
+  IF MK_IORA = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#initora">Init Params</A> ]</DIV></TD></TR>';
+  END IF;
   print(L_LINE);
   L_LINE := TABLE_CLOSE;
   print(L_LINE);
