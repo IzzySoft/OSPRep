@@ -24,6 +24,7 @@ DECLARE
   MK_IORA NUMBER;
   MK_SGASUM NUMBER;
   MK_SGABREAK NUMBER;
+  MK_CACHSIZ NUMBER;
   MK_DC NUMBER;
   MK_LC NUMBER;
   MK_RSSTAT NUMBER;
@@ -321,6 +322,7 @@ BEGIN
   MK_IORA     := :MK_IORA;
   MK_SGASUM   := :MK_SGASUM;
   MK_SGABREAK := :MK_SGABREAK;
+  MK_CACHSIZ  := :MK_CACHSIZ;
   MK_DC       := :MK_DC;
   MK_LC       := :MK_LC;
   MK_RSSTAT   := :MK_RSSTAT;
@@ -424,9 +426,12 @@ BEGIN
 
   -- Navigation
   L_LINE := TABLE_OPEN||'<TR><TD ALIGN="center"><DIV CLASS="small">[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
-            '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> ]';
+            '[ <A HREF="#loads">Load Profile</A> ]';
   print(L_LINE);
   L_LINE :=  ' [ <A HREF="#efficiency">Efficiency</A> ]';
+  IF MK_INSTACT = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#instact">Instance Activity</A> ]';
+  END IF;
   IF MK_TOPWAITS = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#top5wait">Top 5 Wait</A> ] ';
   END IF;
@@ -450,9 +455,6 @@ BEGIN
               ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]';
   ELSE
     L_LINE := '';
-  END IF;
-  IF MK_INSTACT = 1 THEN
-    L_LINE := L_LINE||' [ <A HREF="#instact">Instance Activity</A> ]';
   END IF;
   IF LENGTH(L_LINE) > 0 THEN
     print(L_LINE);
@@ -503,7 +505,7 @@ BEGIN
   IF LENGTH(L_LINE) > 0 THEN
     print(L_LINE);
   END IF;
-  IF MK_DC + MK_LC > 0 THEN
+  IF MK_CACHSIZ + MK_DC + MK_LC > 0 THEN
     L_LINE := ' [ <A HREF="#caches">Caches</A> ]';
   ELSE
     L_LINE := '';
@@ -545,6 +547,5 @@ BEGIN
   L_LINE := ' <TR><TD class="td_name">Report generated:</TD><TD>'||S4||'</TD></TR>'||CHR(10)||
             TABLE_CLOSE;
   print(L_LINE);
-  print('<HR>');
 
 ENDSQL

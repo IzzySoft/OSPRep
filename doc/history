@@ -239,8 +239,8 @@ v0.2.6 (04.03.2004)
 
 v0.2.7
 -------------------
-+ Modularization: Datafile Statistics, TOP_N_SQL, TOP_N_WAITS, Wait Objects and
-  Shared Pool Stats segments can now be switched off (see config)
++ Modularization: Datafile Statistics, TOP_N_SQL, TOP_N_WAITS, Wait Objects,
+  Shared Pool Stats and CacheSizes segments can now be switched off (see config)
 + Reorganized segment grouping: connected stats (as e.g. "Datafile Statistics"
   and "File IO") are now directly following each other (and are no longer
   spread across the report)

@@ -27,7 +27,7 @@
          AND e.gets - b.gets   > 0
        ORDER BY param;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="caches">Dictionary Cache</A></TH></TR>'||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8">Dictionary Cache</TH></TR>'||
                 ' <TR><TD COLSPAN="8" ALIGN="center">"Pct Misses" should be very '||
 	        ' low (&lt; 2% in most cases)<BR>';
       print(L_LINE);

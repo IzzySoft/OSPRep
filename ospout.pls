@@ -25,23 +25,7 @@
     BTIME:= Rec_SnapInfo.begin_snap_time;
     ETIME:= Rec_SnapInfo.end_snap_time;
   END LOOP;
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
-  print('<HR>');
-
-  -- Cache Sizes
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="cachesizes">Cache Sizes (End)</A></TH></TR>'||CHR(10)||
-            ' <TR><TH CLASS="th_sub">Cache</TH><TH CLASS="th_sub">Size</TH></TR>';
-  print(L_LINE);
-  L_LINE := ' <TR><TD>Buffer Cache</TD><TD ALIGN="right">'||to_char(round(BC/1024/1024),'999,999')||' M</TD></TR>'||
-            ' <TR><TD>Std Block Size</TD><TD ALIGN="right">'||to_char(round(BS/1024),'999,999')||' K</TD></TR>';
-  print(L_LINE);
-  L_LINE := ' <TR><TD>Shared Pool Size</TD><TD ALIGN="right">'||to_char(round(SP/1024/1024),'999,999')||' M</TD></TR>'||
-            ' <TR><TD>Log Buffer</TD><TD ALIGN="right">'||to_char(round(LB/1024),'999,999')||' K</TD></TR>';
-  print(L_LINE);
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
-  print('<HR>');
+  print(TABLE_CLOSE);
 
   -- Load Profile
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="loads">Load Profile</A></TH></TR>'||CHR(10)||
@@ -106,8 +90,7 @@
             to_char(round(TRAN/ELA,2),'99,999,999,990.00')||
             '</TD><TD ALIGN="right">&nbsp;</TD></TR>';
   print(L_LINE);
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
+  print(TABLE_CLOSE);
   print('<HR>');
 
   -- Instance Efficiency Percentages
@@ -221,7 +204,6 @@
             ' <TR><TD>Non-Parse CPU</TD><TD ALIGN="right">'||
             S2||'</TD><TD>&nbsp;</TD></TR>';
   print(L_LINE);
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
+  print(TABLE_CLOSE);
   print('<HR>');
 
