@@ -18,7 +18,7 @@ if [ -z "$1" ]; then
   SCRIPT=${0##*/}
   echo
   echo ============================================================================
-  echo "OSPRep v$version                (c) 2003 by Itzchak Rehberg (devel@izzysoft.de)"
+  echo "OSPRep v$version           (c) 2003-2004 by Itzchak Rehberg (devel@izzysoft.de)"
   echo ----------------------------------------------------------------------------
   echo This script is intended to retrieve the execution plans for all statements
   echo that caused Full Table Scans, using the statistics gathered by the Oracle
@@ -30,7 +30,9 @@ if [ -z "$1" ]; then
   echo "     -c <ConfigFileName>"
   echo "     -b <BEGIN_ID (Snapshot)"
   echo "     -e <END_ID (Snapshot)>"
+  echo "     -o <Output Filename>"
   echo "     -p <Password>"
+  echo "     -r <ReportDirectory>"
   echo "     -s <ORACLE_SID/Connection String for Target DB>"
   echo "     -u <username>"
   echo "  Example: generate report for oradb up to snapshot ID 1800:"
@@ -54,6 +56,8 @@ while [ "$1" != "" ] ; do
     -e) shift; PEND_ID=$1;;
     -b) shift; PSTART_ID=$1;;
     -c) shift; CONFIG=$1;;
+    -r) shift; REPORTDIR=$1;;
+    -o) shift; FILENAME=$1;;
   esac
   shift
 done
@@ -68,6 +72,12 @@ if [ -n "$START_ID" ]; then
   if [ -z "$END_ID" ]; then
     END_ID=$START_ID
   fi
+fi
+if [ -n "$REPORTDIR" ]; then
+  REPDIR=$REPORTDIR
+fi
+if [ -z "$FILENAME" ]; then
+  FILENAME="${ORACLE_SID}_fts.html"
 fi
 
 SQLSET=$TMPDIR/osprep_fts_$ORACLE_SID.$$
@@ -94,7 +104,7 @@ Set LINESIZE 300
 Set TRIMSPOOL On 
 Set FEEDBACK OFF
 Set Echo Off
-SPOOL $REPDIR/${ORACLE_SID}_fts.html
+SPOOL $REPDIR/${FILENAME}
 DECLARE
   L_LINE VARCHAR2(4000);
   R_TITLE VARCHAR2(200);
@@ -139,7 +149,12 @@ DECLARE
       dbms_output.put_line(line);
     EXCEPTION
       WHEN OTHERS THEN
-        dbms_output.put_line('*!* Problem in print() *!*');
+        IF SQLERRM LIKE '%ORU-10028%' THEN
+	  print(SUBSTR(line,1,255));
+	  print(SUBSTR(line,256));
+	ELSE
+          dbms_output.put_line('*!* Problem in print() *!*');
+	END IF;
     END;
 
   PROCEDURE get_plan (hashval IN VARCHAR2) IS
@@ -256,8 +271,9 @@ BEGIN
   END IF;
 
   -- HTML Head
-  L_LINE := '<HTML><HEAD>'||CHR(10)||
-            ' <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15"/>'||
+  L_LINE := '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'||CHR(10)||
+            '<HTML><HEAD>'||CHR(10)||
+            ' <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">'||
             CHR(10)||' <TITLE>'||R_TITLE||'</TITLE>';
   print(L_LINE);
   L_LINE := ' <LINK REL="stylesheet" TYPE="text/css" HREF="$CSS">'||CHR(10)||
@@ -288,11 +304,16 @@ BEGIN
   print(TABLE_CLOSE);
 
   -- Page Ending
-  L_LINE := '<HR>'||CHR(10)||TABLE_OPEN;
+  L_LINE := '<HR>'||CHR(10)||TABLE_OPEN||
+            '<TR><TD><IMG SRC="w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14"'||
+            ' ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small">';
   print(L_LINE);
-  L_LINE := '<TR><TD><DIV CLASS="small">Created by OSPRep v'||OSPVER||' (FTS module) &copy; 2003-2004 by '||
+  L_LINE := 'Created by OSPRep v'||OSPVER||' (FTS module) &copy; 2003-2004 by '||
 	    '<A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> '||
-            '&amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></DIV></TD></TR>';
+            '&amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></SPAN>';
+  print(L_LINE);
+  L_LINE := '<IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14"'||
+            ' ALIGN="middle" STYLE="margin-left:3px"></TD></TR>';
   print(L_LINE);
   print(TABLE_CLOSE);
   L_LINE := '</BODY></HTML>'||CHR(10);
