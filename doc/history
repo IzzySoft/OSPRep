@@ -226,7 +226,7 @@ v0.2.5 (02.03.2004)
 + more modularization: init.ora parameters and SGA Stats can now be switched
   off (see config)
 
-v0.2.6
+v0.2.6 (04.03.2004)
 -------------------
 ! Navigation links for SGA and init.ora Stats have been set even if these stats
   were turned off via the config
