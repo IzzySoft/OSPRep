@@ -27,6 +27,7 @@ if [ -z "$1" ]; then
   echo ----------------------------------------------------------------------------
   echo "Syntax: ${SCRIPT} <ORACLE_SID> [Options]"
   echo "  Options:"
+  echo "     -c <ConfigFileName>"
   echo "     -b <BEGIN_ID (Snapshot)"
   echo "     -e <END_ID (Snapshot)>"
   echo "     -p <Password>"
@@ -40,8 +41,9 @@ if [ -z "$1" ]; then
 fi
 
 # =================================================[ Configuration Section ]===
-# -------------------------------------------[ Read the Configuration File ]---
-. ./config $*
+BINDIR=${0%/*}
+CONFIG=$BINDIR/config
+ARGS=$*
 # ------------------------------------------[ process command line options ]---
 while [ "$1" != "" ] ; do
   case "$1" in
@@ -50,9 +52,12 @@ while [ "$1" != "" ] ; do
     -p) shift; password=$1;;
     -e) shift; PEND_ID=$1;;
     -b) shift; PSTART_ID=$1;;
+    -c) shift; CONFIG=$1;;
   esac
   shift
 done
+# -------------------------------------------[ Read the Configuration File ]---
+. $CONFIG $ARGS
 if [ -z "$ORACLE_CONNECT" ]; then
   ORACLE_CONNECT=$ORACLE_SID
 fi
@@ -138,7 +143,7 @@ DECLARE
 
   PROCEDURE get_plan (hashval IN VARCHAR2) IS
     HASHID NUMBER; CI NUMBER; SI NUMBER; OSIZE VARCHAR2(50); IND VARCHAR2(255);
-    CW NUMBER; S1 VARCHAR2(50);
+    CW NUMBER; S1 VARCHAR2(50); TDI VARCHAR2(20);
     CURSOR C_PGet (hash_val IN VARCHAR2) IS
       SELECT operation,options,object_owner,object_name,optimizer,
              NVL(TO_CHAR(cost,'999,990'),'&nbsp;') cost,
@@ -198,16 +203,18 @@ DECLARE
 	    ELSE
 	      S1 := ' CLASS="warn"';
 	    END IF;
+            TDI := '';
 	  ELSE
 	    S1 := '';
+            TDI := ' CLASS="inner"';
 	  END IF;
-          print('<TR'||S1||'><TD><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
-                '</CODE></DIV></TD><TD>'||rplan.object_owner||'.'||rplan.object_name||
-                '</TD><TD>'||NVL(rplan.optimizer,'&nbsp;'));
-          print('</TD><TD ALIGN="right">'||rplan.cost||'</TD><TD ALIGN="right">'||
+          print('<TR'||S1||'><TD'||TDI||'><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
+                '</CODE></DIV></TD><TD'||TDI||'>'||rplan.object_owner||'.'||rplan.object_name||
+                '</TD><TD'||TDI||'>'||NVL(rplan.optimizer,'&nbsp;'));
+          print('</TD><TD ALIGN="right"'||TDI||'>'||rplan.cost||'</TD><TD ALIGN="right"'||TDI||'>'||
                 NVL(TO_CHAR(rplan.cpu_cost,'999,990'),'&nbsp;')||
-                '</TD><TD ALIGN="right">'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
-                '</TD><TD ALIGN="right"><DIV STYLE="width:'||CI||'em">'||OSIZE||'</DIV></TD></TR>');
+                '</TD><TD ALIGN="right"'||TDI||'>'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
+                '</TD><TD ALIGN="right"'||TDI||'><DIV STYLE="width:'||CI||'em">'||OSIZE||'</DIV></TD></TR>');
         END LOOP;
         print('</TABLE></TD></TR>');
       END IF;
