@@ -200,10 +200,11 @@ v0.2.2 (19.02.2004)
 + added AvgCharts (cumulative: timeouts per snapshot)
 * updated the (HTML) documentation
 
-v0.2.3
+v0.2.3 (24.02.2004)
 -------------------
 ! cosmetical fix: description of initial diagram of Ratio charts fixed
 ! fixed division by zero error in buffer pool stats
 ! cmdline parameter -b and -e have been ignored
 + added Pct ReloadsPerPin, Pct GetHitRatio and Pct Row Cache Ratio to Ratio
   charts
++ applied Go4Colors to fts_plans.sh
