@@ -1060,8 +1060,8 @@ DECLARE
          AND snap_id = id.maxid;
       IF CI > 0
       THEN
-        CW := 18;
-        print('<TR><TD>&nbsp;</TD><TD COLSPAN="5">');
+        CW := 20;
+        print('<TR><TD>&nbsp;</TD><TD COLSPAN="6">');
         print(TABLE_OPEN||'<TR><TH CLASS="th_sub">Operation</TH><TH CLASS="th_sub">'||
               'Object</TH><TH CLASS="th_sub">');
         print('Optimizer</TH><TH CLASS="th_sub">Cost</TH><TH CLASS="th_sub">'||
@@ -1082,17 +1082,18 @@ DECLARE
           END IF;
 	  IND := '';
 	  FOR CI IN 1..rplan.depth LOOP
-	    IND := IND||'.';
+	    IND := IND||'. ';
 	  END LOOP;
-	  SI := LENGTH(rplan.operation) + LENGTH(rplan.options) + CI +1;
+	  SI := 11*(LENGTH(rplan.operation) + LENGTH(rplan.options) + 2*rplan.depth)/9;
+	  CI := 3*(LENGTH(OSIZE)+1)/10;
 	  IF SI > CW THEN CW := SI; END IF;
-          print('<TR><TD><DIV STYLE="width:'||3*CW/5||'em">'||IND||rplan.operation||' '||rplan.options||
-                '</DIV></TD><TD>'||rplan.object_owner||'.'||rplan.object_name||
+          print('<TR><TD><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
+                '</CODE></DIV></TD><TD>'||rplan.object_owner||'.'||rplan.object_name||
                 '</TD><TD>'||NVL(rplan.optimizer,'&nbsp;'));
           print('</TD><TD ALIGN="right">'||rplan.cost||'</TD><TD ALIGN="right">'||
                 NVL(TO_CHAR(rplan.cpu_cost,'999,990'),'&nbsp;')||
                 '</TD><TD ALIGN="right">'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
-                '</TD><TD ALIGN="right">'||OSIZE||'</TD></TR>');
+                '</TD><TD ALIGN="right"><DIV STYLE="width:'||CI||'em">'||OSIZE||'</DIV></TD></TR>');
         END LOOP;
         print('</TABLE></TD></TR>');
       END IF;
