@@ -268,7 +268,7 @@ v0.2.9 (19.03.2004)
 ! scripts crashed when specified END_ID was higher then the latest snapshot
 + added alternative StyleSheet: iceage.css
 
-v0.3.0
+v0.3.0 (19.04.2004)
 -------------------
 * number formatting improvements for time and file/memory sizes
 ! some values in Top N SQL where named as "seconds" but represented ms
@@ -276,3 +276,8 @@ v0.3.0
 + fts_plans.sh now supports the "-c" command line switch
 ! report was broken again for Oracle < v9 due to use of CASE (introduced
   with Oracle v9)
+
+v0.3.1
+-------------------
+! when there've been gaps in the snapshot, ratio charts where partly drawn
+  outside the diagram area
