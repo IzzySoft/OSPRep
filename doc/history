@@ -179,5 +179,6 @@ v0.2.0
 -------------------
 + added documentation (see doc/html/ directory)
 + added description for "Execute to Parse" ratio ("Efficiency" block)
-+ Started with "Go4Colors Mode": Datafiles Statistics, Instance Efficiency,
-  Top_N_SQL (FTS in execution plans)
++ added "Go4Colors Mode" for Datafiles Statistics, Instance Efficiency,
+  Top_N_SQL (FTS in execution plans), TS IO Summary, File IO Summary,
+  Library Cache
