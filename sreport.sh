@@ -591,6 +591,104 @@ DECLARE
        AND b.wait_count < e.wait_count
      ORDER BY itim desc, icnt desc;
 
+  CURSOR C_PGAA (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT 'B' snap,
+           to_char(to_number(p.value)/1024/1024,'999,990.00')  pgaat,
+	   to_char(mu.PGA_inuse/1024/1024,'999,990.00')        tot_pga_used,
+	   to_char( (mu.PGA_used_auto + mu.PGA_used_man)
+	            /1024/1024,'999,990.00')                   tot_tun_used,
+	   to_char(mu.onepr/1024/1024,'999,990.00')            onepr,
+	   to_char(s.opt_pct,'990.00')                         opt_pct,
+	   to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
+	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
+           to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
+	   to_char(100* mu.PGA_used_man  / PGA_inuse,'990.00') pct_man_tun
+      FROM ( SELECT sum(case when name like 'total PGA inuse%'
+                             then value else 0 end)             PGA_inuse,
+		    sum(case when name like 'total PGA used for auto%'
+                             then value else 0 end)             PGA_used_auto,
+		    sum(case when name like 'total PGA used for manual%'
+                             then value else 0 end)             PGA_used_man,
+		    sum(case when name like 'maximum % one-pass'
+                             then value else 0 end)             onepr
+	       FROM stats\$pgastat pga
+	      WHERE pga.snap_id = bid
+	        AND pga.dbid    = db_id
+		AND pga.instance_number = instnum ) mu,
+           ( SELECT 100* sum(case when ss.name like
+                              'workarea executions - optimal'
+			      then ss.value else 0 end)
+		       / decode( (  sum(case when ss.name like
+		                     'workarea executions - optimal'
+				     then ss.value else 0 end)
+				  + sum(case when ss.name like
+				     'workarea executions - onepass'
+				     then ss.value else 0 end)
+				  + sum(case when ss.name like
+				     'workarea executions - multipass'
+				     then ss.value else 0 end)
+				 ),0,NULL)                     opt_pct
+	      FROM stats\$sysstat ss
+	     WHERE ss.snap_id = bid
+	       AND ss.dbid    = db_id
+	       AND ss.instance_number = instnum
+	       AND ss.name like 'workarea executions - %'
+	   ) s,
+	   stats\$parameter p
+     WHERE p.snap_id = bid
+       AND p.dbid    = db_id
+       AND p.instance_number = instnum
+       AND p.name    = 'pga_aggregate_target'
+       AND p.value  != 0
+    UNION SELECT 'E' snap,
+           to_char(to_number(p.value)/1024/1024,'999,990.00')  pgaat,
+	   to_char(mu.PGA_inuse/1024/1024,'999,990.00')        tot_pga_used,
+	   to_char( (mu.PGA_used_auto + mu.PGA_used_man)
+	            /1024/1024,'999,990.00')                   tot_tun_used,
+	   to_char(mu.onepr/1024/1024,'999,990.00')            onepr,
+	   to_char(s.opt_pct,'990.00')                         opt_pct,
+	   to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
+	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
+           to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
+	   to_char(100* mu.PGA_used_man  / PGA_inuse,'990.00') pct_man_tun
+      FROM ( SELECT sum(case when name like 'total PGA inuse%'
+                             then value else 0 end)             PGA_inuse,
+		    sum(case when name like 'total PGA used for auto%'
+                             then value else 0 end)             PGA_used_auto,
+		    sum(case when name like 'total PGA used for manual%'
+                             then value else 0 end)             PGA_used_man,
+		    sum(case when name like 'maximum % one-pass'
+                             then value else 0 end)             onepr
+	       FROM stats\$pgastat pga
+	      WHERE pga.snap_id = eid
+	        AND pga.dbid    = db_id
+		AND pga.instance_number = instnum ) mu,
+           ( SELECT 100* sum(case when ss.name like
+                              'workarea executions - optimal'
+			      then ss.value else 0 end)
+		       / decode( (  sum(case when ss.name like
+		                     'workarea executions - optimal'
+				     then ss.value else 0 end)
+				  + sum(case when ss.name like
+				     'workarea executions - onepass'
+				     then ss.value else 0 end)
+				  + sum(case when ss.name like
+				     'workarea executions - multipass'
+				     then ss.value else 0 end)
+				 ),0,NULL)                     opt_pct
+	      FROM stats\$sysstat ss
+	     WHERE ss.snap_id = eid
+	       AND ss.dbid    = db_id
+	       AND ss.instance_number = instnum
+	       AND ss.name like 'workarea executions - %'
+	   ) s,
+	   stats\$parameter p
+     WHERE p.snap_id = eid
+       AND p.dbid    = db_id
+       AND p.instance_number = instnum
+       AND p.name    = 'pga_aggregate_target'
+       AND p.value  != 0;
+
 
 BEGIN
   -- Configuration
@@ -633,7 +731,9 @@ BEGIN
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]'||
             ' [ <A HREF="#bufpool">Buffer Pool</A> ] [ <A HREF="#recover">Instance Recovery</A> ]'||
-	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]</TD></TR>';
+	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ]</TD></TR>';
   dbms_output.put_line(L_LINE);
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
@@ -1221,6 +1321,33 @@ BEGIN
     L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.class||'</TD><TD ALIGN="right">'||
               R_Buff.icnt||'</TD><TD ALIGN="right">'||R_Buff.itim||
 	      '</TD><TD ALIGN="right">'||R_Buff.iavg||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
+  -- PGA Aggreg Target Memory
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="#pga">PGA Aggreg Target Memory Statistics</A></TH></TR>'||
+            ' <TR><TD COLSPAN="9" ALIGN="center">B: Begin SnapShot, E: End SnapShot</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">PGA Aggreg Target (M)</TH>'||
+            '<TH CLASS="th_sub">PGA in Use (M)</TH><TH CLASS="th_sub">W/A PGA in Use (M)</TH>'||
+	    '<TH CLASS="th_sub">1-Pass Mem Req (M)</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE:= '<TH CLASS="th_sub">% Optim W/A Execs</TH><TH CLASS="th_sub">% Non-W/A PGA Memory</TH>'||
+           '<TH CLASS="th_sub">% Auto W/A PGA Mem</TH>'||
+	   '<TH CLASS="th_sub">% Manual W/A PGA Mem</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_PGAA IN C_PGAA(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_PGAA.snap||'</TD><TD ALIGN="right">'||
+              R_PGAA.pgaat||'</TD><TD ALIGN="right">'||R_PGAA.tot_pga_used||
+	      '</TD><TD ALIGN="right">'||R_PGAA.tot_tun_used;
+    dbms_output.put_line(L_LINE);
+    L_LINE := '</TD><TD ALIGN="right">'||R_PGAA.onepr||'</TD><TD ALIGN="right"'||
+              R_PGAA.opt_pct||'</TD><TD ALIGN="right">'||R_PGAA.pct_unt||
+	      '</TD><TD ALIGN="right">'||R_PGAA.pct_auto_tun||
+	      '</TD><TD ALIGN="right">'||R_PGAA.pct_man_tun||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
