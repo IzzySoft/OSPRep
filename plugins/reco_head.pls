@@ -8,8 +8,8 @@
              to_char(actual_redo_blks,'99,999,999') arb,
 	     to_char(target_redo_blks,'99,999,999') trb,
              to_char(log_file_size_redo_blks,'99,999,999') lfrb,
-	     to_char(log_chkpt_timeout_redo_blks,'99,999,999') lctrb,
-             to_char(log_chkpt_interval_redo_blks,'99,999,999,999') lcirb,
+	     nvl(to_char(log_chkpt_timeout_redo_blks,'99,999,999'),'&nbsp;') lctrb,
+             nvl(to_char(log_chkpt_interval_redo_blks,'99,999,999,999'),'&nbsp;') lcirb,
 	     snap_id snid
         FROM stats$instance_recovery b
        WHERE b.snap_id = bid
@@ -22,8 +22,8 @@
              to_char(actual_redo_blks,'99,999,999') arb,
 	     to_char(target_redo_blks,'99,999,999') trb,
              to_char(log_file_size_redo_blks,'99,999,999') lfrb,
-	     to_char(log_chkpt_timeout_redo_blks,'99,999,999') lctrb,
-             to_char(log_chkpt_interval_redo_blks,'99,999,999,999') lcirb,
+	     nvl(to_char(log_chkpt_timeout_redo_blks,'99,999,999'),'&nbsp;') lctrb,
+             nvl(to_char(log_chkpt_interval_redo_blks,'99,999,999,999'),'&nbsp;') lcirb,
 	     snap_id snid
         FROM stats$instance_recovery e
        WHERE e.snap_id = eid
