@@ -24,3 +24,4 @@ v0.0.4 (xx.11.2003)
 + added Top n SQL by Parse
 + added Instance Activity Stats
 + added TableSpace IO Summary Stats
++ added FileIO Summary Stats
