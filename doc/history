@@ -8,6 +8,8 @@ v0.3.2
 + script now accepts the "-r" command line parameter to override the report dir
 + OSPRep should now also work with Oracle 8i (reports are welcome!)
 + some formating updates (fixed '#####' fields)
+! when -b was defined on command line pointing to a time before the last
+  instance restart, the ID of the end snapshot was setup wrong (absolute)
 
 v0.3.1 (26.07.2004)
 -------------------

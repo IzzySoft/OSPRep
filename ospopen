@@ -129,6 +129,13 @@ DECLARE
     SELECT MAX(snap_id) maxid FROM stats\$snapshot
      WHERE dbid = DB_ID AND instance_number = INST_NUM;
 
+  CURSOR C_MaxSnapFor IS
+    SELECT MAX(snap_id) maxid FROM stats\$snapshot
+     WHERE dbid = DB_ID AND instance_number = INST_NUM
+       AND startup_time = (SELECT startup_time FROM stats\$snapshot
+                            WHERE dbid = DB_ID AND instance_number = INST_NUM
+			      AND snap_id = BID);
+
   CURSOR C_MinSnap IS
     SELECT MIN(snap_id) minid FROM stats\$snapshot
      WHERE dbid = DB_ID AND instance_number = INST_NUM
@@ -455,6 +462,11 @@ BEGIN
     END IF;
   ELSE
     BID := $START_ID;
+    IF NVL($END_ID,0) = 0 THEN
+      FOR R_SnapID IN C_MaxSnapFor LOOP
+        EID := R_SnapID.maxid;
+      END LOOP;
+    END IF;
   END IF;
 
   MK_RLIMS := have_rlims;
