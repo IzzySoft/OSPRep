@@ -117,3 +117,6 @@ v0.1.4
 ! fixed a bug in get_plan() that broke the job if a statement had multiple
   execution plans (in that case, we make sure to display the latest now)
 + now including full execution plan "tree"
++ formating enhancements for plan table
++ added enqueue type descs plus tuning hints
++ enhanced description for wait events

@@ -129,7 +129,8 @@ DECLARE
 		    ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
 		    / (e.total_waits - NVL(b.total_waits,0)),'9,999,990.00') ) wt,
 	   to_char((e.total_waits - NVL(b.total_waits,0))/tran,'99,990.00') txwaits,
-	   decode(i.event,NULL,0,99) idle
+	   decode(i.event,NULL,0,99) idle,
+	   decode(i.event,NULL,' ','*') idlemark
       FROM stats\$system_event b, stats\$system_event e, stats\$idle_event i
      WHERE b.snap_id(+)  = bid
        AND e.snap_id     = eid
@@ -154,7 +155,8 @@ DECLARE
 		    ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
 		    / (e.total_waits - NVL(b.total_waits,0)),'9,999,990.00') ) wt,
 	   to_char((e.total_waits - NVL(b.total_waits,0))/tran,'99,990.00') txwaits,
-	   decode(i.event,NULL,0,99) idle
+	   decode(i.event,NULL,0,99) idle,
+	   decode(i.event,NULL,' ','*') idlemark
       FROM stats\$bg_event_summary b, stats\$bg_event_summary e, stats\$idle_event i
      WHERE b.snap_id(+)  = bid
        AND e.snap_id     = eid
