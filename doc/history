@@ -3,7 +3,7 @@ $Id$
 History for OSPRep
 ==================
 
-v0.3.2
+v0.3.2 (22.11.2004)
 -------------------
 + script now accepts the "-r" command line parameter to override the report dir
 + OSPRep should now also work with Oracle 8i (reports are welcome!)
