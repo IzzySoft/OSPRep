@@ -47,13 +47,30 @@
             <code>ORACLE_SID</code> is also used for the report's file name.</td></tr>
   </table>
  </td></tr>
- <tr><td class="text">
+ <tr><td>
   An example command line could look like this:
   <table align="center" border="0"><tr><td>
   <div class="code" style="width:40em">
     ./sreport.sh oradb -c maint.config -d /var/www/reports/oradb
   </div>
   </td></tr></table>
+ </td></tr>
+ <tr><td class="text">
+  For the <code>fts_plans.sh</code> script, the same command line syntax applies.
+  You may want to use this script, if you have many <code>data file sequential
+  reads</code>, and the "Wait Objects" segments of OSPRep's report indicates
+  that this is because of too many full table scans (FTS). <code>fts_plans.sh</code>
+  retrieves the latest execution plans for all statements that caused full table
+  scans (i.e., if the latest execution plan indicates FTS) for the given interval.
+  If your database already has a long uptime, you may be forced to specify a
+  snapshot range (this is due to a limitation in PL/SQL: the dbms_output
+  package is limited to 1000000 chars). In this case, specify the <code>END_ID</code>
+  taken from the report's "SnapShot Info" block, and specify a <code>BEGIN_ID</code>
+  that is between "<code>END_ID</code> -1" and "<code>END_ID</code> -120" (i.e.
+  up to 5 days in the past) -- depending on your database size and traffic you
+  may have to experiment a bit with those values. Of course, these are only guiding
+  values - there may be cases to specify an <code>BEGIN_ID</code> that is earlier
+  than 5 days before the <code>START_ID</code> -- I leave this choice up to you :-)
  </td></tr>
  <tr><th class="th_sub"><a name="eval"></a>Evaluation of results</th></tr>
  <tr><td class="text">
