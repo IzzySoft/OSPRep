@@ -12,6 +12,7 @@ cat>>$SQLSET<<ENDSQL
 DECLARE
   MK_ALLWAITS NUMBER;
   MK_BGWAITS NUMBER;
+  MK_INSTACT NUMBER;
   L_LINE VARCHAR2(4000);
   R_TITLE VARCHAR(200);
   TABLE_OPEN VARCHAR(100); -- Table Attributes
@@ -250,24 +251,6 @@ DECLARE
     SELECT replace(replace(sql_text,'<','&lt;'),'>','&gt;') AS sql_text
       FROM stats\$sqltext WHERE hash_value=hv
      ORDER BY piece;
-
-  CURSOR C_InstAct (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER, tran IN NUMBER) IS
-    SELECT b.name name,
-           to_char(e.value - b.value,'99,999,999,999,990') total,
-	   to_char(round((e.value - b.value)/ela,2),'99,999,999,990.00') sec,
-	   to_char(round((e.value - b.value)/tran,2),'99,999,999,990.00') txn
-      FROM stats\$sysstat b, stats\$sysstat e
-     WHERE b.snap_id = bid
-       AND e.snap_id = eid
-       AND b.dbid    = db_id
-       AND e.dbid    = db_id
-       AND b.instance_number = instnum
-       AND e.instance_number = instnum
-       AND b.name    = e.name
-       AND e.name NOT IN ( 'logons current','opened cursors current','workarea memory allocated')
-       AND e.value   > b.value
-       AND e.value   > 0
-     ORDER BY b.name;
 
   CURSOR C_TSIO (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER) IS
     SELECT e.tsname tsname,
@@ -1059,6 +1042,9 @@ fi
 if [ -n "$BGWAITHEAD" ]; then
   cat $BGWAITHEAD>>$SQLSET
 fi
+if [ -n "$INSTACTHEAD" ]; then
+  cat $INSTACTHEAD>>$SQLSET
+fi
 
 cat>>$SQLSET<<ENDSQL
 BEGIN
@@ -1068,6 +1054,7 @@ BEGIN
   TOP_N_WAITS := $TOP_N_WAITS;
   MK_ALLWAITS := :MK_ALLWAITS;
   MK_BGWAITS := :MK_BGWAITS;
+  MK_INSTACT := :MK_INSTACT;
   dbms_output.enable(1000000);
   R_TITLE := 'StatsPack Report for $ORACLE_SID';
   TABLE_OPEN := '<TABLE ALIGN="center" BORDER="1">';
@@ -1149,8 +1136,10 @@ BEGIN
     print(' [ <A HREF="#waitobjects">Wait Objects</A> ]');
   END IF;
   L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||
-	    ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]'||
-	    ' [ <A HREF="#instact">Instance Activity</A> ]';
+	    ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]';
+  IF MK_INSTACT = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#instact">Instance Activity</A> ]';
+  END IF;
   print(L_LINE);
   L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ] [ <A HREF="#fileio">File IO</A> ]'||
             ' [ <A HREF="#bufpool">Buffer Pool</A> ] [ <A HREF="#recover">Instance Recovery</A> ]'||
