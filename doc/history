@@ -236,3 +236,10 @@ v0.2.6 (04.03.2004)
   well as Execution Plans can now be switched off (see config)
 * sorted the entries in the "features" block of the config file to represent
   the order the segments appear in the report (same for the HTML documentation)
+
+v0.2.7
+-------------------
++ Modularization: Datafile Statistics can now be switched off (see config)
++ Reorganized segment grouping: connected stats (as e.g. "Datafile Statistics"
+  and "File IO") are now directly following each other (and are no longer
+  spread across the report)

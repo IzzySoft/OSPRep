@@ -110,14 +110,6 @@
   print(L_LINE);
   print('<HR>');
 
-  -- Datafile Statistics
-  S1 := 'istats$datafiles'; I1 := 1; I2 := 0;
-  tab_exists(S1,I1,I2);
-  IF I2 = 1
-  THEN
-    get_filestats(DBID,INST_NUM,BID,EID);
-  END IF;
-
   -- Instance Efficiency Percentages
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="efficiency">Instance Efficiency Percentages (Target: 100%)</A></TH></TR>'||CHR(10)||
             ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Efficiency (%)</TH>'||

@@ -6,6 +6,7 @@
      AND dbid    = DBID
      AND instance_number = INST_NUM;
 
+  print('<A NAME="fileio"></A>');
   IF MK_TSIO = 1 THEN
     tsio;
   END IF;

@@ -87,7 +87,7 @@
        GROUP BY e.tsname
        ORDER BY ios desc;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="tsio">TableSpace IO Summary Statistics</A>'||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9">TableSpace IO Summary Statistics'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
 	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
       print(L_LINE);
@@ -206,7 +206,7 @@
                (e.phywrts - nvl(b.phywrts,0) ) ) > 0
        ORDER BY tsname,filename;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="fileio">File IO Summary Statistics</A>'||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10">File IO Summary Statistics'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
 	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></TH></TR>';
       print(L_LINE);

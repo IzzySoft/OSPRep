@@ -31,6 +31,7 @@ DECLARE
   MK_BUFFP NUMBER;
   MK_BUFFW NUMBER;
   MK_RECO NUMBER;
+  MK_DFSTAT NUMBER;
   MK_TSIO NUMBER;
   MK_FIO NUMBER;
   MK_EP NUMBER;
@@ -591,6 +592,7 @@ BEGIN
   MK_BUFFP    := :MK_BUFFP;
   MK_BUFFW    := :MK_BUFFW;
   MK_RECO     := :MK_RECO;
+  MK_DFSTAT   := :MK_DFSTAT;
   MK_TSIO     := :MK_TSIO;
   MK_FIO      := :MK_FIO;
   MK_EP       := :MK_EP;
@@ -682,12 +684,6 @@ BEGIN
   -- Navigation
   L_LINE := TABLE_OPEN||'<TR><TD ALIGN="center"><DIV CLASS="small">[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
             '[ <A HREF="#cachesizes">Cache Sizes</A> ] [ <A HREF="#loads">Load Profile</A> ]';
-  S1 := 'istats\$datafiles'; I1 := 1; I2 := 0;
-  tab_exists(S1,I1,I2);
-  IF I2 = 1
-  THEN
-    L_LINE := L_LINE||(' [ <A HREF="#filestats">Datafiles</A> ]');
-  END IF;
   print(L_LINE);
   L_LINE :=  ' [ <A HREF="#efficiency">Efficiency</A> ]'||
              ' [ <A HREF="#sharedpool">Shared Pool</A> ]'||
@@ -711,13 +707,19 @@ BEGIN
     L_LINE := L_LINE||' [ <A HREF="#instact">Instance Activity</A> ]';
   END IF;
   print(L_LINE);
-  IF MK_TSIO = 1 THEN
-    L_LINE := ' [ <A HREF="#tsio">TableSpace IO</A> ]';
+  L_LINE := '';
+  IF MK_DFSTAT = 1 THEN
+    S1 := 'istats\$datafiles'; I1 := 1; I2 := 0;
+    tab_exists(S1,I1,I2);
+    IF I2 = 1
+    THEN
+      L_LINE := L_LINE||(' [ <A HREF="#filestats">Datafiles</A> ]');
+    END IF;
+  END IF;
+  IF MK_TSIO + MK_FIO > 0 THEN
+    L_LINE := L_LINE ||' [ <A HREF="#fileio">File IO</A> ]';
   ELSE
     L_LINE := '';
-  END IF;
-  IF MK_FIO = 1 THEN
-    L_LINE := L_LINE||' [ <A HREF="#fileio">File IO</A> ]';
   END IF;
   IF MK_RECO = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#recover">Instance Recovery</A> ]';
