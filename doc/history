@@ -260,7 +260,7 @@ v0.2.8 (12.03.2004)
   term
 + added help on Instance Activity segment and slightly reworked CSS file
 
-v0.2.9
+v0.2.9 (19.03.2004)
 -------------------
 + added "Transactions per Snapshot" to ratio charts
 * some cleanup to charts.sh
