@@ -37,11 +37,10 @@ function mkline(arr,col) {
      continue;
    }
    if (i>bid) {
-//     delta = (arr[k] - arr[i]) / parts;
      delta = (arr[k] - arr[i]);
      for (f=1;f<=parts;f++) {
        x = D.ScreenX(i + f/parts);
-       diff = odelta - delta;
+       diff = delta - odelta;
        j = D.ScreenY(Math.abs(odelta + f*diff/parts));
        new Pixel(x, j, col);
      }
@@ -57,7 +56,6 @@ function mkline(arr,col) {
 document.open();
 var D=new Diagram();
 maxval = parent.amaxdelta[parent.arrname];
-//maxval = 2000;
 if (maxval == 0 || isNaN(maxval)) maxval = 1;
 mkdiag();
 mkline(parent.dstat,'#0000FF');
