@@ -47,8 +47,11 @@ TOP_N_SQL=5
 #--- continuous interval (i.e. the interval ending with the latest recording
 #--- SnapShot and starting with the first SnapShot having the same database
 #--- startup time)
+#--- You may set both values to 0 (last interval will be used then), both to
+#--- a value > 0 (specified value is used), or START_ID=0 and END_ID>0. In
+#--- all cases, only specify existing SnapShot IDs.
 START_ID=0
-END_ID=0
+END_ID=203
 
 # If called from another script, we may have to change to another directory
 # before generating the reports
@@ -83,7 +86,6 @@ DECLARE
   I1 NUMBER;
   I2 NUMBER;
   I3 NUMBER;
-  MAX_SNAP_ID NUMBER; MIN_SNAP_ID NUMBER; STARTUP_TIME DATE;
   BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER; EDRT NUMBER; EET NUMBER;
   EPC NUMBER; BTIME VARCHAR2(20); ETIME VARCHAR2(20);
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
@@ -137,7 +139,7 @@ DECLARE
            NVL(b.ucomment,'&nbsp;') begin_snap_comment,
 	   e.snap_id end_snap_id,to_char(e.snap_time,'dd.mm.yyyy hh24:mi') end_snap_time,
 	   NVL(e.ucomment,'&nbsp;') end_snap_comment,
-	   to_char(round(((e.snap_time - b.snap_time) * 1440 * 60),0)/60,'9,990.00') elapsed,
+	   to_char(round(((e.snap_time - b.snap_time) * 1440 * 60),0)/60,'9,999,990.00') elapsed,
 	   (e.snap_time - b.snap_time)*1440*60 ela,
 	   e.buffer_gets_th ebgt,
 	   e.disk_reads_th edrt,
@@ -1040,16 +1042,21 @@ BEGIN
     INTO DBID,DB_NAME,INST_NUM,INST_NAME
     FROM v\$database d,v\$instance i;
 
-  IF NVL($START_ID,0) = 0
-  THEN
-    FOR R_SnapID IN C_MaxSnap(DBID,INST_NUM) LOOP
+  IF NVL($END_ID,0) = 0
+    THEN
+      FOR R_SnapID IN C_MaxSnap(DBID,INST_NUM) LOOP
       EID := R_SnapID.maxid;
     END LOOP;
+  ELSE
+    EID := $END_ID;
+  END IF;
+  IF NVL($START_ID,0) = 0
+  THEN
     FOR R_SnapID IN C_MinSnap(DBID,INST_NUM,EID) LOOP
       BID := R_SnapID.minid;
     END LOOP;
   ELSE
-    BID := $START_ID; EID := $END_ID;
+    BID := $START_ID;
   END IF;
 
   FOR R_SnapBind IN C_SnapBind(DBID,INST_NUM,BID) LOOP
