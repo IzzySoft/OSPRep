@@ -58,7 +58,6 @@ function maxDelta(arr) {
      i++;
      continue;
    }
-   bummy = bummy + " " + arr[i];
    maxval = Math.max(maxval,arr[i]);
  }
  if (maxval == 0) maxval = 1;
