@@ -78,6 +78,7 @@ document.close();
  <OPTION VALUE="phywrt">Physical Writes</OPTION>
  <OPTION VALUE="logon">Logons</OPTION>
  <OPTION VALUE="opencur">Open Cursors</OPTION>
+ <OPTION VALUE="tx">Transactions</OPTION>
 </SELECT>
 </TD></TR></TABLE><BR>
 <TABLE ALIGN="center" BORDER="1">

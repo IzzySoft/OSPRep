@@ -78,6 +78,9 @@ function drawStat(stat) {
     case "phywrt" : parent.dstat = parent.phywrt;
                   parent.dname = "Physical Writes per Snapshot (MB)";
 		  break;
+    case "tx" :   parent.dstat = parent.tx;
+                  parent.dname = "Transactions ('user commits' + 'transaction rollbacks') per Snapshot";
+		  break;
   }
   location.reload();
 }

@@ -248,7 +248,7 @@ v0.2.7 (08.03.2004)
 * if no Enqueue Activities are reported, we do not draw an empty table anymore
 * some work on formatting (duplicate rulers when excluding certain segments, etc.)
 
-v0.2.8
+v0.2.8 (12.03.2004)
 -------------------
 + added FileIO to Ratio charts (phys. Reads/Writes per SnapShot)
 + charts.sh now also supports the "-c" parameter (alternative config file)
@@ -258,3 +258,9 @@ v0.2.8
 ! fixed the Latch Activity stats (values have been ordered ASC instead of DESC)
 * updated descriptions for Latches and Enqueues with short explanation of the
   term
++ added help on Instance Activity segment and slightly reworked CSS file
+
+v0.2.9
+-------------------
++ added "Transactions per Snapshot" to ratio charts
+* some cleanup to charts.sh

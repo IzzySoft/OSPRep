@@ -129,7 +129,7 @@ DECLARE
 
   PROCEDURE get_sysevent(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, eventname IN VARCHAR2, arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
-    CURSOR C_Sev(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, eventname IN VARCHAR2, arrname IN VARCHAR2) IS
+    CURSOR C_Sev IS
       SELECT arrname||'['||snap_id||'] = '||total_timeouts||';' line,
              NVL(total_timeouts,0) value, snap_id
         FROM stats\$system_event
@@ -140,7 +140,7 @@ DECLARE
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
-      FOR rec IN C_Sev(db_id,instnum,bid,eid,eventname,arrname) LOOP
+      FOR rec IN C_Sev LOOP
         print(rec.line);
 	IF rec.value > MAXVAL THEN
 	  MAXVAL := rec.value;
@@ -164,7 +164,7 @@ DECLARE
 
   PROCEDURE get_sysstat(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, eventname IN VARCHAR2, arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
-    CURSOR C_Sys(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, eventname IN VARCHAR2, arrname IN VARCHAR2) IS
+    CURSOR C_Sys IS
       SELECT arrname||'['||snap_id||'] = '||value||';' line, value, snap_id
         FROM stats\$sysstat
        WHERE name=eventname
@@ -174,7 +174,7 @@ DECLARE
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
-      FOR rec IN C_Sys(db_id,instnum,bid,eid,eventname,arrname) LOOP
+      FOR rec IN C_Sys LOOP
         print(rec.line);
 	IF rec.value > MAXVAL THEN
 	  MAXVAL := rec.value;
@@ -196,9 +196,38 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
+  PROCEDURE get_sysstat2_ps(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
+    MAXVAL NUMBER; LASTVAL NUMBER; ACTVAL NUMBER; VALUE NUMBER;
+    CURSOR C_Sys IS
+      SELECT arrname||'['||snap_id||'] = '||SUM(value)||';' line,snap_id,SUM(value) val
+        FROM stats\$sysstat
+       WHERE name IN (event1,event2)
+         AND instance_number=instnum
+	 AND dbid=db_id
+	 AND snap_id BETWEEN bid AND eid
+       GROUP BY snap_id;
+    BEGIN
+      MAXVAL := 0; LASTVAL := 0;
+      print(CHR(10)||'var '||arrname||' = new Array();');
+      FOR rec IN C_Sys LOOP
+        ACTVAL := rec.val;
+        IF rec.snap_id > bid THEN
+          VALUE := ACTVAL - LASTVAL;
+          print(arrname||'['||rec.snap_id||'] = '||VALUE||';');
+	  IF VALUE > MAXVAL THEN
+	    MAXVAL := VALUE;
+          END IF;
+        END IF;
+	LASTVAL := ACTVAL;
+      END LOOP;
+      print('amaxval["'||arrname||'"] = '||MAXVAL||';');
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN NULL;
+    END;
+
   PROCEDURE get_sysstat_per(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2, factor IN NUMBER) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
-    CURSOR C_Sys(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
+    CURSOR C_Sys IS
       SELECT arrname||'['||a.snap_id||'] = '||round(factor*a.value/b.value,5)||';' line,
              a.snap_id, round(factor*a.value/b.value,5) value
         FROM stats\$sysstat a, stats\$sysstat b
@@ -209,36 +238,25 @@ DECLARE
 	 AND a.dbid=db_id
 	 AND b.dbid=db_id
 	 AND a.snap_id BETWEEN bid AND eid
---	 AND b.snap_id BETWEEN bid AND eid
 	 AND a.snap_id=b.snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
-      FOR rec IN C_Sys(db_id,instnum,bid,eid,event1,event2,arrname) LOOP
+      FOR rec IN C_Sys LOOP
         print(rec.line);
 	IF rec.value > MAXVAL THEN
 	  MAXVAL := rec.value;
 	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
-          IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
-            MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
-          END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
 	LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
-      print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
-      print('amaxdelta["'||arrname||'"] = '||MAXDELTA||';');
     EXCEPTION
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
   PROCEDURE get_libmiss(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
     MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
-    CURSOR C_Lib(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, arrname IN VARCHAR2) IS
+    CURSOR C_Lib IS
       SELECT arrname||'['||snap_id||'] = '||
              decode(nvl(sum(gets),0),0,0,100-nvl((sum(gethits)/sum(gets)),0)*100)||
 	     ';' line, snap_id,
@@ -251,7 +269,7 @@ DECLARE
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
-      FOR rec IN C_Lib(db_id,instnum,bid,eid,arrname) LOOP
+      FOR rec IN C_Lib LOOP
         print(rec.line);
 	IF rec.value > MAXVAL THEN
 	  MAXVAL := rec.value;
@@ -291,19 +309,9 @@ DECLARE
 	IF rec.value > MAXVAL THEN
 	  MAXVAL := rec.value;
 	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
-          IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
-            MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
-          END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
 	LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
-      print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
-      print('amaxdelta["'||arrname||'"] = '||MAXDELTA||';');
     EXCEPTION
       WHEN NO_DATA_FOUND THEN NULL;
     END;
@@ -326,19 +334,9 @@ DECLARE
 	IF rec.value > MAXVAL THEN
 	  MAXVAL := rec.value;
 	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
-          IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
-            MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
-          END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
 	LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
-      print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
-      print('amaxdelta["'||arrname||'"] = '||MAXDELTA||';');
     EXCEPTION
       WHEN NO_DATA_FOUND THEN NULL;
     END;
@@ -361,19 +359,9 @@ DECLARE
 	IF rec.value > MAXVAL THEN
 	  MAXVAL := rec.value;
 	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
-          IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
-            MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
-          END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
 	LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
-      print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
-      print('amaxdelta["'||arrname||'"] = '||MAXDELTA||';');
     EXCEPTION
       WHEN NO_DATA_FOUND THEN NULL;
     END;
@@ -398,19 +386,9 @@ DECLARE
 	IF rec.value > MAXVAL THEN
 	  MAXVAL := rec.value;
 	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
-          IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
-            MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
-          END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
 	LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
-      print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
-      print('amaxdelta["'||arrname||'"] = '||MAXDELTA||';');
     EXCEPTION
       WHEN NO_DATA_FOUND THEN NULL;
     END;
@@ -435,19 +413,8 @@ DECLARE
 	IF rec.value > MAXVAL THEN
 	  MAXVAL := rec.value;
 	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
-          IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
-            MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
-          END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
-	LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
-      print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
-      print('amaxdelta["'||arrname||'"] = '||MAXDELTA||';');
     EXCEPTION
       WHEN NO_DATA_FOUND THEN NULL;
     END;
@@ -475,7 +442,11 @@ BEGIN
   THEN
     BID := DBUP_ID;
   ELSE
-    BID := $START_ID;
+    IF $START_ID < DBUP_ID THEN
+      BID := DBUP_ID;
+    ELSE
+      BID := $START_ID;
+    END IF;
   END IF;
 
   SELECT TO_CHAR(snap_time,'dd.mm.yyyy hh24:mi') INTO BTIME
@@ -522,6 +493,7 @@ BEGIN
   get_rowcacheratio(DBID,INST_NUM,BID,EID,'rcr');
   get_filereads(DBID,INST_NUM,BID,EID,'phyrd');
   get_filewrites(DBID,INST_NUM,BID,EID,'phywrt');
+  get_sysstat2_ps(DBID,INST_NUM,BID,EID,'user commits','transaction rollbacks','tx');
 
 END;
 /
