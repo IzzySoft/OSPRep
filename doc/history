@@ -140,7 +140,7 @@ v0.1.6 (05.01.2004)
 + more detailled help on latch statistics
 + more detailled help on library cache statistics (external help file now)
 
-v0.1.7
+v0.1.7 (09.01.2004)
 -------------------
 * execution plans are now also displayed for statements w/o cost (sometimes
   the optimizer misses to display costs)
