@@ -218,7 +218,7 @@ v0.2.4 (27.02.2004)
   stats (instead of JS calculation)
 * made CumAvg charts more precise
 
-v0.2.5
+v0.2.5 (02.03.2004)
 -------------------
 ! cumulative charts drew out-of-range lines when there were gaps in the
   snapshot range
