@@ -13,7 +13,6 @@
 #                                                              Itzchak Rehberg
 # =============================================================================
 #
-version='0.1.7'
 # =======================================================[ Header / Syntax ]===
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
@@ -34,6 +33,7 @@ fi
 # =================================================[ Configuration Section ]===
 # -------------------------------------------[ Read the Configuration File ]---
 . ./config $*
+. ./version
 SQLSET=$TMPDIR/osprep_sqlset_$1.$$
 TMPOUT=$TMPDIR/osprep_tmpout_$1.$$
 GWDUMMY=$TMPDIR/osprep_gwdummy_$1.$$

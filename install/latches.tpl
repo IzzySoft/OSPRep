@@ -21,7 +21,7 @@
  <P>The <I>Latch Miss Sources</I> report is primarily useful to Oracle Support
   staff. The data here is used to identify the code which was executing at the
   time the latch was not obtained (i.e. "missed").</P>
- <P>Three of the most commonlatches waited for are the shared pool, library cache
+ <P>Three of the most common latches waited for are the shared pool, library cache
   and cache buffers chains latches. Latch contention is not usually a problem in
   itself, but is symptomatic of other issues. For example, contention on the
   shared pool and library cache latches can often be symptomatic of unnecessary

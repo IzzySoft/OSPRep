@@ -863,22 +863,26 @@
   print(L_LINE);
 
   -- Latch Sleep Breakdown
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">Latch Sleep Breakdown'||
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7">Latch Sleep Breakdown'||
             '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'latches'||CHR(39)||
 		')"><IMG SRC="help/help.gif" BORDER="0" HEIGTH="12" VALIGN="middle"></A></TH></TR>';
   print(L_LINE);
-  L_LINE := ' <TR><TD COLSPAN="5" ALIGN="center">Ordered by Misses desc</TD></TR>';
+  L_LINE := ' <TR><TD COLSPAN="7" ALIGN="center">Ordered by Misses desc</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Latch Name</TH><TH CLASS="th_sub">Get Requests</TH>'||
-            '<TH CLASS="th_sub">Misses</TH><TH CLASS="th_sub">Sleeps</TH>'||
-	    '<TH CLASS="th_sub">Spin & Sleeps 1-&gt;4</TH></TR>';
+            '<TH CLASS="th_sub">Misses</TH><TH CLASS="th_sub">PctMiss</TH>'||
+            '<TH CLASS="th_sub">Sleeps</TH>';
+  print(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">PctSleep</TH><TH CLASS="th_sub">'||
+            'Spin & Sleeps 1-&gt;4</TH></TR>';
   print(L_LINE);
   FOR R_LA IN C_LAS(DBID,INST_NUM,BID,EID) LOOP
     L_LINE := ' <TR><TD CLASS="td_name">'||R_LA.name||'</TD><TD ALIGN="right">'||
               R_LA.gets||'</TD><TD ALIGN="right">'||R_LA.misses||
-	      '</TD><TD ALIGN="right">'||R_LA.sleeps||'</TD>';
+	      '</TD><TD ALIGN="right">'||R_LA.pctmiss||'</TD>';
     print(L_LINE);
-    L_LINE := '<TD ALIGN="center">'||R_LA.sleep4||'</TD></TR>';
+    L_LINE := '</TD><TD ALIGN="right">'||R_LA.sleeps||'</TD><TD ALIGN="right">'||
+              R_LA.pctsleep||'<TD ALIGN="center">'||R_LA.sleep4||'</TD></TR>';
     print(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;

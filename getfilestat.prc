@@ -19,7 +19,7 @@ PROCEDURE get_filestats(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid I
 	 TO_CHAR(e.bytes_free/1024/1024,'99,999,990.0') e_freebytes,
          TO_CHAR(100*(1-(e.bytes_free/e.bytes)),'990.00') e_freepct,
 	 TO_CHAR((e.bytes - b.bytes)/1024/1024,'99,999,990.0') byte_diff,
-	 TO_CHAR(100*(1-e.bytes/b.bytes),'990.00') pct_diff,
+	 TO_CHAR((100*e.bytes/b.bytes)-100,'9,990.00') pct_diff,
 	 s.minsnap min_snap,s.maxsnap max_snap
     FROM istats\$datafiles b,istats\$datafiles e,
 	 ( SELECT MIN(snap_id) minsnap, MAX(snap_id) maxsnap
