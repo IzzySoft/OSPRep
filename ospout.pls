@@ -881,7 +881,18 @@
 
   -- Library Cache
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7">Library Cache</TH></TR>'||
-            ' <TR><TD COLSPAN="7" ALIGN="center">"Pct Misses" should be very low</TD></TR>';
+            ' <TR><TD COLSPAN="7" ALIGN="justify">First, "Pct Misses" should '||
+	    'be very low. If they exceed 10%, ';
+  print(L_LINE);
+  L_LINE := 'your SQL statements may use unsharable SQL. You can fix this by '||
+            'either using bind variables or by the <CODE>cursor_sharing=FORCE</CODE> '||
+	    'statement in your <CODE>init.ora</CODE>. Also important is the number ';
+  print(L_LINE);
+  L_LINE := 'of reloads: if this is significantly high, reusable information is '||
+            'aged out of the SGA and then needs to be reloaded and rebuilt. If '||
+	    'this happens, you should optimize the SGA: ';
+  print(L_LINE);
+  L_LINE := 'increase its size, changing the large pool, pinning objects, etc.</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">NameSpace</TH><TH CLASS="th_sub">Get Requests</TH>'||
             '<TH CLASS="th_sub">Pct Miss</TH><TH CLASS="th_sub">Pin Reqs</TH>'||
