@@ -24,7 +24,15 @@ if [ -z "$1" ]; then
   echo collected statistics. Look inside the script header for closer details, and
   echo check for the configuration there as well.
   echo ----------------------------------------------------------------------------
-  echo "Syntax: ${SCRIPT} <ORACLE_SID> [StartID EndID]"
+  echo "Syntax: ${SCRIPT} <ORACLE_SID> [Options]"
+  echo "  Options:"
+  echo "     -b <BEGIN_ID (Snapshot)"
+  echo "     -e <END_ID (Snapshot)>"
+  echo "     -p <Password>"
+  echo "     -s <ORACLE_SID/Connection String for Target DB>"
+  echo "     -u <username>"
+  echo "  Example: generate report for oradb up to snapshot ID 1800:"
+  echo "   ${SCRIPT} oradb -e 1800"
   echo ============================================================================
   echo
   exit 1
@@ -33,23 +41,28 @@ fi
 # =================================================[ Configuration Section ]===
 # -------------------------------------------[ Read the Configuration File ]---
 . ./config $*
-. ./version
-SQLSET=$TMPDIR/osprep_sqlset_$1.$$
-TMPOUT=$TMPDIR/osprep_tmpout_$1.$$
-GWDUMMY=$TMPDIR/osprep_gwdummy_$1.$$
-DFDUMMY=$TMPDIR/osprep_dfdummy_$1.$$
 
-# If Start/End ID are specified on CmdLine, override internal settings:
-if [ -n "$2" ]; then
-  START_ID=$2
-fi
-if [ -n "$3" ]; then
-  END_ID=$3
-fi
+# ------------------------------------------[ process command line options ]---
+while [ "$1" != "" ] ; do
+  case "$1" in
+    -s) shift; ORACLE_SID=$1;;
+    -u) shift; user=$1;;
+    -p) shift; password=$1;;
+    -e) shift; END_ID=$1;;
+    -b) shift; START_ID=$1;;
+  esac
+  shift
+done
+
+. ./version
+SQLSET=$TMPDIR/osprep_sqlset_$ORACLE_SID.$$
+TMPOUT=$TMPDIR/osprep_tmpout_$ORACLE_SID.$$
+GWDUMMY=$TMPDIR/osprep_gwdummy_$ORACLE_SID.$$
+DFDUMMY=$TMPDIR/osprep_dfdummy_$ORACLE_SID.$$
 
 # --------------------------------[ Get the Oracle version of the DataBase ]---
 cat >$SQLSET<<ENDSQL
-CONNECT $user/$password@$1
+CONNECT $user/$password@$ORACLE_SID
 Set TERMOUT OFF
 Set SCAN OFF
 Set SERVEROUTPUT On Size 1000000
@@ -116,7 +129,7 @@ fi
 
 # -------------------------------[ Prepare and run the final report script ]---
 cat >$SQLSET<<ENDSQL
-CONNECT $user/$password@$1
+CONNECT $user/$password@$ORACLE_SID
 Set TERMOUT OFF
 Set SCAN OFF
 Set SERVEROUTPUT On Size 1000000

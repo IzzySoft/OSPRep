@@ -155,3 +155,6 @@ v0.1.8
 + added some enqueue types to help file
 + added PctMiss and PctSleep to Latch Sleep Breakdown block
 + added PctFail to Enqueue Activity block
++ enhanced command line syntax: now you can override some of the default
+  options from the "config" file (e.g. user, passwd) at the command line
+  (thanx to Manuel Soriano for this suggestion incl. code sent for OraRep)
