@@ -88,7 +88,7 @@ v0.1.1 (16.11.2003)
 ! fixed Optim W/A Execs in PGA stats (statement from Oracle Statspack
   didn't work correctly - replaced by own statement)
 
-v0.1.2
+v0.1.2 (25.11.2003)
 -------------------
 + added HitRatio to Buffer Pool Stats
 + additional procedure (and table) for statspack to gather information on
@@ -96,3 +96,5 @@ v0.1.2
   schema, the procedure needs the SYS schema - see docs and files for details.
   Installing this is optional.
 + enhanced buffer wait stats (including tuning tips)
++ added hints/comments to TS/File IO stats, wait events, Top-N SQL statements,
+  enqueue activity, RBS stats and Library Cache stats
