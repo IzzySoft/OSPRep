@@ -36,6 +36,7 @@ fi
 . ./config $*
 SQLSET=$TMPDIR/osprep_sqlset_$1.$$
 TMPOUT=$TMPDIR/osprep_tmpout_$1.$$
+GWDUMMY=$TMPDIR/osprep_gwdummy_$1.$$
 
 # If Start/End ID are specified on CmdLine, override internal settings:
 if [ -n "$2" ]; then
@@ -68,7 +69,16 @@ if [ "$WTEXISTS" = "1" ];
 then
   GETWAITS="./getwaits.prc"
 else
-  GETWAITS="ls >/dev/null"
+  cat >$GWDUMMY<<ENDSQL
+  cat>>$SQLSET<<ENDDUMMY
+  PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+  BEGIN
+    NULL;
+  END;
+ENDDUMMY
+ENDSQL
+  chmod u+x $GWDUMMY
+  GETWAITS=$GWDUMMY
 fi
 
 # ---------------------------------------------------[ Setup some Settings ]---
