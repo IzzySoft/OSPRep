@@ -42,9 +42,9 @@
   L_LINE := '<TH CLASS="th_sub">Reloads</TH><TH CLASS="th_sub">Invalidations</TH></TR>';
   print(L_LINE);
   FOR R_CA IN C_CAM(DBID,INST_NUM,BID,EID) LOOP
-    S1 := alert_gt_warn(R_CA.ngetm,40,15);
-    S2 := alert_gt_warn(R_CA.rpg,30,10);
-    S3 := alert_gt_warn(R_CA.ipg,20,10);
+    S1 := alert_gt_warn(R_CA.ngetm,AR_LC_MISS,WR_LC_MISS);
+    S2 := alert_gt_warn(R_CA.rpg,AR_LC_RLPRQ,WR_LC_RLPRQ);
+    S3 := alert_gt_warn(R_CA.ipg,AR_LC_INVPRQ,WR_LC_INVPRQ);
     L_LINE := ' <TR><TD CLASS="td_name">'||R_CA.namespace||'</TD><TD ALIGN="right">'||
               R_CA.gets||'</TD><TD ALIGN="right"'||S1||'>'||R_CA.getm||
 	      '</TD><TD ALIGN="right">'||R_CA.pins||'</TD>';

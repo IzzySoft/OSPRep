@@ -194,7 +194,7 @@ DECLARE
 	  CI := 3*(LENGTH(OSIZE)+1)/10;
 	  IF SI > CW THEN CW := SI; END IF;
 	  IF rplan.operation||' '||rplan.options = 'TABLE ACCESS FULL' THEN
-	    IF rplan.cost > 1000 THEN
+	    IF rplan.cost > AR_EP_FTS THEN
 	      S1 := ' CLASS="alert"';
 	    ELSE
 	      S1 := ' CLASS="warn"';

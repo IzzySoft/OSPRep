@@ -50,7 +50,7 @@ PROCEDURE get_filestats(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid I
 	      '<TH CLASS="th_sub">% Change</TH></TR>';
     print(L_LINE);
     FOR rec IN cur LOOP
-      S1 := alert_gt_warn(7*rec.num_pctdiff/DB_UPTIME,100,50);
+      S1 := alert_gt_warn(7*rec.num_pctdiff/DB_UPTIME,AR_DF_CHNG,WR_DF_CHNG);
       L_LINE := ' <TR><TD CLASS="td_name">'||rec.tsname||'</TD><TD CLASS="td_name">'||
                 rec.dfname||'</TD><TD ALIGN="right">'||rec.b_bytes||
                 ' M</TD><TD ALIGN="right">'||rec.b_freebytes||' M</TD><TD ALIGN="right">';

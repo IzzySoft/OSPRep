@@ -58,4 +58,41 @@ MK_LACT=0
 # Include Latch Miss Sources (only needed and understood by Oracle staff) [0|1]
 # If MK_LACT=0 it will never be included.
 MK_LMS=0
+
+# -------------------------------------------------------------[ Go4Colors ]---
+# WR_* stands for WarnRatio, AR_* for AlertRatio. The next letters indicate the
+# report segment: *_IE_* is Instance Efficiency, *_TS_* Table Space & FileIO
+# Summary, *_EP_* is execution plans, *_DF_* Datafiles Statistics, *_LC_*
+# Library Cache. For more details, see the HTML documentation.
+WR_IE_BUFFNW=80
+AR_IE_BUFFNW=60
+WR_IE_REDONW=90
+AR_IE_REDONW=75
+WR_IE_BUFFHIT=50
+AR_IE_BUFFHIT=30
+WR_IE_IMSORT=85
+AR_IE_IMSORT=70
+WR_IE_LIBHIT=80
+AR_IE_LIBHIT=60
+WR_IE_SOFTPRS=80
+AR_IE_SOFTPRS=60
+WR_IE_PRSC2E=80
+AR_IE_PRSC2E=60
+WR_IE_LAHIT=85
+AR_IE_LAHIT=70
+# Full Table Scans will always issue a warning in the execution plans, so there
+# is no WR_* value here
+AR_EP_FTS=1000
+WR_DF_CHNG=50
+AR_DF_CHNG=100
+WR_TS_BLKRD=80
+AR_TS_BLKRD=100
+WR_TS_RD=50
+AR_TS_RD=80
+WR_LC_MISS=15
+AR_LC_MISS=40
+WR_LC_RLPRQ=10
+AR_LC_RLPRQ=30
+WR_LC_INVPRQ=10
+AR_LC_INVPRQ=20
 # ===================================================================[ EOF ]===

@@ -22,8 +22,8 @@
            '<TH CLASS="th_sub">Buffer Waits</TH><TH CLASS="th_sub">Avg Buf Wt (ms)</TH></TR>';
   print(L_LINE);
   FOR R_TSIO IN C_TSIO(DBID,INST_NUM,BID,EID,ELA) LOOP
-    S1 := alert_gt_warn(R_TSIO.bprn,I1,I1*0.8);
-    S2 := alert_gt_warn(R_TSIO.avems,80,50);
+    S1 := alert_gt_warn(R_TSIO.bprn,I1*AR_TS_BLKRD/100,I1*WR_TS_BLKRD/100);
+    S2 := alert_gt_warn(R_TSIO.avems,AR_TS_RD,WR_TS_RD);
     L_LINE := ' <TR><TD CLASS="td_name">'||R_TSIO.tsname||'</TD><TD ALIGN="right">'||
               R_TSIO.reads||'</TD><TD ALIGN="right">'||R_TSIO.rps||
 	      '</TD><TD ALIGN="right"'||S2||'>'||R_TSIO.avgrd;
@@ -55,8 +55,8 @@
 	   '<TH CLASS="th_sub">Avg Buf Wt (ms)</TH></TR>';
   print(L_LINE);
   FOR R_TSIO IN C_FileIO(DBID,INST_NUM,BID,EID,ELA) LOOP
-    S1 := alert_gt_warn(R_TSIO.bprn,I1,I1*0.8);
-    S2 := alert_gt_warn(R_TSIO.avems,80,50);
+    S1 := alert_gt_warn(R_TSIO.bprn,I1*AR_TS_BLKRD/100,I1*WR_TS_BLKRD/100);
+    S2 := alert_gt_warn(R_TSIO.avems,AR_TS_RD,WR_TS_RD);
     L_LINE := ' <TR><TD CLASS="td_name">'||R_TSIO.tsname||'</TD><TD CLASS="td_name">'||
               R_TSIO.filename||'</TD><TD ALIGN="right">'||
               R_TSIO.reads||'</TD><TD ALIGN="right">'||R_TSIO.rps||

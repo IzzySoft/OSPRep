@@ -123,7 +123,7 @@
             ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Efficiency (%)</TH>'||
 	    '<TH CLASS="th_sub">Comment</TH></TR>';
   print(L_LINE);
-  S2 := alert_lt_warn(100*(1-BFWT/GETS),60,80);
+  S2 := alert_lt_warn(100*(1-BFWT/GETS),AR_IE_BUFFNW,WR_IE_BUFFNW);
   L_LINE := ' <TR><TD><DIV STYLE="width:13em">Buffer Nowait</DIV></TD><TD ALIGN="right"'||
             S2||'>'||to_char(round(100*(1-BFWT/GETS),2),'990.00');
   print(L_LINE);
@@ -134,7 +134,7 @@
   IF RENT = 0
   THEN S1 := '&nbsp;';
   ELSE S1 := to_char(round(100*(1-BFWT/GETS),2),'990.00');
-       S2 := alert_lt_warn(100*(1-BFWT/GETS),75,90);
+       S2 := alert_lt_warn(100*(1-BFWT/GETS),AR_IE_REDONW,WR_IE_REDONW);
   END IF;
   L_LINE := ' <TR><TD>Redo Nowait</TD><TD ALIGN="right"'||S2||'>'||S1||
             '</TD><TD><DIV ALIGN="justify">A value close to 100% indicates minimal '||
@@ -144,7 +144,7 @@
             'very often or because the database is able to switch to a new log '||
 	    'quickly whenever the current log fills up.</DIV></TD></TR>';
   print(L_LINE);
-  S2 := alert_lt_warn(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),30,50);
+  S2 := alert_lt_warn(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),AR_IE_BUFFHIT,WR_IE_BUFFHIT);
   L_LINE := ' <TR><TD>Buffer Hit</TD><TD ALIGN="right"'||S2||'>'||
             to_char(round(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),2),'990.00');
   print(L_LINE);
@@ -163,7 +163,7 @@
   IF (SRTM+SRTD) = 0
   THEN S1 := '&nbsp;';
   ELSE S1 := to_char(round(100*SRTM/(SRTD+SRTM),2),'990.00');
-       S2 := alert_lt_warn(100*SRTM/(SRTD+SRTM),70,85);
+       S2 := alert_lt_warn(100*SRTM/(SRTD+SRTM),AR_IE_IMSORT,WR_IE_IMSORT);
   END IF;
   L_LINE := ' <TR><TD>In-Memory Sort</TD><TD ALIGN="right"'||S2||'>'||S1||
             '</TD><TD><DIV ALIGN="justify">A too low ratio indicates too many '||
@@ -171,7 +171,7 @@
   print(L_LINE);
   L_LINE := 'solution could be increasing the sort area/SGA size.</DIV></TD></TR>';
   print(L_LINE);
-  S2 := alert_lt_warn(100*LHTR,60,80);
+  S2 := alert_lt_warn(100*LHTR,AR_IE_LIBHIT,WR_IE_LIBHIT);
   L_LINE := ' <TR><TD>Library Hit</TD><TD ALIGN="right"'||S2||'>'||
             to_char(round(100*LHTR,2),'990.00');
   print(L_LINE);
@@ -182,7 +182,7 @@
   L_LINE := 'If the soft parse ratio is also low, check whether there is a '||
             'parsing issue.</DIV></TD></TR>';
   print(L_LINE);
-  S2 := alert_lt_warn(100*(1-HPRS/PRSE),60,80);
+  S2 := alert_lt_warn(100*(1-HPRS/PRSE),AR_IE_SOFTPRS,WR_IE_SOFTPRS);
   L_LINE := ' <TR><TD>Soft Parse</TD><TD ALIGN="right"'||S2||'>'||
             to_char(round(100*(1-HPRS/PRSE),2),'990.00')||'</TD><TD><DIV ALIGN="justify">'||
             'When the <A HREF="JavaScript:popup('||CHR(39)||'softparse'||CHR(39)||
@@ -201,7 +201,7 @@
 	    '</TD><TD>A low value here indicates that there is no much '||
 	    're-usable SQL. See <I>Soft Parse</I> for possible actions.</TD></TR>';
   print(L_LINE);
-  S2 := alert_lt_warn(100*(1-LHR),70,85);
+  S2 := alert_lt_warn(100*(1-LHR),AR_IE_LAHIT,WR_IE_LAHIT);
   L_LINE := ' <TR><TD>Latch Hit</TD><TD ALIGN="right"'||S2||'>'||
             to_char(round(100*(1-LHR),2),'990.00');
   print(L_LINE);
@@ -218,7 +218,7 @@
   IF PRSELA = 0
   THEN S1 := '&nbsp;';
   ELSE S1 := to_char(round(100*PRSCPU/PRSELA,2),'990.00');
-       S3 := alert_lt_warn(100*PRSCPU/PRSELA,40,60);
+       S3 := alert_lt_warn(100*PRSCPU/PRSELA,AR_IE_PRSC2E,WR_IE_PRSC2E);
   END IF;
   IF TCPU = 0
   THEN S2 := '&nbsp;';
