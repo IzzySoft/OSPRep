@@ -62,7 +62,20 @@ ENDSQL
 cat $SQLSET getver.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
 DBVER=`cat $TMPOUT`
 SPFILE=sp$DBVER.pls
-rm $TMPOUT
+cat $SQLSET checkwt.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
+WTEXISTS=`cat $TMPOUT`
+if [ "$WTEXISTS" = "1" ];
+then
+  GETWAITS=`cat getwaits.prc`
+else
+  cat >$TMPOUT<<ENDSQL
+  PROCEDURE get_waitobj(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+  BEGIN
+    NULL;
+  END;
+ENDSQL
+  GETWAITS=`cat $TMPOUT`
+fi
 
 # -------------------------------[ Prepare and run the final report script ]---
 cat >$SQLSET<<ENDSQL
@@ -81,3 +94,4 @@ ENDSQL
 # cat $SQLSET $SPFILE ospout.pls >osp.out
 cat $SQLSET $SPFILE ospout.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
 rm $SQLSET
+rm $TMPOUT

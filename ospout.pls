@@ -241,6 +241,14 @@
   print(L_LINE);
   print('<HR>');
 
+  -- Wait Objects
+  S1 := 'istats$waitobjects'; I1 := 1; I2 := 0;
+  tab_exists(S1,I1,I2);
+  IF I2 = 1
+  THEN
+    get_waitobj(DBID,INST_NUM,BID,EID);
+  END IF;
+
   -- SQL by Gets
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbygets">Top '||TOP_N_SQL||' SQL ordered by Gets</A></TH></TR>'||
             CHR(10)||' <TR><TD COLSPAN="7" ALIGN="center">End Buffer Gets Treshold: '||EBGT;
