@@ -15,7 +15,7 @@ TMPDIR=/tmp
 # in which directory should the report ($ORACLE_SID.html) be placed
 REPDIR=/var/www/html/oracle/statspack
 # StyleSheet to use
-CSS=../main.css
+CSS=../iceage.css
 
 # --------------------------------------------------------------[ DataBase ]---
 # SID of the database to analyse
@@ -43,6 +43,10 @@ EXC_PERF_FOR="SYS SYSTEM"
 #--- Arguments on the command line override these settings.
 START_ID=0
 END_ID=0
+# Max Snapshot Interval in days. Only used if no START_ID specified. Set to
+# 0 to disable.
+MAX_REP_INTERVAL=0
+MAX_CHART_INTERVAL=14
 
 # --------------------------------------------------------------[ Features ]---
 # Include the Instance Efficiency segment? [0|1]

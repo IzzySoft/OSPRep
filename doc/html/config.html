@@ -110,6 +110,19 @@
            the parameters <code>-b</code> (for the "Begin" snapshot) and
            <code>-e</code> (for the "End" snapshot).</td></tr>
    <tr><td class="td_name"><code>END_ID</code></td></tr>
+   <tr><td class="td_name"><code>MAX_REP_INTERVAL</code></td>
+       <td class="text" rowspan="2">These two values as well specify the snapshot
+           interval to consider, but in a different manner. First, the
+           <code>MAX_*_INTERVAL</code> only applies if <code>START_ID=0</code>.
+           In this case OSPRep considers the snapshot interval from the
+           <code>END_ID</code> value and subtracts the amount of days specified
+           by <code>MAX_*_INTERVAL</code> to find the starting point. Configure
+           this feature with the <code>*_REP_*</code> keyword for the reports,
+           and with the <code>*_CHART_*</code> keyword for the charts. Setting
+           the value of zero instructs OSPRep to evaluate the snapshot interval
+           as described above using <code>START_ID</code> and <code>END_ID</code>
+           settings.</td></tr>
+   <tr><td class="td_name"><code>MAX_CHART_INTERVAL</code></td></tr>
    <tr><td class="td_name" COLSPAN="2"><div align="center">Features</div></td></tr>
    <tr><td class="td_name"><code>MK_INSTEFF</code></td>
        <td class="text">The "Instance Efficiency Percentages" provide an overview
