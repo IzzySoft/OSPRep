@@ -40,13 +40,41 @@ fi
 
 # =================================================[ Configuration Section ]===
 BINDIR=${0%/*}
+CONFIG=$BINDIR/config
+ARGS=$*
 PLUGINDIR=$BINDIR/plugins
 RULER=$PLUGINDIR/ruler.pls
 
+# ------------------------------------------[ process command line options ]---
+while [ "$1" != "" ] ; do
+  case "$1" in
+    -s) shift; ORACLE_CONNECT=$1;;
+    -u) shift; username=$1;;
+    -p) shift; passwd=$1;;
+    -e) shift; END_ID=$1;;
+    -b) shift; START_ID=$1;;
+    -c) shift; CONFIG=$1;;
+  esac
+  shift
+done
 # -------------------------------------------[ Read the Configuration File ]---
-. $BINDIR/config $*
-#SQLFILE=$TMPDIR/osprep_execfile_$ORACLE_SID.$$
+. $CONFIG $ARGS
+if [ -z "$ORACLE_CONNECT" ]; then
+  ORACLE_CONNECT=$ORACLE_SID
+fi
+if [ -n $START_ID ]; then
+  if [ -z $END_ID ]; then
+    END_ID=$START_ID
+  fi
+fi
+if [ -n "$username" ]; then
+  user=$username
+fi
+if [ -n "$passwd" ]; then
+  password=$passwd
+fi
 
+# ---------------------------------------------------[ Prepare the PlugIns ]---
 if [ $MK_BGWAITS -eq 1 ]; then
   BGWAITHEAD=$PLUGINDIR/bgwait_head.pls
   BGWAITBODY=$PLUGINDIR/bgwait_body.pls
@@ -72,32 +100,13 @@ if [ $MK_LACT -eq 1 ]; then
   fi
 fi
 
-# ------------------------------------------[ process command line options ]---
-while [ "$1" != "" ] ; do
-  case "$1" in
-    -s) shift; ORACLE_CONNECT=$1;;
-    -u) shift; user=$1;;
-    -p) shift; password=$1;;
-    -e) shift; END_ID=$1;;
-    -b) shift; START_ID=$1;;
-  esac
-  shift
-done
-if [ -z "$ORACLE_CONNECT" ]; then
-  ORACLE_CONNECT=$ORACLE_SID
-fi
-if [ -n $START_ID ]; then
-  if [ -z $END_ID ]; then
-    END_ID=$START_ID
-  fi
-fi
-
 . $BINDIR/version
 SQLSET=$TMPDIR/osprep_sqlset_$ORACLE_SID.$$
 TMPOUT=$TMPDIR/osprep_tmpout_$ORACLE_SID.$$
 GWDUMMY=$TMPDIR/osprep_gwdummy_$ORACLE_SID.$$
 DFDUMMY=$TMPDIR/osprep_dfdummy_$ORACLE_SID.$$
 
+# ==========================================[ Start the Run of the Scripts ]===
 # --------------------------------[ Get the Oracle version of the DataBase ]---
 cat >$SQLSET<<ENDSQL
 CONNECT $user/$password@$ORACLE_CONNECT
@@ -196,5 +205,4 @@ ENDSQL
 . $BINDIR/ospopen
 #cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $RULER $LACTBODY $LMSBODY $BINDIR/ospout04.pls >osp.out
 cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $RULER $LACTBODY $LMSBODY $BINDIR/ospout04.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
-rm $SQLSET
-rm $TMPOUT
+rm -f $SQLSET $TMPOUT $GWDUMMY $DFDUMMY

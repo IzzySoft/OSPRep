@@ -172,3 +172,5 @@ v0.1.9
 + blocks that may be not needed on a regular basis can now be excluded (or
   included) on demand - see the "config" file for details
 * Resource Limits table is now only created if content exists for it
++ new command line parameter "-c" to specify alternative config file
+! some temporary files have not been cleaned up after run
