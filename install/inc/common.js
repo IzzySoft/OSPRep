@@ -49,13 +49,13 @@ function drawStat(stat) {
                   parent.dname = "Redo Log Space Requests";
 		  break;
     case "enqper" :  parent.dstat = parent.enqper;
-                  parent.dname = "Enqueue Timeouts per Request";
+                  parent.dname = "Enqueue Timeouts per Request (OK: &lt;&lt; 0.01)";
 		  break;
     case "fbp"  : parent.dstat = parent.fbp;
-                  parent.dname = "Free Buffers Inspected / Requested";
+                  parent.dname = "Free Buffers Inspected / Requested (OK: &lt;&lt; 0.1)";
 		  break;
     case "libmiss" :  parent.dstat = parent.libmiss;
-                  parent.dname = "Pct Library Cache HitMisses";
+                  parent.dname = "Pct Library Cache HitMisses (OK: &lt; 10%)";
 		  break;
     case "logon" :  parent.dstat = parent.logon;
                   parent.dname = "Logons";
@@ -64,16 +64,16 @@ function drawStat(stat) {
                   parent.dname = "Open Cursors";
 		  break;
     case "cfr"  : parent.dstat = parent.cfr;
-                  parent.dname = "Chained-Fetch-Ratio";
+                  parent.dname = "Chained-Fetch-Ratio (OK: &lt; 5%)";
 		  break;
     case "rpp"  : parent.dstat = parent.rpp;
-                  parent.dname = "Pct Library Cache Reloads Per Pin";
+                  parent.dname = "Pct Library Cache Reloads Per Pin (OK: &lt; 1%)";
 		  break;
     case "ghr"  : parent.dstat = parent.ghr;
-                  parent.dname = "Pct Library Cache GetHitRatio";
+                  parent.dname = "Pct Library Cache GetHitRatio (OK: &gt; 90%)";
 		  break;
     case "rcr"  : parent.dstat = parent.rcr;
-                  parent.dname = "Pct Row Cache Ratio";
+                  parent.dname = "Pct Row Cache Ratio (OK: &lt; 15%)";
 		  break;
   }
   location.reload();

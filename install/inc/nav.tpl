@@ -10,7 +10,7 @@
                      parent.dname = "Enqueues";
 		     break;
       case "ratio" : parent.dstat = parent.enqper;
-                     parent.dname = "Enqueue Timeouts per Request";
+                     parent.dname = "Enqueue Timeouts per Request (OK: &lt;&lt; 0.01)";
 		     break;
     }
   }

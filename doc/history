@@ -208,3 +208,7 @@ v0.2.3 (24.02.2004)
 + added Pct ReloadsPerPin, Pct GetHitRatio and Pct Row Cache Ratio to Ratio
   charts
 + applied Go4Colors to fts_plans.sh
+
+v0.2.4
+-------------------
++ added some hints to the ratio charts
