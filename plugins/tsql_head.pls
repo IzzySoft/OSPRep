@@ -130,11 +130,13 @@
 
   -- SQL by Gets
   PROCEDURE sqlbygets IS
+    WARN VARCHAR2(50);
     CURSOR C_SQLByGets (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, gets IN NUMBER) IS
-      SELECT bufgets,execs,getsperexec,pcttotal,cputime,elapsed,hashval
+      SELECT bufgets,execs,getsperexec,pcttotal,cputime,elapsed,hashval,exe,ela
         FROM ( SELECT /*+ ordered use_nl (b st) */
               to_char((e.buffer_gets - nvl(b.buffer_gets,0)),'99,999,999,990') bufgets,
 	      to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
+	      e.executions - nvl(b.executions,0) exe,
 	      to_char(decode(e.executions - nvl(b.executions,0),
 			         0, '&nbsp;',
 				 (e.buffer_gets - nvl(b.buffer_gets,0)) /
@@ -145,7 +147,8 @@
 	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0))/1000000,
 			  '99,990.00'),'0.00') cputime,
 	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0))
-			/ 1000000,'99,990.00'), '0.00') elapsed,
+			/ 1000000,'999,999,990.00'), '0.00') elapsed,
+              nvl((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
 	     WHERE b.snap_id(+)  = bid
@@ -182,7 +185,8 @@
                 '<TH CLASS="th_sub">Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByGets(DBID,INST_NUM,BID,EID,GETS) LOOP
-        L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.bufgets||'</TD><TD ALIGN="right">'||
+        WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.bufgets||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.getsperexec||
 	          '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'</TD><TD ALIGN="right">';
         print(L_LINE);
@@ -203,11 +207,13 @@
 
   -- SQL by Reads
   PROCEDURE sqlbyreads IS
+    WARN VARCHAR2(50);
     CURSOR C_SQLByReads (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, phyr IN NUMBER) IS
-      SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,hashval
+      SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,hashval,exe,ela
         FROM ( SELECT /*+ ordered use_nl (b st) */
               to_char((e.disk_reads - nvl(b.disk_reads,0)),'99,999,999,990') phyreads,
 	      to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
+	      e.executions - nvl(b.executions,0) exe,
 	      to_char(decode(e.executions - nvl(b.executions,0),
 			         0, '&nbsp;',
 				 (e.disk_reads - nvl(b.disk_reads,0)) /
@@ -218,7 +224,8 @@
 	      nvl(to_char( (e.cpu_time - nvl(b.cpu_time,0))/1000000,
 			  '99,990.00'),'0.00') cputime,
 	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0))
-			/ 1000000,'99,990.00'), '0.00') elapsed,
+			/ 1000000,'999,999,999,990.00'), '0.00') elapsed,
+              nvl((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
 	     WHERE b.snap_id(+)  = bid
@@ -252,7 +259,8 @@
                 'Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByReads(DBID,INST_NUM,BID,EID,PHYR) LOOP
-        L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.phyreads||'</TD><TD ALIGN="right">'||
+        WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.phyreads||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.readsperexec||
 	          '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'</TD><TD ALIGN="right">';
         print(L_LINE);
@@ -273,8 +281,9 @@
 
   -- SQL by Executions
   PROCEDURE sqlbyexec IS
+    WARN VARCHAR2(50);
     CURSOR C_SQLByExec (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval
+      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela
         FROM ( SELECT /*+ ordered use_nl (b st) */
 	      to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
 	      to_char((nvl(e.rows_processed,0) - nvl(b.rows_processed,0)),
@@ -289,7 +298,9 @@
 			  '9,999,999,990.00'),'0.00') cputime,
 	      nvl(to_char( (e.elapsed_time - nvl(b.elapsed_time,0)) /
 	                   (e.executions - nvl(b.executions,0)),
-			'999,990.00'), '0.00') elapsed,
+			'9,999,999,990.00'), '0.00') elapsed,
+              (e.elapsed_time - nvl(b.elapsed_time,0)) /
+                  (e.executions - nvl(b.executions,0)) ela,
 	      NVL ( e.hash_value,0 ) hashval
 	      FROM stats$sql_summary e, stats$sql_summary b
 	     WHERE b.snap_id(+)  = bid
@@ -320,7 +331,8 @@
       L_LINE := '<TH CLASS="th_sub">Elap per Exec (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByExec(DBID,INST_NUM,BID,EID) LOOP
-        L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.execs||'</TD><TD ALIGN="right">'||
+        WARN := alert_gt_warn(R_SQL.ela,AR_ET,WR_ET);
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.execs||'</TD><TD ALIGN="right">'||
                   R_SQL.rowsproc||'</TD><TD ALIGN="right">'||R_SQL.rowsperexec||
                   '</TD><TD ALIGN="right">'||R_SQL.cputime||'</TD><TD ALIGN="right">';
         print(L_LINE);

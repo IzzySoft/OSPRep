@@ -298,6 +298,8 @@ variable WR_LC_RLPRQ NUMBER;
 variable AR_LC_RLPRQ NUMBER;
 variable WR_LC_INVPRQ NUMBER;
 variable AR_LC_INVPRQ NUMBER;
+variable WR_ET NUMBER;
+variable AR_ET NUMBER;
 BEGIN
   :MK_INSTEFF  := $MK_INSTEFF;
   :MK_TOPWAITS := $MK_TOPWAITS;
@@ -358,6 +360,8 @@ BEGIN
   :AR_LC_RLPRQ   := $AR_LC_RLPRQ;
   :WR_LC_INVPRQ  := $WR_LC_INVPRQ;
   :AR_LC_INVPRQ  := $AR_LC_INVPRQ;
+  :WR_ET         := $WR_ET;
+  :AR_ET         := $AR_ET;
 END;
 /
 SPOOL $REPDIR/${ORACLE_SID}.html

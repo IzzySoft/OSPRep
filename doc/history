@@ -254,3 +254,4 @@ v0.2.8
 + charts.sh now also supports the "-c" parameter (alternative config file)
 + added physical IO bytes to FileIO and TSIO segments
 ! fixed HitRatio column in Buffer Pool Statistics
++ added Seconds per Execution to Go4Colors for TOP_N_SQL

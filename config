@@ -135,4 +135,7 @@ WR_LC_RLPRQ=10
 AR_LC_RLPRQ=30
 WR_LC_INVPRQ=10
 AR_LC_INVPRQ=20
+# Warn/Alert for SQL statements where execution time exceeds .. seconds:
+WR_ET=3600
+AR_ET=7200
 # ===================================================================[ EOF ]===
