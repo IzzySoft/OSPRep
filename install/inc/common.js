@@ -13,7 +13,9 @@ function mkdiag() {
  // ScreenLeftX, TopY, RightX, BottomY
   D.SetBorder(bid, eid, 0, max + max/20);
  // DiagLeftX, RightX, BottomY, TopY
-  D.SetText("", "", "<B>"+parent.dname+"</B>");
+//  D.SetText("", "", "<B>"+parent.dname+"</B>");
+ // ScaleX, ScaleY, Title
+  D.SetText("", "", "");
  // ScaleX, ScaleY, Title
   D.Draw("#DDDDDD", "#000000", false, "");
  // DrawColor, TextColor, isScaleText [, ToolTip [, Action]]
