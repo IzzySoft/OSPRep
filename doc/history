@@ -217,3 +217,8 @@ v0.2.4 (27.02.2004)
 * sped up chart pages by creating the appropriate max/avg values with the
   stats (instead of JS calculation)
 * made CumAvg charts more precise
+
+v0.2.5
+-------------------
+! cumulative charts drew out-of-range lines when there were gaps in the
+  snapshot range

@@ -32,11 +32,15 @@ function mkline(arr,col) {
  }
  for (i=bid,k=bid; i<=eid; i=i+inc) {
    if (isNaN(arr[i])) {
-     k++;
+     k = k + inc;
      continue;
    }
    if (i>bid) {
-     delta = (arr[k] - arr[i]) / parts;
+     if ( isNaN(arr[k]) ) {
+       delta = 0;
+     } else {
+       delta = (arr[k] - arr[i]) / parts;
+     }
      for (f=0;f<parts;f++) {
        x = D.ScreenX(i - f/parts);
        j = D.ScreenY(arr[i] + f*delta);
