@@ -89,7 +89,7 @@ if [ $MK_INSTACT -eq 1 ]; then
   INSTACTHEAD=$PLUGINDIR/instact_head.pls
   INSTACTBODY=$PLUGINDIR/instact_body.pls
 fi
-if [ $MK_USSTAT -eq 1 ]; then
+if [ "${USS}${MK_USSTAT}" != "00" ]; then
   USSTATHEAD=$PLUGINDIR/undo_head.pls
   USSTATBODY=$PLUGINDIR/undo_body.pls
 fi
@@ -100,6 +100,10 @@ if [ $MK_LACT -eq 1 ]; then
     LMSHEAD=$PLUGINDIR/lms_head.pls
     LMSBODY=$PLUGINDIR/lms_body.pls
   fi
+fi
+if [ $MK_ENQ -eq 1 ]; then
+  ENQHEAD=$PLUGINDIR/enq_head.pls
+  ENQBODY=$PLUGINDIR/enq_body.pls
 fi
 if [ "${MK_RSSTAT}${MK_RSSTOR}" != "00" ]; then
   RBSHEAD=$PLUGINDIR/rbs_head.pls
@@ -205,6 +209,7 @@ Set Echo Off
 variable MK_ALLWAITS NUMBER;
 variable MK_BGWAITS NUMBER;
 variable MK_INSTACT NUMBER;
+variable MK_USS NUMBER;
 variable MK_USSTAT NUMBER;
 variable MK_LACT NUMBER;
 variable MK_LMS NUMBER;
@@ -215,6 +220,7 @@ variable MK_DC NUMBER;
 variable MK_LC NUMBER;
 variable MK_RSSTAT NUMBER;
 variable MK_RSSTOR NUMBER;
+variable MK_ENQ NUMBER;
 variable WR_IE_BUFFNW NUMBER;
 variable AR_IE_BUFFNW NUMBER;
 variable WR_IE_REDONW NUMBER;
@@ -248,6 +254,7 @@ BEGIN
   :MK_ALLWAITS := $MK_ALLWAITS;
   :MK_BGWAITS  := $MK_BGWAITS;
   :MK_INSTACT  := $MK_INSTACT;
+  :MK_USS      := $MK_USS;
   :MK_USSTAT   := $MK_USSTAT;
   :MK_LACT     := $MK_LACT;
   :MK_LMS      := $MK_LMS;
@@ -258,6 +265,7 @@ BEGIN
   :MK_LC       := $MK_LC;
   :MK_RSSTAT   := $MK_RSSTAT;
   :MK_RSSTOR   := $MK_RSSTOR;
+  :MK_ENQ      := $MK_ENQ;
   :WR_IE_BUFFNW  := $WR_IE_BUFFNW;
   :AR_IE_BUFFNW  := $AR_IE_BUFFNW;
   :WR_IE_REDONW  := $WR_IE_REDONW;
@@ -293,6 +301,6 @@ SPOOL $REPDIR/${ORACLE_SID}.html
 ENDSQL
 
 . $BINDIR/ospopen
-#cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $RULER $RBSBODY $LACTBODY $LMSBODY $CACHEBODY $SGABODY $PLUGINDIR/rlims.pls $IORABODY $BINDIR/footer.pls >osp.out
-cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $USSTATBODY $RULER $RBSBODY $LACTBODY $LMSBODY $CACHEBODY $SGABODY $PLUGINDIR/rlims.pls $IORABODY $BINDIR/footer.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
+#cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $ENQBODY $USSTATBODY $RULER $RBSBODY $LACTBODY $LMSBODY $CACHEBODY $SGABODY $PLUGINDIR/rlims.pls $IORABODY $BINDIR/footer.pls >osp.out
+cat $SQLSET $SPFILE $BINDIR/ospout.pls $ALLWAITBODY $BGWAITBODY $BINDIR/ospout02.pls $INSTACTBODY $BINDIR/ospout03.pls $ENQBODY $USSTATBODY $RULER $RBSBODY $LACTBODY $LMSBODY $CACHEBODY $SGABODY $PLUGINDIR/rlims.pls $IORABODY $BINDIR/footer.pls | $ORACLE_HOME/bin/sqlplus -s /NOLOG
 rm -f $SQLSET $TMPOUT $GWDUMMY $DFDUMMY

@@ -121,10 +121,12 @@
        <td class="text">The "Instance Activity" segment of the report can be boring
            sometimes, so you may suppress it here and just activate it if you
            really need it ;-)</td></tr>
-   <tr><td class="td_name"><code>MK_USSTAT</code></td>
-       <td class="text">Except for special occasions, the "Undo Segment Statistics"
-           will not be needed (especially when using automatic undo management).
-           This option will not turn off the "Undo Segment Summary" table, however.</td></tr>
+   <tr><td class="td_name"><code>MK_USS</code></td>
+       <td class="text" ROWSPAN="2">Except for special occasions, the "Undo Segment Statistics"
+           (<code>MK_USSTAT</code>) will not be needed (especially when using
+           automatic undo management). The "Undo Segment Summary" table can also
+           be turned off, if not needed, with the <code>MK_USS=0</code> statement.</td></tr>
+   <tr><td class="td_name"><code>MK_USSTAT</code></td></td>
    <tr><td class="td_name"><code>MK_LACT</code></td>
        <td class="text">"Latch Activity" will only be needed for closer investigation,
            so this option is turned off by the default configuration. When you

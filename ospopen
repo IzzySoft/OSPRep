@@ -14,6 +14,7 @@ DECLARE
   MK_ALLWAITS NUMBER;
   MK_BGWAITS NUMBER;
   MK_INSTACT NUMBER;
+  MK_USS NUMBER;
   MK_USSTAT NUMBER;
   MK_LACT NUMBER;
   MK_LMS NUMBER;
@@ -24,6 +25,7 @@ DECLARE
   MK_LC NUMBER;
   MK_RSSTAT NUMBER;
   MK_RSSTOR NUMBER;
+  MK_ENQ NUMBER;
   WR_IE_BUFFNW NUMBER;
   AR_IE_BUFFNW NUMBER;
   WR_IE_REDONW NUMBER;
@@ -677,52 +679,6 @@ DECLARE
        AND e.value  >= b.value
        AND e.value  >  0;
 
-  CURSOR C_Enq (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT e.eq_type name,
-           to_char(e.total_req# - nvl(b.total_req#,0),'99,999,999') reqs,
-	   to_char(e.succ_req#  - nvl(b.succ_req#,0),'99,999,999') sreq,
-	   to_char(e.failed_req# - nvl(b.failed_req#,0),'99,999,999') freq,
-	   to_char(100*((e.failed_req# - nvl(b.failed_req#,0))/
-                   (e.total_req# - nvl(b.total_req#,0))),'990.00') pctfail,
-	   to_char(e.total_wait# - nvl(b.total_wait#,0),'999,999') waits,
-	   to_char(decode( (e.total_wait# - nvl(b.total_wait#,0)),
-	                   0, to_number(NULL),
-			   (  (e.cum_wait_time - nvl(b.cum_wait_time,0))
-			    / (e.total_wait# - nvl(b.total_wait#,0))
-			   ) ),'999,999,990.00') awttm,
-	   to_char((e.cum_wait_time - nvl(b.cum_wait_time,0))/1000,
-	            '999,999') wttm
-      FROM stats\$enqueue_stat b, stats\$enqueue_stat e
-     WHERE b.snap_id(+) = bid
-       AND e.snap_id    = eid
-       AND b.dbid(+)    = db_id
-       AND e.dbid       = db_id
-       AND b.dbid(+)    = e.dbid
-       AND b.instance_number(+) = instnum
-       AND e.instance_number    = instnum
-       AND b.instance_number(+) = e.instance_number
-       AND b.eq_type(+) = e.eq_type
-       AND e.total_wait# - nvl(b.total_wait#,0) > 0
-     ORDER BY waits desc, reqs desc;
-
-    CURSOR C_USS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
-      SELECT undotsn,
-             to_char(sum(undoblks),'99,999,999') undob,
-	     to_char(sum(txncount),'9,999,999,999,999') txcnt,
-	     to_char(max(maxquerylen),'999,999,999') maxq,
-	     to_char(max(maxconcurrency),'999,999') maxc,
-	     to_char(sum(ssolderrcnt),'99,999') snol,
-	     to_char(sum(nospaceerrcnt),'99,999') nosp,
-	     sum(unxpstealcnt)||'/'||sum(unxpblkrelcnt)||'/'||
-	     sum(unxpblkreucnt)||' / '||sum(expstealcnt)||'/'||
-	     sum(expblkrelcnt)||'/'||sum(expblkreucnt) blkst
-        FROM stats\$undostat
-       WHERE dbid = db_id
-         AND instance_number = instnum
-         AND end_time > to_date(btime, 'DD.MM.YYYY HH24:MI:SS')
-         AND begin_time < to_date(etime, 'DD.MM.YYYY HH24:MI:SS')
-       GROUP BY undotsn;
-
   CURSOR C_RLim (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT resource_name rname,
            to_char(current_utilization,'999,999,990') curu,
@@ -961,6 +917,9 @@ if [ -n "$LACTHEAD" ]; then
     cat $LMSHEAD>>$SQLSET
   fi
 fi
+if [ -n "$ENQHEAD" ]; then
+  cat $ENQHEAD>>$SQLSET
+fi
 if [ -n "$CACHEHEAD" ]; then
   cat $CACHEHEAD>>$SQLSET
 fi
@@ -980,6 +939,7 @@ BEGIN
   MK_ALLWAITS := :MK_ALLWAITS;
   MK_BGWAITS  := :MK_BGWAITS;
   MK_INSTACT  := :MK_INSTACT;
+  MK_USS      := :MK_USS;
   MK_USSTAT   := :MK_USSTAT;
   MK_LACT     := :MK_LACT;
   MK_IORA     := :MK_IORA;
@@ -989,6 +949,7 @@ BEGIN
   MK_LC       := :MK_LC;
   MK_RSSTAT   := :MK_RSSTAT;
   MK_RSSTOR   := :MK_RSSTOR;
+  MK_ENQ      := :MK_ENQ;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
   WR_IE_REDONW := :WR_IE_REDONW;
@@ -1110,8 +1071,13 @@ BEGIN
             ' [ <A HREF="#bufpool">Buffer Pool</A> ] [ <A HREF="#recover">Instance Recovery</A> ]'||
 	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]';
   print(L_LINE);
-  L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ] [ <A HREF="#enq">Enqueue Activity</A> ]'||
-            ' [ <A HREF="#undo">Undo Segs</A> ]';
+  L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ]';
+  IF MK_ENQ = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#enq">Enqueue Activity</A> ]';
+  END IF;
+  IF MK_USS + MK_USSTAT > 0 THEN
+    L_LINE := L_LINE||' [ <A HREF="#undo">Undo Segs</A> ]';
+  END IF;
   IF MK_RSSTAT + MK_RSSTOR > 0 THEN
     L_LINE := L_LINE||' [ <A HREF="#rbs">RBS</A> ]';
   END IF;
