@@ -1,0 +1,5 @@
+History for StatsRep
+
+v0.0.1 (03.11.2003) initial version
++ Output intro: Common instance information
++ simple SnapShot info (id, time, comment)
