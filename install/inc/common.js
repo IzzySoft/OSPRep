@@ -5,7 +5,11 @@ if (max == 0) max = 1;
 
 // Create Diagram
 function mkdiag() {
-  D.SetFrame(80, 120, 540, 380);
+  var left  = Math.max(0,(document.body.clientWidth - 460) / 2);
+  var right = left + 460;
+//  D.SetFrame(80, 120, 540, 380);
+ // ScreenLeftX, TopY, RightX, BottomY
+  D.SetFrame(left, 120, right, 380);
  // ScreenLeftX, TopY, RightX, BottomY
   D.SetBorder(bid, eid, 0, max + max/20);
  // DiagLeftX, RightX, BottomY, TopY
