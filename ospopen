@@ -26,6 +26,8 @@ DECLARE
   MK_RSSTAT NUMBER;
   MK_RSSTOR NUMBER;
   MK_ENQ NUMBER;
+  MK_PGAA NUMBER;
+  MK_PGAM NUMBER;
   WR_IE_BUFFNW NUMBER;
   AR_IE_BUFFNW NUMBER;
   WR_IE_REDONW NUMBER;
@@ -562,123 +564,6 @@ DECLARE
        AND b.wait_count < e.wait_count
      ORDER BY itim desc, icnt desc;
 
-  CURSOR C_PGAA (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT 'B' snap,
-           to_char(to_number(p.value)/1024/1024,'999,990.00')  pgaat,
-	   to_char(mu.PGA_inuse/1024/1024,'999,990.00')        tot_pga_used,
-	   to_char( (mu.PGA_used_auto + mu.PGA_used_man)
-	            /1024/1024,'999,990.00')                   tot_tun_used,
-	   to_char(mu.onepr/1024/1024,'999,990.00')            onepr,
-	   nvl(to_char(s.opt_pct,'990.00'),'&nbsp;')           opt_pct,
-	   to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
-	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
-           to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
-	   to_char(100* mu.PGA_used_man  / PGA_inuse,'990.00') pct_man_tun
-      FROM ( SELECT sum(case when name like 'total PGA inuse%'
-                             then value else 0 end)             PGA_inuse,
-		    sum(case when name like 'total PGA used for auto%'
-                             then value else 0 end)             PGA_used_auto,
-		    sum(case when name like 'total PGA used for manual%'
-                             then value else 0 end)             PGA_used_man,
-		    sum(case when name like 'maximum % one-pass'
-                             then value else 0 end)             onepr
-	       FROM stats\$pgastat pga
-	      WHERE pga.snap_id = bid
-	        AND pga.dbid    = db_id
-		AND pga.instance_number = instnum ) mu,
-           ( SELECT DECODE(NVL(a.sval,0),0,NULL,100*b.oval/a.sval) opt_pct
-	       FROM ( SELECT SUM(NVL(value,0)) sval 
-	                FROM stats\$sysstat
-		       WHERE name IN ('workarea executions - optimal',
-		                      'workarea executions - onepass',
-				      'workarea executions - multipass')
-			 AND snap_id = bid) a,
-		    ( SELECT SUM(NVL(value,0)) oval
-	                FROM stats\$sysstat
-		       WHERE name = 'workarea executions - optimal'
-		         AND snap_id = bid) b )              s,
-	   stats\$parameter p
-     WHERE p.snap_id = bid
-       AND p.dbid    = db_id
-       AND p.instance_number = instnum
-       AND p.name    = 'pga_aggregate_target'
-       AND p.value  != 0
-    UNION SELECT 'E' snap,
-           to_char(to_number(p.value)/1024/1024,'999,990.00')  pgaat,
-	   to_char(mu.PGA_inuse/1024/1024,'999,990.00')        tot_pga_used,
-	   to_char( (mu.PGA_used_auto + mu.PGA_used_man)
-	            /1024/1024,'999,990.00')                   tot_tun_used,
-	   to_char(mu.onepr/1024/1024,'999,990.00')            onepr,
-	   nvl(to_char(s.opt_pct,'990.00'),'&nbsp;')           opt_pct,
-	   to_char(100*(mu.PGA_inuse - mu.PGA_used_auto
-	            - mu.PGA_used_man)/ PGA_inuse,'990.00')    pct_unt,
-           to_char(100* mu.PGA_used_auto / PGA_inuse,'990.00') pct_auto_tun,
-	   to_char(100* mu.PGA_used_man  / PGA_inuse,'990.00') pct_man_tun
-      FROM ( SELECT sum(case when name like 'total PGA inuse%'
-                             then value else 0 end)             PGA_inuse,
-		    sum(case when name like 'total PGA used for auto%'
-                             then value else 0 end)             PGA_used_auto,
-		    sum(case when name like 'total PGA used for manual%'
-                             then value else 0 end)             PGA_used_man,
-		    sum(case when name like 'maximum % one-pass'
-                             then value else 0 end)             onepr
-	       FROM stats\$pgastat pga
-	      WHERE pga.snap_id = eid
-	        AND pga.dbid    = db_id
-		AND pga.instance_number = instnum ) mu,
-           ( SELECT DECODE(NVL(a.sval,0),0,NULL,100*b.oval/a.sval) opt_pct
-	       FROM ( SELECT SUM(NVL(value,0)) sval 
-	                FROM stats\$sysstat
-		       WHERE name IN ('workarea executions - optimal',
-		                      'workarea executions - onepass',
-				      'workarea executions - multipass')
-			 AND snap_id = eid) a,
-		    ( SELECT SUM(NVL(value,0)) oval
-	                FROM stats\$sysstat
-		       WHERE name = 'workarea executions - optimal'
-		         AND snap_id = eid) b )              s,
-	   stats\$parameter p
-     WHERE p.snap_id = eid
-       AND p.dbid    = db_id
-       AND p.instance_number = instnum
-       AND p.name    = 'pga_aggregate_target'
-       AND p.value  != 0;
-
-  CURSOR C_PGAM (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT b.name st,
-           to_char(b.value/1024/1024,'9,999,990.00') snap1,
-           to_char(e.value/1024/1024,'9,999,990.00') snap2,
-	   nvl(to_char(decode(b.value,0,NULL,
-	                    100*((e.value - nvl(b.value,0))/b.value)),
-		   '9,999,999,990.00'),'&nbsp') diff
-      FROM stats\$pgastat b, stats\$pgastat e
-     WHERE b.snap_id = bid
-       AND e.snap_id = eid
-       AND b.dbid    = db_id
-       AND e.dbid    = db_id
-       AND b.instance_number = instnum
-       AND e.instance_number = instnum
-       AND b.name    = e.name
-       AND e.value  >= b.value
-       AND e.value  >  0
-    UNION SELECT b.name st,
-           to_char(b.value/1024/1024,'9,999,990.00') snap1,
-           to_char(e.value/1024/1024,'9,999,990.00') snap2,
-	   to_char(decode(b.value,0,100* (e.value - nvl(b.value,0)),
-	                            100*((e.value - nvl(b.value,0))/b.value)),
-		   '990.00') diff
-      FROM stats\$sysstat b, stats\$sysstat e
-     WHERE b.snap_id = bid
-       AND e.snap_id = eid
-       AND b.dbid    = db_id
-       AND e.dbid    = db_id
-       AND b.instance_number = instnum
-       AND e.instance_number = instnum
-       AND b.name    = e.name
-       AND e.name    = 'workarea memory allocated'
-       AND e.value  >= b.value
-       AND e.value  >  0;
-
   CURSOR C_RLim (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT resource_name rname,
            to_char(current_utilization,'999,999,990') curu,
@@ -917,6 +802,9 @@ if [ -n "$LACTHEAD" ]; then
     cat $LMSHEAD>>$SQLSET
   fi
 fi
+if [ -n "$PGAHEAD" ]; then
+  cat $PGAHEAD>>$SQLSET
+fi
 if [ -n "$ENQHEAD" ]; then
   cat $ENQHEAD>>$SQLSET
 fi
@@ -950,6 +838,8 @@ BEGIN
   MK_RSSTAT   := :MK_RSSTAT;
   MK_RSSTOR   := :MK_RSSTOR;
   MK_ENQ      := :MK_ENQ;
+  MK_PGAA     := :MK_PGAA;
+  MK_PGAM     := :MK_PGAM;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
   WR_IE_REDONW := :WR_IE_REDONW;
@@ -1071,7 +961,11 @@ BEGIN
             ' [ <A HREF="#bufpool">Buffer Pool</A> ] [ <A HREF="#recover">Instance Recovery</A> ]'||
 	    ' [ <A HREF="#bufwait">Buffer Waits</A> ]';
   print(L_LINE);
-  L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ]';
+  IF MK_PGAA + MK_PGAM > 0 THEN
+    L_LINE := ' [ <A HREF="#pga">Memory Stats</A> ]';
+  ELSE
+    L_LINE := '';
+  END IF;
   IF MK_ENQ = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#enq">Enqueue Activity</A> ]';
   END IF;

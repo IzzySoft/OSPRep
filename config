@@ -73,6 +73,9 @@ MK_RSSTAT=0
 MK_RSSTOR=0
 # Include the Enqueue Activity segment? [0|1]
 MK_ENQ=1
+# Include the PGA Aggret & Memory Stats segment? [0|1]
+MK_PGAA=1
+MK_PGAM=1
 
 # -------------------------------------------------------------[ Go4Colors ]---
 # WR_* stands for WarnRatio, AR_* for AlertRatio. The next letters indicate the

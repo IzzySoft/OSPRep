@@ -153,12 +153,21 @@
    <tr><td class="td_name"><code>MK_SGABREAK</code></td></tr>
    <tr><td class="td_name"><code>MK_DC</code></td>
        <td class="text" rowspan="2">Whether to create the "Dictionary Cache" and
-           "Library Cache" segments of the report.</td></tr>
+           "Library Cache" segments of the report, containing statistics and
+           ratios on usage of these areas.</td></tr>
    <tr><td class="td_name"><code>MK_LC</code></td></tr>
    <tr><td class="td_name"><code>MK_RSSTAT</code></td>
        <td class="text" rowspan="2">Whether to create the "RBS Stats" and
-           "RBS Storage" segments of the report.</td></tr>
+           "RBS Storage" segments of the report. These Rollback statistics are
+           quite useless if your database uses automatic Undo management.</td></tr>
    <tr><td class="td_name"><code>MK_RSSTOR</code></td></tr>
+   <tr><td class="td_name"><code>MK_ENQ</code></td>
+       <td class="text">The "Enqueue Activity" segment of the report contains
+           information on for which queue types have been waits encountered</td></tr>
+   <tr><td class="td_name"><code>MK_PGAA</code></td>
+       <td class="text" rowspan="2">Whether to include the "PGA Aggregat" and
+           "PGA Memory" segments of the report.</td></tr>
+   <tr><td class="td_name"><code>MK_PGAM</code></td></tr>
    <tr><td class="td_name"><code>WR_*</code></td>
        <td class="text" rowspan="2">These are the values used for warnings (<code>WR_*</code>)
            and alerts (<code>AR_*</code>) in the <a href="results.html#go4colors">Go4Colors</a>
