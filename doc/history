@@ -174,3 +174,7 @@ v0.1.9 (22.01.2004)
 * Resource Limits table is now only created if content exists for it
 + new command line parameter "-c" to specify alternative config file
 ! some temporary files have not been cleaned up after run
+
+v0.2.0
+-------------------
++ added documentation (see doc/html/ directory)
