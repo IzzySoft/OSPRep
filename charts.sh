@@ -75,9 +75,9 @@ cat >$REPDIR/${ORACLE_SID}_chart.html<<ENDTXT
    var vers  = "${version}";
  //--></SCRIPT>
 </HEAD>
-<FRAMESET COLS="1,*">
- <FRAME NAME="menu">
- <FRAME SRC="inc/cumul.html" NAME="main">
+<FRAMESET COLS="60,*" BORDER="0">
+ <FRAME SRC="inc/nav.html" NAME="menu">
+ <FRAME SRC="inc/cumul.html" NAME="chart">
 </FRAMESET>
 </HTML>
 ENDTXT
@@ -152,6 +152,29 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
+  PROCEDURE get_sysstat_per(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
+    CURSOR C_Sys(db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
+      SELECT arrname||'['||a.snap_id||'] = '||round(a.value/b.value,5)||';' line
+        FROM stats\$sysstat a, stats\$sysstat b
+       WHERE a.name=event1
+         AND b.name=event2
+         AND a.instance_number=instnum
+         AND b.instance_number=instnum
+	 AND a.dbid=db_id
+	 AND b.dbid=db_id
+	 AND a.snap_id BETWEEN bid AND eid
+--	 AND b.snap_id BETWEEN bid AND eid
+	 AND a.snap_id=b.snap_id;
+    BEGIN
+      print(CHR(10)||'var '||arrname||' = new Array();');
+      FOR rec IN C_Sys(db_id,instnum,bid,eid,event1,event2,arrname) LOOP
+        print(rec.line);
+      END LOOP;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN print('no_data');
+      -- NULL;
+    END;
+
 BEGIN
   OSPVER := '$version';
   dbms_output.enable(1000000);
@@ -191,14 +214,15 @@ BEGIN
   print('var etime = "'||ETIME||'";');
 
   -- Chart statistics
-  get_sysevent(DBID,INST_NUM,BID,EID,'free buffer waits','freebuff');  
-  get_sysevent(DBID,INST_NUM,BID,EID,'buffer busy waits','busybuff');  
-  get_sysevent(DBID,INST_NUM,BID,EID,'db file sequential read','fileseq');  
-  get_sysevent(DBID,INST_NUM,BID,EID,'db file scattered read','filescat');  
-  get_sysevent(DBID,INST_NUM,BID,EID,'enqueue','enq');  
-  get_sysevent(DBID,INST_NUM,BID,EID,'LGWR wait for redo copy','lgwr');  
-  get_sysevent(DBID,INST_NUM,BID,EID,'log file switch completion','lgsw');  
-  get_sysstat(DBID,INST_NUM,BID,EID,'redo log space requests','redoreq');  
+  get_sysevent(DBID,INST_NUM,BID,EID,'free buffer waits','freebuff');
+  get_sysevent(DBID,INST_NUM,BID,EID,'buffer busy waits','busybuff');
+  get_sysevent(DBID,INST_NUM,BID,EID,'db file sequential read','fileseq');
+  get_sysevent(DBID,INST_NUM,BID,EID,'db file scattered read','filescat');
+  get_sysevent(DBID,INST_NUM,BID,EID,'enqueue','enq');
+  get_sysevent(DBID,INST_NUM,BID,EID,'LGWR wait for redo copy','lgwr');
+  get_sysevent(DBID,INST_NUM,BID,EID,'log file switch completion','lgsw');
+  get_sysstat(DBID,INST_NUM,BID,EID,'redo log space requests','redoreq');
+  get_sysstat_per(DBID,INST_NUM,BID,EID,'enqueue timeouts','enqueue requests','enqper');
 
 END;
 /

@@ -1,7 +1,6 @@
 bid = parent.bid;
 eid = parent.eid;
-max = parent.dstat[eid];
-if (max == 0) max = 1;
+if (maxval == 0) maxval = 1;
 
 // Create Diagram
 function mkdiag() {
@@ -11,7 +10,7 @@ function mkdiag() {
  // ScreenLeftX, TopY, RightX, BottomY
   D.SetFrame(left, 120, right, 380);
  // ScreenLeftX, TopY, RightX, BottomY
-  D.SetBorder(bid, eid, 0, max + max/20);
+  D.SetBorder(bid, eid, 0, maxval + maxval/20);
  // DiagLeftX, RightX, BottomY, TopY
 //  D.SetText("", "", "<B>"+parent.dname+"</B>");
  // ScaleX, ScaleY, Title
