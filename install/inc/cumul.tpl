@@ -20,8 +20,14 @@ document.write('<TR><TH CLASS="th_sub" ALIGN="center">'+parent.dname+'</TH></TR>
 // Create a graph (Array, StartElem, Color)
 function mkline(arr,col) {
  // parts: connect dots (fill the gaps with calculated delta for x pieces)
- parts = Math.ceil(620/(eid - bid)) +5;
- for (i=bid,k=bid; i<eid; i++) {
+ if ( (eid - bid) > 620 ) {
+   parts = 1;
+   inc   = Math.floor((eid - bid)/620);
+ } else {
+   parts = Math.ceil(620/(eid - bid));
+   inc   = 1;
+ }
+ for (i=bid,k=bid; i<eid; i=i+inc) {
    if (isNaN(arr[i])) {
      k++;
      continue;
