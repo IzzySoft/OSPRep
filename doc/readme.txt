@@ -53,9 +53,15 @@ experiment with copying the provided files. A better idea is to see the
 ?/rdbms/admin/spreport.sql file for the exact specification and creating your
 sp??.pls file yourself. Although, no warranty that this will work.
 
-One more limitation to mention: the information in this reports is equivalent
-to what spreport.sql would give you on level 5 snapshots. So if you need the
-additional data for higher levels reported, OSPRep won't help you.
+The same "auto-detection" mode applies to snap level 6 data as well as to
+possible future plugins: I will try to always keep the report script
+compatible with the "defaults" but automatically get the best out of your
+database for you when detecting features.
+
+Moreover you should remember: when only taking snapshots at level 5, OSPRep
+cannot report level 6 data (such as e.g. execution plans). But I would not
+regard this a limitation of OSPRep but rather of your data collection in this
+case :-)
 
 ===============================================================================
 
