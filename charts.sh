@@ -40,6 +40,7 @@ if [ -z "$1" ]; then
 fi
 
 # =================================================[ Configuration Section ]===
+BINDIR=${0%/*}
 CONFIG=$BINDIR/config
 ARGS=$*
 # ------------------------------------------[ process command line options ]---
