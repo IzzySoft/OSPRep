@@ -55,8 +55,9 @@ mkline(parent.dstat,'#0000FF');
 document.close();
 
 //--></SCRIPT>
+<DIV ALIGN="center">
 <DIV
- STYLE="position:absolute; top:420">
+ STYLE="margin-top:380">
 <TABLE BORDER="1" ALIGN="center">
 <TR><TD ALIGN="center">
 <SELECT NAME="stat" onChange="drawStat(this.value)">
@@ -78,6 +79,7 @@ document.close();
 //--></SCRIPT>
 </TD></TR>
 </TABLE>
+</DIV>
 </DIV>
 </body>
 </html>
