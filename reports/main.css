@@ -1,4 +1,8 @@
 BODY { background-color:#7777FF; }
+
+/* ------------------------------------------------------------------------ */
+/*                           Headers and Paragraphs                         */
+/* ------------------------------------------------------------------------ */
 P { text-align:justified; }
 H2 {
  text-align:center;
@@ -6,24 +10,36 @@ H2 {
  background-color:#EEEEEE
 }
 H3 { text-align:center; }
+.small { font-size:75%; }
+.code {
+  font-family: monospace; 
+  font-size: 8pt; 
+  background-color: #FFEEAA;
+  border:  1px solid #000000;
+  margin-bottom: 6px;
+  margin-top: 6px;
+  padding: 4px;
+  color: #660033;
+}
+
+/* ------------------------------------------------------------------------ */
+/*                          Tables and Table Classes                        */
+/* ------------------------------------------------------------------------ */
 TABLE {  background-color:#FFFFFF; }
+
+/* -------------------------------------------------------[ Table Rows ]--- */
+tr.alert {
+ background-color:#ff5555;
+}
+tr.warn {
+ background-color:Yellow;
+}
+
+/* ----------------------------------------------------[ Table Headers ]--- */
 TH {
  text-align:center;
  background-color:#FFD000;
 }
-TD { font-size:80%; }
-TD.small { font-size:70%; }
-TD.smallname {
- font-size:70%;
- font-weight:bold;
- background-color:#f0f0f0;
- border:1px solid #000000;
-}
-UL {
- margin-top:2;
- margin-bottom:2;
-}
-
 .th_sub  {
  text-align:center;
  font-size:90%;
@@ -36,11 +52,19 @@ UL {
  font-style:italic;
  background-color:lemonchiffon;
 }
-.td_name {
+
+/* ------------------------------------------------------[ Table Cells ]--- */
+TD { font-size:80%; }
+TD.small { font-size:70%; }
+TD.smallname {
+ font-size:70%;
  font-weight:bold;
- background-color:#f0f0f0
+ background-color:#f0f0f0;
+ border:1px solid #000000;
 }
-.small { font-size:75%; }
+TD.text {
+ text-align:justify;
+}
 td.alert {
  background-color:#ff5555;
  font-weight:bold
@@ -48,20 +72,16 @@ td.alert {
 td.warn {
  background-color:Yellow;
 }
-tr.alert {
- background-color:#ff5555;
+.td_name {
+ font-weight:bold;
+ background-color:#f0f0f0
 }
-tr.warn {
- background-color:Yellow;
-}
-.code {
-  font-family: monospace; 
-  font-size: 8pt; 
-  background-color: #FFEEAA;
-  border:  1px solid #000000;
-  margin-bottom: 6px;
-  margin-top: 6px;
-  padding: 4px;
-  color: #660033;
+
+/* ------------------------------------------------------------------------ */
+/*                                Miscellaneous                             */
+/* ------------------------------------------------------------------------ */
+UL {
+ margin-top:2;
+ margin-bottom:2;
 }
 
