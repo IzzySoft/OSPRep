@@ -55,7 +55,7 @@ v0.0.7 (11.11.2003)
 ! pctSGA (for Dictionary Cache block) was not shown due to error in SQL
   statement. Fixed.
 
-v0.0.8 (xx.11.2003)
+v0.0.8 (11.11.2003)
 + modularized spreport.sh - it now consists of multiple files. spreport.sh
   itself remains as a wrapper, the real script is generated at runtime. This
   is due to different parameter structure in the call to the collector
@@ -66,4 +66,7 @@ v0.0.8 (xx.11.2003)
   the real values in some cases
 ! some Shell variables still remained in a place they could not be replaced
   any more
+
+v0.1.0 (12.11.2003)
 + added example output
++ added some docu
