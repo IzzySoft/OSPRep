@@ -132,7 +132,7 @@ v0.1.5 (19.12.2003)
   verbose ;)
 + updated the doc/readme.txt concerning the installation instructions
 
-v0.1.6
+v0.1.6 (05.01.2004)
 -------------------
 * one more digit for pctChange on data file growth (may now grow up to 9999.99%)
 + added external help file for rollback segment stats and undo segment stats
