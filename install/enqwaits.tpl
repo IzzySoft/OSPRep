@@ -6,7 +6,7 @@
 
 <TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <P>Below you find a description on selected enqueue types:</P>
- <TABLE BORDER="0">
+ <TABLE STYLE="border:0">
   <TR><TD CLASS="smallname">BL</TD>
       <TD CLASS="text"><B>Buffer Cache Managment</B></TD></TR>
   <TR><TD CLASS="smallname">CF</TD>

@@ -41,7 +41,7 @@
  <P>In the <CODE>V$SESSION_WAIT</CODE> view, you find the address of the latch
   in column P1, the latch number in P2 and the number of times process has
   already slept in waiting for the latch in P3:
-  <TABLE ALIGN="center"><TR><TD>
+  <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
   <DIV CLASS="code" STYLE="width:27em">
   SELECT n.name, SUM(w.p3) Sleeps<BR>
   &nbsp;&nbsp;FROM v$session_wait w, v$latchname n<BR>
@@ -53,15 +53,15 @@
  <TABLE WIDTH="95%" BORDER="1" ALIGN="center">
   <TR><TH CLASS="th_sub2">Latch</TH><TH CLASS="th_sub2">SGA Area</TH>
       <TH CLASS="th_sub2">Possible Causes</TH><TH CLASS="th_sub2">Look For:</TH></TR>
-  <TR><TD>shared pool, library cache</TD><TD>Shared Pool</TD>
-      <TD><UL><LI>Lack of statement reuse</LI>
+  <TR><TD CLASS="inner">shared pool, library cache</TD><TD CLASS="inner">Shared Pool</TD>
+      <TD CLASS="inner"><UL><LI>Lack of statement reuse</LI>
               <LI>Statements not using bind variables</LI>
 	      <LI>Insufficient size of application cursor cache</LI>
 	      <LI>Cursors closed explicitly after each execution</LI>
 	      <LI>Frequent logon/logoffs</LI>
 	      <LI>Underlying object structure being modified (for example truncate)</LI>
 	      <LI>Shared Pool too small</LI></UL></TD>
-      <TD>Sessions (in <CODE>V$SESSTAT</CODE>) with high:<UL>
+      <TD CLASS="inner">Sessions (in <CODE>V$SESSTAT</CODE>) with high:<UL>
           <LI>parse time CPU</LI><LI>parse time elapsed</LI>
 	  <LI>ratio of parse count (hard) / execute count</LI>
 	  <LI>ratio of parse count (total) / execute count</LI></UL>
@@ -71,19 +71,19 @@
 	      clause (that is, no bind variables used)</LI>
 	  <LI>high <CODE>RELOADS</CODE></LI><LI>high <CODE>INVALIDATIONS</CODE></LI>
 	  <LI>large (&gt; 1 MB) <CODE>SHARABLE_MEM</CODE></LI></UL></TD></TR>
-  <TR><TD>cache buffers lru chain</TD><TD>Buffer Cache LRU lists</TD>
-      <TD><UL><LI>Excessive buffer cache throughput. For example, many
+  <TR><TD CLASS="inner">cache buffers lru chain</TD><TD CLASS="inner">Buffer Cache LRU lists</TD>
+      <TD CLASS="inner"><UL><LI>Excessive buffer cache throughput. For example, many
                   cache-based sorts, inefficient SQL that accesses incorrect
 		  indexes iteratively (large <code>index range scans</code>),
 		  or many <code>full table scans</code></LI>
 	      <LI>DBWR not keeping up with the dirty workload; hence, foreground
 	          process spends longer holding the latch looking for a free buffer</LI>
 	      <LI>Cache may be too small</LI></UL></TD>
-      <TD>Statements with very high LIO/PIO using unselective indexes</TD></TR>
-  <TR><TD>cache buffer chains</TD><TD>Buffer Cache Buffers</TD>
-      <TD>Repeated access to a block (or small number of blocks), known as
+      <TD CLASS="inner">Statements with very high LIO/PIO using unselective indexes</TD></TR>
+  <TR><TD CLASS="inner">cache buffer chains</TD><TD CLASS="inner">Buffer Cache Buffers</TD>
+      <TD CLASS="inner">Repeated access to a block (or small number of blocks), known as
           "hot block"</TD>
-      <TD><UL><LI>Sequence number generation code that updates a row in a table
+      <TD CLASS="inner"><UL><LI>Sequence number generation code that updates a row in a table
                   to generate the number, rather than using a sequence number
 		  generator</LI>
               <LI>Identify the segment the hot block belongs to</LI></UL></TD></TR>
@@ -97,7 +97,7 @@
   literals were replaced with bind variables. The idea is to either:<UL>
   <LI>Manually inspect SQL statements that have only one execution to see
       whether they are similar:
-      <TABLE ALIGN="center"><TR><TD>
+      <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
       <DIV CLASS="code" STYLE="width:15em">
       SELECT sqltext<BR>
       &nbsp;&nbsp;FROM v$sqlarea<BR>
@@ -108,7 +108,7 @@
       which will likely be the same, and group the SQL statements by that many
       bytes. For example, the example below groups together statements that
       differ only after the first 60 bytes.
-      <TABLE ALIGN="center"><TR><TD>
+      <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
       <DIV CLASS="code" STYLE="width:27em">
       SELECT SUBSTR(sql_text,1, 60), COUNT(*)<BR>
       &nbsp;&nbsp;FROM V$SQLAREA<BR>
@@ -118,7 +118,7 @@
       </TD></TR></TABLE></LI></UL></P>
  <P><B>Reparsed Sharable SQL</B><BR>
   Check the V$SQLAREA view. Enter the following query:
-  <TABLE ALIGN="center"><TR><TD>
+  <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
   <DIV CLASS="code" STYLE="width:28em">
   SELECT sql_text, parse_calls, executions<BR>
   &nbsp;&nbsp;FROM v$sqlarea<BR>
@@ -131,7 +131,7 @@
   Identify unnecessary parse calls by identifying the session in which they
   occur. It might be that particular batch programs or certain types of
   applications do most of the reparsing. To do this, run the following query:
-  <TABLE ALIGN="center"><TR><TD>
+  <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
   <DIV CLASS="code" STYLE="width:32em">
   column sid format 99999<BR>
   column name format a20<BR>
@@ -173,7 +173,7 @@
   the blocks protected by this latch. For example, given the address
   (<CODE>V$LATCH_CHILDREN.ADDR</CODE>) of a heavily contended latch, this
   queries the file and block numbers:
-  <TABLE ALIGN="center"><TR><TD>
+  <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
   <DIV CLASS="code" STYLE="width:24em">
   SELECT file#, dbablk, class, state<BR>
   &nbsp;&nbsp;FROM X$BH<BR>

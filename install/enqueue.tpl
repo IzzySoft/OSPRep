@@ -21,7 +21,7 @@
  <P>You could check whether you have child tables with unindexed foreign key
   constraints, issuing the following statement either as <CODE>SYS</CODE> or
   <CODE>SYSTEM</CODE> user:
-  <TABLE ALIGN="center"><TR><TD>
+  <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
     <DIV CLASS="code" STYLE="width:35em">
     SELECT con.owner, con.table_name, co.column_name,<BR>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;con.constraint_name, i.index_name<BR>
@@ -51,7 +51,7 @@
   <CODE>ENQUEUE_RESOURCES</CODE> parameter in the <CODE>init.ora</CODE> may
   help reduce these waits as well. To check the current values, execute the
   following statement as <CODE>SYS</CODE> or <CODE>SYSTEM</CODE>:
-  <TABLE ALIGN="center"><TR><TD>
+  <TABLE ALIGN="center" STYLE="border:0"><TR><TD>
     <DIV CLASS="code" STYLE="width:28em">
     SELECT *<BR>
     &nbsp;&nbsp;FROM v$resource_limit<BR>

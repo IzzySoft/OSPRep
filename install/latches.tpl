@@ -49,25 +49,25 @@
   heavy access to a single block - this would require identifying the hot
   block, and then why the block is being contended for.</P>
 
- <H3>Potential Fixes for indicated Latch problems</H3>
-  <TABLE ALIGN="center" WIDTH="90%" BORDER="1" WIDTH="95%" STYLE="margin:5px">
+ <H3>Potential Fixes for indicated Latch problems</H3><DIV ALIGN="center">
+  <TABLE WIDTH="90%" BORDER="1" WIDTH="95%" STYLE="margin:5px">
    <TR><TH CLASS="th_sub">Latch</TH><TH CLASS="th_sub">Potential Fix</TH></TR>
-   <TR><TD>library cache and shared pool latches</TD>
-       <TD>adjusting the <CODE>shared_pool_size</CODE> and use of bind
+   <TR><TD CLASS="inner">library cache and shared pool latches</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">adjusting the <CODE>shared_pool_size</CODE> and use of bind
            variables / set <CODE>cursor_sharing</CODE> parameter (see e.g.
 	   <A HREF="libcache.html">Library Cache</A> for details) in your
            <CODE>init.ora</CODE></TD></TR>
-   <TR><TD>redo allocation latches</TD>
-       <TD>minimize redo generation and avoid unnecessary commits</TD></TR>
-   <TR><TD>redo copy latches</TD>
-       <TD>increase the <CODE>log_simultaneous_copies</CODE></TD></TR>
-   <TR><TD>row cache objects latches</TD>
-       <TD>increase the <CODE>shared_pool_size</CODE></TD></TR>
-   <TR><TD>cache buffer chain latches</TD>
-       <TD>adjust <CODE>_db_block_hash_buckets</CODE></TD></TR>
-   <TR><TD>cache buffer latches</TD>
-       <TD>use <CODE>_db_block_lru_lru_latches</CODE> or multiple buffer pools</TD></TR>
-  </TABLE>
+   <TR><TD CLASS="inner">redo allocation latches</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">minimize redo generation and avoid unnecessary commits</TD></TR>
+   <TR><TD CLASS="inner">redo copy latches</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">increase the <CODE>log_simultaneous_copies</CODE></TD></TR>
+   <TR><TD CLASS="inner">row cache objects latches</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">increase the <CODE>shared_pool_size</CODE></TD></TR>
+   <TR><TD CLASS="inner">cache buffer chain latches</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">adjust <CODE>_db_block_hash_buckets</CODE></TD></TR>
+   <TR><TD CLASS="inner">cache buffer latches</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">use <CODE>_db_block_lru_lru_latches</CODE> or multiple buffer pools</TD></TR>
+  </TABLE></DIV>
   <P>Again, these are potential fixes, not general solutions. More information can
   be found on the help page about <A HREF="latchfree.html">Latch Free Waits</A></P>
 </TD></TR></TABLE>

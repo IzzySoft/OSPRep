@@ -15,16 +15,16 @@
   <TABLE ALIGN="center" BORDER="1" WIDTH="95%" STYLE="margin:5px">
    <TR><TH CLASS="th_sub">Value</TH><TH CLASS="th_sub">Comment</TH></TR>
    <TR><TD CLASS="td_name">exact</TD>
-       <TD CLASS="text">Only Statements with identical text are allowed to share
+       <TD CLASS="inner" STYLE="text-align:justify">Only Statements with identical text are allowed to share
            a cursor (Default)</TD></TR>
    <TR><TD CLASS="td_name">similiar</TD>
-       <TD CLASS="text">Statements that may differ in some literals but are
+       <TD CLASS="inner" STYLE="text-align:justify">Statements that may differ in some literals but are
            otherwise identical are caused to share a cursor, unless the
 	   literals affect either the meaning of the statement or the degree to
 	   which the plan is optimized (I recommend this for e.g. a low soft
 	   parse ratio or high library cache getmiss ratio).</TD></TR>
    <TR><TD CLASS="td_name">force</TD>
-       <TD CLASS="text">Even statements that may differ in some literals but
+       <TD CLASS="inner" STYLE="text-align:justify">Even statements that may differ in some literals but
            are otherwise identical are forced to share a cursor, unless the
 	   literals affect the meaning of the statement (since this also means
 	   the optimizer cannot predict precise selectivity you should think
