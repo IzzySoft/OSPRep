@@ -859,6 +859,29 @@ DECLARE
             + e.immediate_gets - b.immediate_gets ) > 0
      ORDER BY wt,sleeps,imiss;
 
+  CURSOR C_LAS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
+    SELECT b.name name,
+           to_char(e.gets - b.gets,'99,999,999,999') gets,
+	   to_char(e.misses - b.misses,'99,999,999') misses,
+	   to_char(e.sleeps - b.sleeps,'999,999,999') sleeps,
+	   to_char(e.spin_gets - b.spin_gets)||'/'||
+	   to_char(e.sleep1 - b.sleep1)||'/'||
+	   to_char(e.sleep2 - b.sleep2)||'/'||
+	   to_char(e.sleep3 - b.sleep3)||'/'||
+	   to_char(e.sleep4 - b.sleep4) sleep4
+      FROM stats\$latch b, stats\$latch e
+     WHERE b.snap_id = bid
+       AND e.snap_id = eid
+       AND b.dbid    = db_id
+       AND e.dbid    = db_id
+       AND b.dbid    = e.dbid
+       AND b.instance_number = instnum
+       AND e.instance_number = instnum
+       AND b.instance_number = e.instance_number
+       AND b.name    = e.name
+       AND e.sleeps - b.sleeps > 0
+     ORDER BY misses desc;
+
 
 BEGIN
   -- Configuration
@@ -1694,6 +1717,25 @@ BEGIN
     dbms_output.put_line(L_LINE);
     L_LINE := '<TD ALIGN="right">'||R_LA.wt||'</TD><TD ALIGN="right">'||
               R_LA.nowai||'</TD><TD ALIGN="right">'||R_LA.imiss||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+
+  -- Latch Sleep Breakdown
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="#latches">Latch Sleep Breakdown</A></TH></TR>'||
+            ' <TR><TD COLSPAN="5" ALIGN="center">Ordered by Misses desc</TD></TR>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := ' <TR><TH CLASS="th_sub">Latch Name</TH><TH CLASS="th_sub">Get Requests</TH>'||
+            '<TH CLASS="th_sub">Misses</TH><TH CLASS="th_sub">Sleeps</TH>'||
+	    '<TH CLASS="th_sub">Spin & Sleeps 1-&gt;4</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_LA IN C_LAS(DBID,INST_NUM,BID,EID) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name" ALIGN="right">'||R_LA.name||'</TD><TD ALIGN="right">'||
+              R_LA.gets||'</TD><TD ALIGN="right">'||R_LA.misses||
+	      '</TD><TD ALIGN="right">'||R_LA.sleeps||'</TD>';
+    dbms_output.put_line(L_LINE);
+    L_LINE := '<TD ALIGN="center">'||R_LA.sleep4||'</TD></TR>';
     dbms_output.put_line(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;
