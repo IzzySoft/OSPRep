@@ -177,7 +177,12 @@ DECLARE
       dbms_output.put_line(line);
     EXCEPTION
       WHEN OTHERS THEN
-        dbms_output.put_line('*!* Problem in print() *!*');
+        IF SQLERRM LIKE '%ORU-10028%' THEN
+	  print(SUBSTR(line,1,255));
+	  print(SUBSTR(line,256));
+	ELSE
+          dbms_output.put_line('*!* Problem in print() *!*');
+	END IF;
     END;
 
   FUNCTION have_rlims RETURN BOOLEAN IS
