@@ -641,7 +641,19 @@
   -- Enqueue Activity
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="enq">Enqueue Activity</A></TH></TR>'||
             ' <TR><TD COLSPAN="7" ALIGN="center">Enqueue Stats gathered prior to 9i '||
-	    'should not be compared with 9i data<BR>Ordered by Waits desc, Requests desc</TD></TR>';
+	    'should not be compared with 9i data<BR>Ordered by Waits desc, Requests desc';
+  print(L_LINE);
+  L_LINE := '<DIV ALIGN="justify">TX means transaction locks, indicating multiple '||
+            'users try modifying the same row in the database (row-level lock). '||
+	    'TM stands for Table locks and point to the possibility ';
+  print(L_LINE);
+  L_LINE := 'of e.g. foreign key constraints not being indexed. ST notes '||
+            'space-management locks which could be caused by using permanent '||
+	    'tablespaces for sorting (rather than temporary), ';
+  print(L_LINE);
+  L_LINE := 'or by dynamic allocation resulting from inadequate storage clauses. '||
+            'In the latter case, using locally-managed tablespaces may help you '||
+	    'avoiding this problem.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Eq</TH><TH CLASS="th_sub">Requests</TH>'||
             '<TH CLASS="th_sub">Succ Gets</TH><TH CLASS="th_sub">Failed Gets</TH>'||
