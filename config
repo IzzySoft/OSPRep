@@ -27,6 +27,7 @@ password="perfstat"
 # -------------------------------------------------------------------[ SQL ]---
 # Top settings: Display Top N Statements
 TOP_N_SQL=5
+TOP_N_WAITS=10
 
 #--- SnapShot Interval. Set values to 0 for automatic evaluation of latest
 #--- continuous interval (i.e. the interval ending with the latest recording
