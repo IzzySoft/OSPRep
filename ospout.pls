@@ -190,9 +190,17 @@
            'about details in the corresponding block, e.g. for "db file * read" '||
 	   'check the <A HREF="#tsio">TableSpace IO</A> ';
   print(L_LINE);
-  L_LINE := 'and <A HREF="#fileio">File IO</A> blocks, for "enqueue" waits look '||
-            'up the <A HREF="#enq">Enqueue Activity</A> section of this '||
-            'document. Then continue the same';
+  L_LINE := '(and <A HREF="#fileio">File IO</A>) blocks to identify the possibly '||
+            'affected schemas, and then the <A HREF="#sqlbyreads">SQL Statements '||
+	    'by Reads</A> (and ';
+  print(L_LINE);
+  L_LINE := '<A HREF="#waitobjects">Wait Objects</A>) to find out what statements '||
+            '(and/or objects) may need some tuning , for "enqueue" waits look '||
+            'up the <A HREF="#enq">Enqueue Activity</A> ';
+  print(L_LINE);
+  L_LINE := 'section of this document. If the CPU is indicated as a bottleneck, '||
+            'check the <A HREF="#sqlbygets">SQL Statements byGets</A>. Then '||
+	    'continue the same ';
   print(L_LINE);
   L_LINE := 'with the next block, <A HREF="#waitevents">All Wait Events</A></DIV></TD></TR>';
   print(L_LINE);
