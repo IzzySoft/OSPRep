@@ -8,3 +8,4 @@
       undostats;
     END IF;
   END IF;
+  print('<HR>');

@@ -237,11 +237,13 @@ v0.2.6 (04.03.2004)
 * sorted the entries in the "features" block of the config file to represent
   the order the segments appear in the report (same for the HTML documentation)
 
-v0.2.7
+v0.2.7 (08.03.2004)
 -------------------
 + Modularization: Datafile Statistics, TOP_N_SQL, TOP_N_WAITS, Wait Objects,
-  Shared Pool Stats and CacheSizes segments can now be switched off (see config)
+  Shared Pool Stats, CacheSizes and Instance Efficiency segments can now be
+  switched off (see config)
 + Reorganized segment grouping: connected stats (as e.g. "Datafile Statistics"
   and "File IO") are now directly following each other (and are no longer
   spread across the report)
 * if no Enqueue Activities are reported, we do not draw an empty table anymore
+* some work on formatting (duplicate rulers when excluding certain segments, etc.)

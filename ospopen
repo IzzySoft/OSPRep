@@ -11,6 +11,7 @@
 cat>>$SQLSET<<ENDSQL
 DECLARE
   EXCLUDE_OWNERS VARCHAR2(255);
+  MK_INSTEFF NUMBER;
   MK_RLIMS BOOLEAN;
   MK_TOPWAITS NUMBER;
   MK_ALLWAITS NUMBER;
@@ -320,6 +321,7 @@ BEGIN
   EXCLUDE_OWNERS := '$EXCLUDE_OWN';
   TOP_N_SQL := $TOP_N_SQL;
   TOP_N_WAITS := $TOP_N_WAITS;
+  MK_INSTEFF  := :MK_INSTEFF;
   MK_TOPWAITS := :MK_TOPWAITS;
   MK_ALLWAITS := :MK_ALLWAITS;
   MK_BGWAITS  := :MK_BGWAITS;
@@ -437,7 +439,11 @@ BEGIN
   L_LINE := TABLE_OPEN||'<TR><TD ALIGN="center"><DIV CLASS="small">[ <A HREF="#snapinfo">SnapShot Info</A> ] '||
             '[ <A HREF="#loads">Load Profile</A> ]';
   print(L_LINE);
-  L_LINE :=  ' [ <A HREF="#efficiency">Efficiency</A> ]';
+  IF MK_INSTEFF = 1 THEN
+    L_LINE :=  ' [ <A HREF="#efficiency">Efficiency</A> ]';
+  ELSE
+    L_LINE := '';
+  END IF;
   IF MK_INSTACT = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#instact">Instance Activity</A> ]';
   END IF;
