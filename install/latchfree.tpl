@@ -4,7 +4,7 @@
  <TITLE>OraHelp: Latch Free</TITLE>
 </HEAD><BODY>
 
-<TABLE WIDTH="95%" ALIGN="center"><TR><TD>
+<TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <H3>What are <CODE>latch free</CODE> waits?</H3>
  <P>A latch is a low-level internal lock used by Oracle to protect memory
   structures. The <CODE>latch free</CODE> wait event occurs whenever one Oracle

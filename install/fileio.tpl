@@ -4,7 +4,7 @@
  <TITLE>OraHelp: File IO</TITLE>
 </HEAD><BODY>
 
-<TABLE WIDTH="95%" ALIGN="center"><TR><TD>
+<TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <H3>File I/O and TableSpace I/O</H3>
  <P>If the value for Avg Blks/Rd is higher than 1, this indicates full table
   scans. If it grows higher than <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE> we

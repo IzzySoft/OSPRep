@@ -4,7 +4,7 @@
  <TITLE>OraHelp</TITLE>
 </HEAD><BODY>
 
-<TABLE WIDTH="95%" ALIGN="center"><TR><TD>
+<TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <P>If Waits/s are high for a given class, you may consider some tuning: For
   the undo headers/blocks, adding more rollback segments can help. With data
   blocks, increasing the size of the database buffer cache can reduce these

@@ -4,7 +4,7 @@
  <TITLE>OraHelp: Enqueue</TITLE>
 </HEAD><BODY>
 
-<TABLE WIDTH="95%" ALIGN="center"><TR><TD>
+<TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <H3>What do Enqueue waits stand for?</H3>
  <P>The <code>Enqueue</code> wait event may be an indication that something is
   either wrong with the code (should multiple sessions be serializing

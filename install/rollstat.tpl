@@ -4,7 +4,7 @@
  <TITLE>OraHelp: RollBack Stats</TITLE>
 </HEAD><BODY>
 
-<TABLE WIDTH="95%" ALIGN="center"><TR><TD>
+<TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <H3>What are Rollback Segments?</H3>
  <P>The primary task of Rollback Segments is to keep the "before image" of data
   records until changes of transactions have been committed. This makes sure

@@ -4,12 +4,32 @@
  <TITLE>OraHelp: Library Cache</TITLE>
 </HEAD><BODY>
 
-<TABLE WIDTH="95%" ALIGN="center"><TR><TD>
+<TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <H3>Library Cache</H3>
  <P><I>Pct Miss</I>es should be very low. If they exceed 10%, your SQL
   statements may use unsharable SQL. You can fix this by either using bind
-  variables or by the <CODE>cursor_sharing=FORCE</CODE> statement in your
-  <CODE>init.ora</CODE>.</P>
+  variables or by the <CODE>cursor_sharing</CODE> statement in your
+  <CODE>init.ora</CODE>. Available values to this parameter are:
+  <TABLE ALIGN="center" BORDER="1" WIDTH="95%" STYLE="margin:5px">
+   <TR><TH CLASS="th_sub">Value</TH><TH CLASS="th_sub">Comment</TH></TR>
+   <TR><TD CLASS="td_name">exact</TD>
+       <TD CLASS="text">Only Statements with identical text are allowed to share
+           a cursor (Default)</TD></TR>
+   <TR><TD CLASS="td_name">similiar</TD>
+       <TD CLASS="text">Statements that may differ in some literals but are
+           otherwise identical are caused to share a cursor, unless the
+	   literals affect either the meaning of the statement or the degree to
+	   which the plan is optimized (I recommend this for e.g. a low soft
+	   parse ratio or high library cache getmiss ratio).</TD></TR>
+   <TR><TD CLASS="td_name">force</TD>
+       <TD CLASS="text">Even statements that may differ in some literals but
+           are otherwise identical are forced to share a cursor, unless the
+	   literals affect the meaning of the statement (since this also means
+	   the optimizer cannot predict precise selectivity you should think
+	   twice before using this)</TD></TR>
+  </TABLE>
+  Since this parameter is dynamic, you may use <CODE>ALTER SYSTEM</CODE> to
+  change its value without restarting the instance.</P>
  <P>An important statistic to look at is the number or <I>RELOADS</I>. If there
   are significant number of <I>RELOADS</I>, then reusable information is being
   aged out of the SGA, and hence having to be reloaded and rebuilt. This

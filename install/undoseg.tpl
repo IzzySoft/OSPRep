@@ -4,7 +4,7 @@
  <TITLE>OraHelp: Undo segment stats</TITLE>
 </HEAD><BODY>
 
-<TABLE WIDTH="95%" ALIGN="center"><TR><TD>
+<TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <H3>Interpretation of the table</H3>
  <TABLE ALIGN="center" WIDTH="95%" BORDER="1">
   <TR><TH CLASS="th_sub">Column</TH><TH CLASS="th_sub">Explanation</TH></TR>

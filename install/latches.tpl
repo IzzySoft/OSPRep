@@ -4,7 +4,7 @@
  <TITLE>OraHelp: Latches</TITLE>
 </HEAD><BODY>
 
-<TABLE WIDTH="95%" ALIGN="center"><TR><TD>
+<TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
  <H3>What is this about?</H3>
  <P><I>Pct Get Miss</I>es and <I>Pct NoWait Miss</I>es should be low. <I>Pct
   Get Miss</I> is the percentage of time a latch was requested (in a
@@ -38,11 +38,12 @@
   block, and then why the block is being contended for.</P>
 
  <H3>Potential Fixes for indicated Latch problems</H3>
-  <TABLE ALIGN="center" WIDTH="90%" BORDER="1">
+  <TABLE ALIGN="center" WIDTH="90%" BORDER="1" WIDTH="95%" STYLE="margin:5px">
    <TR><TH CLASS="th_sub">Latch</TH><TH CLASS="th_sub">Potential Fix</TH></TR>
    <TR><TD>library cache and shared pool latches</TD>
        <TD>adjusting the <CODE>shared_pool_size</CODE> and use of bind
-           variables / set cursor_sharing parameter in your
+           variables / set <CODE>cursor_sharing</CODE> parameter (see e.g.
+	   <A HREF="libcache.html">Library Cache</A> for details) in your
            <CODE>init.ora</CODE></TD></TR>
    <TR><TD>redo allocation latches</TD>
        <TD>minimize redo generation and avoid unnecessary commits</TD></TR>
