@@ -36,5 +36,14 @@ v0.0.5 (07.11.2003)
 + added Latch Stats
 + added Cache Stats
 
-v0.0.6 (xx.11.2003)
+v0.0.6 (10.11.2003)
 + added SGA stats
++ added Resource Limits
++ added Init Params
+! SnapShot Info now regards dbid and instnum
+
+v0.0.7 (xx.11.2003)
++ added possibility to auto-evaluate the latest possible SnapShot interval
++ -"- up to a specified Snap_End (only Start_ID will be eval'd)
+* some descriptions changed (th)
++ Start/End ID can be specified at / overridden from CmdLine
