@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Oracle StatsPack Report 2 HTML      (c) 2003 by IzzySoft (devel@izzysoft.de)
+# Oracle StatsPack Report 2 HTML (c) 2003-2004 by IzzySoft (devel@izzysoft.de)
 # ----------------------------------------------------------------------------
 # $Id$
 # ----------------------------------------------------------------------------
@@ -1028,38 +1028,27 @@ DECLARE
 	        WHERE snap_id BETWEEN bid AND eid
 		  AND plan_hash_value = hash_val ) id
        WHERE plan_hash_value = hash_val
-         AND snap_id = id.maxid
+--         AND snap_id = id.maxid
 	 ORDER BY id;
-    PROCEDURE print(line IN VARCHAR2) IS
-      BEGIN
-        dbms_output.put_line(line);
-      EXCEPTION
-        WHEN OTHERS THEN
-          dbms_output.put_line('*!* Problem in print() *!*');
-      END;
     BEGIN
       SELECT MAX(snap_id) INTO SI
         FROM ( SELECT plan_hash_value,snap_id
                  FROM stats\$sql_plan_usage
                 WHERE hash_value = hashval
-                  AND cost > 0
                   AND snap_id BETWEEN bid AND eid );
       SELECT MAX(plan_hash_value) INTO HASHID
         FROM ( SELECT plan_hash_value,snap_id
                  FROM stats\$sql_plan_usage
                 WHERE hash_value = hashval
-                  AND cost > 0
                   AND snap_id=SI );
-      SELECT COUNT(cost) INTO CI
-        FROM stats\$sql_plan,
-	     ( SELECT MAX(snap_id) maxid FROM stats\$sql_plan
-	        WHERE snap_id BETWEEN bid AND eid
-		  AND plan_hash_value = HASHID ) id
+      SELECT COUNT(snap_id) INTO CI
+        FROM stats\$sql_plan
+--	     ( SELECT MAX(snap_id) maxid FROM stats\$sql_plan
+--	        WHERE snap_id BETWEEN bid AND eid
+--		  AND plan_hash_value = HASHID ) id
        WHERE plan_hash_value = HASHID
-         AND cost IS NOT NULL
-	 AND object_owner IS NOT NULL
-	 AND object_owner NOT IN ($EXCLUDE_OWNERS)
-         AND snap_id = id.maxid;
+	 AND object_owner NOT IN ($EXCLUDE_OWNERS);
+--         AND snap_id = id.maxid;
       IF CI > 0
       THEN
         CW := 20;

@@ -2,7 +2,7 @@
 # $Id$
 #
 # =============================================================================
-# Oracle StatsPack Report 2 Html       (c) 2003 by IzzySoft (devel@izzysoft.de)     
+# Oracle StatsPack Report 2 Html  (c) 2003-2004 by IzzySoft (devel@izzysoft.de)     
 # -----------------------------------------------------------------------------
 # This report script creates a HTML document containing the StatsPack Report.
 # It is a simple rewrite of the standard sprepins.sql script
@@ -13,7 +13,7 @@
 #                                                              Itzchak Rehberg
 # =============================================================================
 #
-version='0.1.6'
+version='0.1.7'
 # =======================================================[ Header / Syntax ]===
 if [ -z "$1" ]; then
   SCRIPT=${0##*/}
