@@ -163,11 +163,36 @@ DECLARE
 	      ORDER BY time desc, waits desc )
      WHERE rownum <= 5;
 
+  CURSOR C_AllWait (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, tran NUMBER) IS
+    SELECT e.event event,
+           to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
+	   to_char(e.total_timeouts - NVL(b.total_timeouts,0),'999,999') timeouts,
+	   to_char((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000000,'99,999,990.00') time,
+	   decode ((e.total_waits - NVL(b.total_waits,0)),
+	          0,'0.00',to_char(
+		    ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
+		    / (e.total_waits - NVL(b.total_waits,0)),'99,990.00') ) wt,
+	   to_char((e.total_waits - NVL(b.total_waits,0))/tran,'99,990.00') txwaits,
+	   decode(i.event,NULL,0,99) idle
+      FROM stats\$system_event b, stats\$system_event e, stats\$idle_event i
+     WHERE b.snap_id(+)  = bid
+       AND e.snap_id     = eid
+       AND b.dbid(+)     = db_id
+       AND e.dbid        = db_id
+       AND b.instance_number(+) = instnum
+       AND e.instance_number    = instnum
+       AND b.event(+)    = e.event
+       AND e.total_waits > NVL(b.total_waits,0)
+       AND e.event NOT LIKE '%timer%'
+       AND e.event NOT LIKE 'rdbms ipc%'
+       AND i.event(+)    = e.event
+     ORDER BY idle, time desc, waits desc;
+
 BEGIN
   -- Configuration
   BID := $START_ID; EID := $END_ID;
   dbms_output.enable(1000000);
-  R_TITLE := 'Report for $ORACLE_SID';
+  R_TITLE := 'StatsPack Report for $ORACLE_SID';
   TABLE_OPEN := '<TABLE ALIGN="center" BORDER="1">';
   TABLE_CLOSE := '</TABLE>'||CHR(10)||'<BR CLEAR="all">'||CHR(10);
 
@@ -196,7 +221,7 @@ BEGIN
             '] [ <A HREF="#efficiency">Efficiency</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE :=   ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#top5wait">Top 5 Wait</A>'||
-            ' ] [ <A HREF="#bufferpool">Buffer Pool</A> ] [ <A HREF="#sysstat">SysStat</A> ]';
+            ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#sysstat">SysStat</A> ]';
   dbms_output.put_line(L_LINE);
   L_LINE := ' [ <A HREF="#events">Events</A> ] [ <A HREF="#invobj">Invalid Objects</A> ]'||
 	    ' [ <A HREF="#misc">Misc</A> ]</TD></TR>';
@@ -453,16 +478,16 @@ BEGIN
             ' <TR><TH CLASS="th_sub">Name</TH><TH CLASS="th_sub">Begin</TH>'||
 	    '<TH CLASS="th_sub">End</TH></TR>';
   dbms_output.put_line(L_LINE);
-  L_LINE := ' <TR><TD>Memory Usage %</TD><TD>'||
+  L_LINE := ' <TR><TD CLASS="td_name">Memory Usage %</TD><TD>'||
             to_char(round(100*(1-BFRM/BSPM),2),'990.00')||'</TD><TD>'||
 	    to_char(round(100*(1-EFRM/ESPM),2),'990.00')||'</TD></TR>';
   dbms_output.put_line(L_LINE);
   FOR R_SPSQL IN C_SPSQL(DBID,INST_NUM,BID,EID) LOOP
-    L_LINE := ' <TR><TD>% SQL with executions &gt; 1</TD><TD>'||
+    L_LINE := ' <TR><TD CLASS="td_name">% SQL with executions &gt; 1</TD><TD>'||
               to_char(round(R_SPSQL.b_single_sql,2),'990.00')||'</TD><TD>'||
 	      to_char(round(R_SPSQL.e_single_sql,2),'990.00')||'</TD></TR>';
     dbms_output.put_line(L_LINE);
-    L_LINE := ' <TR><TD>% Memory for SQL with executions &gt; 1</TD><TD>'||
+    L_LINE := ' <TR><TD CLASS="td_name">% Memory for SQL with executions &gt; 1</TD><TD>'||
               to_char(round(R_SPSQL.b_single_mem,2),'990.00')||'</TD><TD>'||
 	      to_char(round(R_SPSQL.e_single_mem,2),'990.00')||'</TD></TR>';
     dbms_output.put_line(L_LINE);
@@ -477,7 +502,7 @@ BEGIN
 	    '<TH CLASS="th_sub">Wait Time (s)</TH><TH CLASS="th_sub">% Total Wt Time (ms)</TH></TR>';
   dbms_output.put_line(L_LINE);
   FOR R_Top5 IN C_Top5(DBID,INST_NUM,BID,EID,TWT) LOOP
-    L_LINE := ' <TR><TD>'||R_Top5.event||'</TD><TD ALIGN="right">'||R_Top5.waits||
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_Top5.event||'</TD><TD ALIGN="right">'||R_Top5.waits||
               '</TD><TD ALIGN="right">'||R_Top5.time||'</TD><TD ALIGN="right">'||R_Top5.pctwtt||
 	      '</TD></TR>';
     dbms_output.put_line(L_LINE);
@@ -485,6 +510,26 @@ BEGIN
   L_LINE := TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
   dbms_output.put_line('<HR>');
+
+  -- All Wait Events
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="#waitevents">All Wait Events</A></TH></TR>'||CHR(10)||
+            ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
+	    '<TH CLASS="th_sub">Timeouts</TH><TH CLASS="th_sub">Total Wt Time (s)</TH>';
+  dbms_output.put_line(L_LINE);
+  L_LINE := '<TH CLASS="th_sub">Avg Wait Time (ms)</TH><TH CLASS="th_sub">'||
+            'Waits/TXN</TH></TR>';
+  dbms_output.put_line(L_LINE);
+  FOR R_AllWait IN C_AllWait(DBID,INST_NUM,BID,EID,TRAN) LOOP
+    L_LINE := ' <TR><TD CLASS="td_name">'||R_AllWait.event||'</TD><TD ALIGN="right">'||
+              R_AllWait.waits||'</TD><TD ALIGN="right">'||R_AllWait.timeouts||'</TD><TD ALIGN="right">'||
+	      R_AllWait.time||'</TD><TD ALIGN="right">'||R_AllWait.wt||'</TD><TD ALIGN="right">'||
+	      R_AllWait.txwaits||'</TD></TR>';
+    dbms_output.put_line(L_LINE);
+  END LOOP;
+  L_LINE := TABLE_CLOSE;
+  dbms_output.put_line(L_LINE);
+  dbms_output.put_line('<HR>');
+
 
   -- Page Ending
   L_LINE := '<HR>'||CHR(10)||TABLE_OPEN;
