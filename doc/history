@@ -223,4 +223,5 @@ v0.2.5
 ! cumulative charts drew out-of-range lines when there were gaps in the
   snapshot range
 * made the Delta and CumAvg charts more accurate
-+ more modularization: init.ora parameters can now be switched off (see config)
++ more modularization: init.ora parameters and SGA Stats can now be switched
+  off (see config)
