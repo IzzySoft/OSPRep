@@ -51,8 +51,8 @@ while [ "$1" != "" ] ; do
     -s) shift; ORACLE_CONNECT=$1;;
     -u) shift; username=$1;;
     -p) shift; passwd=$1;;
-    -e) shift; END_ID=$1;;
-    -b) shift; START_ID=$1;;
+    -e) shift; PEND_ID=$1;;
+    -b) shift; PSTART_ID=$1;;
     -c) shift; CONFIG=$1;;
   esac
   shift
@@ -62,8 +62,10 @@ done
 if [ -z "$ORACLE_CONNECT" ]; then
   ORACLE_CONNECT=$ORACLE_SID
 fi
-if [ -n $START_ID ]; then
-  if [ -z $END_ID ]; then
+if [ -n "$PEND_ID" ]; then END_ID=$PEND_ID; fi
+if [ -n "$PSTART_ID" ]; then START_ID=$PSTART_ID; fi
+if [ -n "$START_ID" ]; then
+  if [ -z "$END_ID" ]; then
     END_ID=$START_ID
   fi
 fi
