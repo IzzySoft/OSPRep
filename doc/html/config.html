@@ -86,6 +86,14 @@
        <td class="text" rowspan="2">How many items to list up in the "Top N"
            blocks of the report for Wait objects and SQL statements</td></tr>
    <tr><td class="td_name"><code>TOP_N_WAITS</code></td></tr>
+   <tr><td class="td_name"><code>MK_EP</code></td>
+       <td class="text">If your snapshots are taken with level 6 or higher, the
+           execution plans are captured with each snapshot and can be displayed
+           together with the respective SQL statement in the <code>TOP_N_SQL</code>.
+           block. With the <code>MK_EP</code> parameter you can suppress these
+           execution plans even if they are available (by setting it to
+           <code>MK_EP=0</code>). However, if you only collect level 5 data with
+           your snapshots, <code>MK_EP=1</code> will have no effect at all.</td></tr>
    <tr><td class="td_name"><code>EXC_PERF_FOR</code></td>
        <td class="text">This can be used to exclude objects of given users from
            some statistics. For example, it makes no sense to print long

@@ -25,9 +25,11 @@ user=perfstat
 password="pyha#"
 
 # -------------------------------------------------------------------[ SQL ]---
-# Top settings: Display Top N Statements
+# Top settings: Display Top N Statements [Number]
 TOP_N_SQL=5
 TOP_N_WAITS=10
+# Include the execution plan for the statements, if available? [0|1]
+MK_EP=1
 
 # Exclusion of performance stats for these object owners (where possible).
 # Comment this statement out if you want to exclude nobody. Case sensitive!

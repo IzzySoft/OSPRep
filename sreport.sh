@@ -244,6 +244,7 @@ variable MK_BUFFW NUMBER;
 variable MK_RECO NUMBER;
 variable MK_TSIO NUMBER;
 variable MK_FIO NUMBER;
+variable MK_EP NUMBER;
 variable WR_IE_BUFFNW NUMBER;
 variable AR_IE_BUFFNW NUMBER;
 variable WR_IE_REDONW NUMBER;
@@ -296,6 +297,7 @@ BEGIN
   :MK_RECO     := $MK_RECO;
   :MK_TSIO     := $MK_TSIO;
   :MK_FIO      := $MK_FIO;
+  :MK_EP       := $MK_EP;
   :WR_IE_BUFFNW  := $WR_IE_BUFFNW;
   :AR_IE_BUFFNW  := $AR_IE_BUFFNW;
   :WR_IE_REDONW  := $WR_IE_REDONW;
