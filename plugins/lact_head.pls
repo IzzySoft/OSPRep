@@ -27,7 +27,7 @@
          AND b.name    = e.name
          AND (  e.gets - b.gets
               + e.immediate_gets - b.immediate_gets ) > 0
-       ORDER BY wt,sleeps,imiss;
+       ORDER BY wt DESC,sleeps DESC,imiss DESC;
     CURSOR C_LAS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
       SELECT b.name name,
              to_char(e.gets - b.gets,'99,999,999,999') gets,
@@ -63,7 +63,7 @@
                 'latch get requests<BR>"NoWait Requests", "Pct NoWait Miss" are ';
       print(L_LINE);
       L_LINE := 'for no-wait latch get requests<BR>"Pct Misses" for both should be '||
-	        'very close to 0.0<BR>Ordered by Wait Time desc, Avg Slps/Miss, '||
+	        'very close to 0.0<BR>Ordered by Wait Time desc, Avg Slps/Miss desc, '||
                 'Pct NoWait Miss desc</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Latch</TH><TH CLASS="th_sub">Get Requests</TH>'||
