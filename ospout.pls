@@ -518,7 +518,7 @@
               R_PGAA.pgaat||'</TD><TD ALIGN="right">'||R_PGAA.tot_pga_used||
 	      '</TD><TD ALIGN="right">'||R_PGAA.tot_tun_used;
     print(L_LINE);
-    L_LINE := '</TD><TD ALIGN="right">'||R_PGAA.onepr||'</TD><TD ALIGN="right"'||
+    L_LINE := '</TD><TD ALIGN="right">'||R_PGAA.onepr||'</TD><TD ALIGN="right">'||
               R_PGAA.opt_pct||'</TD><TD ALIGN="right">'||R_PGAA.pct_unt||
 	      '</TD><TD ALIGN="right">'||R_PGAA.pct_auto_tun||
 	      '</TD><TD ALIGN="right">'||R_PGAA.pct_man_tun||'</TD></TR>';

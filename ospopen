@@ -564,25 +564,17 @@ DECLARE
 	      WHERE pga.snap_id = bid
 	        AND pga.dbid    = db_id
 		AND pga.instance_number = instnum ) mu,
-           ( SELECT 100* sum(case when ss.name like
-                              'workarea executions - optimal'
-			      then ss.value else 0 end)
-		       / decode( (  sum(case when ss.name like
-		                     'workarea executions - optimal'
-				     then ss.value else 0 end)
-				  + sum(case when ss.name like
-				     'workarea executions - onepass'
-				     then ss.value else 0 end)
-				  + sum(case when ss.name like
-				     'workarea executions - multipass'
-				     then ss.value else 0 end)
-				 ),0,NULL)                     opt_pct
-	      FROM stats\$sysstat ss
-	     WHERE ss.snap_id = bid
-	       AND ss.dbid    = db_id
-	       AND ss.instance_number = instnum
-	       AND ss.name like 'workarea executions - %'
-	   ) s,
+           ( SELECT DECODE(NVL(a.sval,0),0,NULL,100*b.oval/a.sval) opt_pct
+	       FROM ( SELECT SUM(NVL(value,0)) sval 
+	                FROM stats\$sysstat
+		       WHERE name IN ('workarea executions - optimal',
+		                      'workarea executions - onepass',
+				      'workarea executions - multipass')
+			 AND snap_id = bid) a,
+		    ( SELECT SUM(NVL(value,0)) oval
+	                FROM stats\$sysstat
+		       WHERE name = 'workarea executions - optimal'
+		         AND snap_id = bid) b )              s,
 	   stats\$parameter p
      WHERE p.snap_id = bid
        AND p.dbid    = db_id
@@ -612,25 +604,17 @@ DECLARE
 	      WHERE pga.snap_id = eid
 	        AND pga.dbid    = db_id
 		AND pga.instance_number = instnum ) mu,
-           ( SELECT 100* sum(case when ss.name like
-                              'workarea executions - optimal'
-			      then ss.value else 0 end)
-		       / decode( (  sum(case when ss.name like
-		                     'workarea executions - optimal'
-				     then ss.value else 0 end)
-				  + sum(case when ss.name like
-				     'workarea executions - onepass'
-				     then ss.value else 0 end)
-				  + sum(case when ss.name like
-				     'workarea executions - multipass'
-				     then ss.value else 0 end)
-				 ),0,NULL)                     opt_pct
-	      FROM stats\$sysstat ss
-	     WHERE ss.snap_id = eid
-	       AND ss.dbid    = db_id
-	       AND ss.instance_number = instnum
-	       AND ss.name like 'workarea executions - %'
-	   ) s,
+           ( SELECT DECODE(NVL(a.sval,0),0,NULL,100*b.oval/a.sval) opt_pct
+	       FROM ( SELECT SUM(NVL(value,0)) sval 
+	                FROM stats\$sysstat
+		       WHERE name IN ('workarea executions - optimal',
+		                      'workarea executions - onepass',
+				      'workarea executions - multipass')
+			 AND snap_id = eid) a,
+		    ( SELECT SUM(NVL(value,0)) oval
+	                FROM stats\$sysstat
+		       WHERE name = 'workarea executions - optimal'
+		         AND snap_id = eid) b )              s,
 	   stats\$parameter p
      WHERE p.snap_id = eid
        AND p.dbid    = db_id
