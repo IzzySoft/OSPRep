@@ -52,6 +52,10 @@ experiment with copying the provided files. A better idea is to see the
 ?/rdbms/admin/spreport.sql file for the exact specification and creating your
 sp??.pls file yourself. Although, no warranty that this will work.
 
+One more limitation to mention: the information in this reports is equivalent
+to what spreport.sql would give you on level 5 snapshots. So if you need the
+additional data for higher levels reported, OSPRep won't help you.
+
 ===============================================================================
 
 4) Installation
