@@ -10,7 +10,7 @@
                      parent.dname = "Enqueues";
 		     break;
       case "ratio" : parent.dstat = parent.enqper;
-                     parent.dname = "Pct Library Cache HitMisses";
+                     parent.dname = "Enqueue Timeouts per Request";
 		     break;
     }
   }
