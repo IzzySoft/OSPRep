@@ -381,7 +381,7 @@
 	    '<BR>Consider tuning these ';
   print(L_LINE);
   L_LINE := 'statements/objects, if the percentage of CPU used for parsing is high. '||
-            'Currently, parsing takes '||S1||'% of all CPU usage by all sessions.</TD></TR>';
+            'Currently, parsing takes avg. '||S1||'% of all CPU usage by all sessions.</TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
 	    '<TH CLASS="th_sub">% Total Parses</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
@@ -468,7 +468,19 @@
             'instead of using an index first, so you should consider creating '||
 	    'appropriate indices ';
   print(L_LINE);
-  L_LINE := 'or, maybe, increasing the <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE>.</DIV></TD></TR>';
+  L_LINE := 'or, maybe, increasing the <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE>.'||
+            '<BR>Average Read Times (AvgRd) of greater than 20..40ms should be '||
+	    'considered slow for ';
+  print(L_LINE);
+  L_LINE := 'single block reads. So if this is the case, you should check whether '||
+            'the disks are capable of the required IO rates. If they are, your '||
+	    'file-to-disk layout ';
+  print(L_LINE);
+  L_LINE := 'may be causing some disks to be underused while others are overly '||
+            'busy. Furthermore, if the temporary TableSpaces have the most write '||
+	    'activity, this may indicate';
+  print(L_LINE);
+  L_LINE := 'that too much of the sorting is to disk and may require optimization.</DIV></TD></TR>';
   print(L_LINE);
   L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Filename</TH>'||
             '<TH CLASS="th_sub">Reads</TH><TH CLASS="th_sub">AvgReads/s</TH>'||
