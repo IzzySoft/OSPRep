@@ -121,7 +121,7 @@ DECLARE
   CURSOR C_AllWait (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, tran NUMBER) IS
     SELECT e.event event,
            to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
-	   to_char(e.total_timeouts - NVL(b.total_timeouts,0),'999,999') timeouts,
+	   to_char(e.total_timeouts - NVL(b.total_timeouts,0),'9,999,999,999') timeouts,
 	   to_char((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000000,'99,999,990.00') time,
 	   decode ((e.total_waits - NVL(b.total_waits,0)),
 	          0,'0.00',to_char(
@@ -146,7 +146,7 @@ DECLARE
   CURSOR C_BGWait (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, tran NUMBER) IS
     SELECT e.event event,
            to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
-	   to_char(e.total_timeouts - NVL(b.total_timeouts,0),'999,999') timeouts,
+	   to_char(e.total_timeouts - NVL(b.total_timeouts,0),'9,999,999,999') timeouts,
 	   to_char((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000000,'99,999,990.00') time,
 	   decode ((e.total_waits - NVL(b.total_waits,0)),
 	          0,'0.00',to_char(
@@ -642,9 +642,9 @@ DECLARE
     SELECT b.name st,
            to_char(b.value/1024/1024,'9,999,990.00') snap1,
            to_char(e.value/1024/1024,'9,999,990.00') snap2,
-	   to_char(decode(b.value,0,100* (e.value - nvl(b.value,0)),
-	                            100*((e.value - nvl(b.value,0))/b.value)),
-		   '990.00') diff
+	   nvl(to_char(decode(b.value,0,NULL,
+	                    100*((e.value - nvl(b.value,0))/b.value)),
+		   '9,999,999,990.00'),'&nbsp') diff
       FROM stats\$pgastat b, stats\$pgastat e
      WHERE b.snap_id = bid
        AND e.snap_id = eid
@@ -701,7 +701,7 @@ DECLARE
 
   CURSOR C_RBS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT b.usn rbs#,
-           to_char(e.gets - b.gets,'999,990.0') gets,
+           to_char(e.gets - b.gets,'9,999,999,990.0') gets,
 	   to_char(to_number(decode(e.gets,b.gets,NULL,
 	          (e.waits - b.waits) * 100 / (e.gets - b.gets) )),
 		  '990.00') waits,
@@ -743,7 +743,7 @@ DECLARE
   CURSOR C_USS (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, btime IN VARCHAR2, etime IN VARCHAR2) IS
     SELECT undotsn,
            to_char(sum(undoblks),'99,999,999') undob,
-	   to_char(sum(txncount),'99,999,999') txcnt,
+	   to_char(sum(txncount),'9,999,999,999,999') txcnt,
 	   to_char(max(maxquerylen),'999,999,999') maxq,
 	   to_char(max(maxconcurrency),'999,999') maxc,
 	   to_char(sum(ssolderrcnt),'99,999') snol,
@@ -861,7 +861,7 @@ DECLARE
 	   nvl(to_char(decode(e.scans, b.scans, NULL,
 	                (e.scanmisses - b.scanmisses) *100 /
 			(e.scans - b.scans)),'990.00'),'&nbsp;') scanm,
-	   to_char(e.modifications - b.modifications,'999,990') mods,
+	   to_char(e.modifications - b.modifications,'999,999,990') mods,
 	   to_char(e.usage,'9,999,990') usage,
 	   nvl(to_char(decode(nvl(e.total_usage,0),0,0,
 	                 e.usage *100/e.total_usage),'990.00'),'&nbsp') sgapct
