@@ -88,14 +88,9 @@ DECLARE
   R_TITLE VARCHAR(200);
   TABLE_OPEN VARCHAR(100); -- Table Attributes
   TABLE_CLOSE VARCHAR(100);
-  S1 VARCHAR(200);
-  S2 VARCHAR(200);
-  S3 VARCHAR(200);
-  S4 VARCHAR(200);
-  S5 VARCHAR(200);
-  I1 NUMBER;
-  I2 NUMBER;
-  I3 NUMBER;
+  S1 VARCHAR(200); S2 VARCHAR(200); S3 VARCHAR(200); S4 VARCHAR(200);
+  I1 NUMBER; I2 NUMBER; I3 NUMBER;
+  DBVER NUMBER; DBSUBVER NUMBER;
   BID NUMBER; EID NUMBER; ELA NUMBER; EBGT NUMBER; EDRT NUMBER; EET NUMBER;
   EPC NUMBER; BTIME VARCHAR2(20); ETIME VARCHAR2(20);
   DBID NUMBER; DB_NAME VARCHAR(9); INST_NUM NUMBER; INST_NAME VARCHAR(16);
@@ -114,10 +109,10 @@ DECLARE
   GCCRRV NUMBER; GCCRRT NUMBER; GCCURV NUMBER; GCCURT NUMBER; GCCRSV NUMBER;
   GCCRBT NUMBER; GCCRFT NUMBER; GCCRST NUMBER; GCCUSV NUMBER; GCCUPT NUMBER;
   GCCUFT NUMBER; GCCUST NUMBER;
-  /* StatsPack ab Oracle v9.2 Start
+  -- StatsPack ab Oracle v9.2 Start
       DBFR NUMBER; GCDFR NUMBER; MSGSQ NUMBER; MSGSQT NUMBER; MSGSQK NUMBER;
       MSGSQTK NUMBER; MSGRQ NUMBER; MSGRQT NUMBER;
-     StatsPack ab Oracle v9.2 END */
+  -- StatsPack ab Oracle v9.2 END
   -- StatsPack vor Oracle v9.2 Start
   DFCMS NUMBER; DFCMR NUMBER; DMRV NUMBER; DYNAL NUMBER; SCMA NUMBER; SCML NUMBER;
   PINC NUMBER; PINCRNC NUMBER; PICC NUMBER; PICRRC NUMBER; PBC NUMBER;
@@ -371,7 +366,8 @@ DECLARE
      WHERE rownum <= $TOP_N_SQL;
 
   CURSOR C_GetSQL (hv IN NUMBER) IS
-    SELECT sql_text FROM stats\$sqltext WHERE hash_value=hv
+    SELECT replace(replace(sql_text,'<','&lt;'),'>','&gt;') AS sql_text
+      FROM stats\$sqltext WHERE hash_value=hv
      ORDER BY piece;
 
   CURSOR C_InstAct (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, ela IN NUMBER, tran IN NUMBER) IS
@@ -941,7 +937,8 @@ DECLARE
 			(e.scans - b.scans)),'990.00'),'&nbsp;') scanm,
 	   to_char(e.modifications - b.modifications,'999,990') mods,
 	   to_char(e.usage,'9,999,990') usage,
-	   to_char(e.usage *100/e.total_usage,'990.00') sgapct
+	   nvl(to_char(decode(nvl(e.total_usage,0),0,0,
+	                 e.usage *100/e.total_usage),'990.00'),'&nbsp') sgapct
       FROM stats\$rowcache_summary b, stats\$rowcache_summary e
      WHERE b.snap_id = bid
        AND e.snap_id = eid
@@ -1072,6 +1069,8 @@ BEGIN
   FOR R_SnapBind IN C_SnapBind(DBID,INST_NUM,BID) LOOP
     PARA  := R_SnapBind.parallel;
     VERSN := R_SnapBind.version;
+    DBVER := TO_NUMBER(SUBSTR(VERSN,1,INSTR(VERSN,'.')-1));
+    DBSUBVER  := TO_NUMBER(SUBSTR(VERSN,INSTR(VERSN,'.')+1,INSTR(VERSN,'.',1,2)-1 -INSTR(VERSN,'.')));
     HOST_NAME := R_SnapBind.host_name;
   END LOOP;
 
@@ -1112,7 +1111,7 @@ BEGIN
   dbms_output.put_line(L_LINE);
 
   -- Initial information about this instance
-  SELECT to_char(SYSDATE,'DD.MM.YYYY HH24:MI') INTO S5 FROM DUAL;
+  SELECT to_char(SYSDATE,'DD.MM.YYYY HH24:MI') INTO S4 FROM DUAL;
   L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2">Common Instance Information</TH></TR>'||CHR(10)||
             ' <TR><TD class="td_name">Hostname:</TD><TD>'||HOST_NAME||'</TD></TR>'||CHR(10)||
             ' <TR><TD class="td_name">Instance:</TD><TD>'||INST_NAME||'</TD></TR>';
@@ -1129,7 +1128,7 @@ BEGIN
   L_LINE := ' <TR><TD class="td_name">FileSize (Data+Log)</TD><TD>'||S1||' MB</TD></TR>'||CHR(10)||
             ' <TR><TD class="td_name">Startup / Uptime</TD><TD>'||S2||' / '||S3||' d</TD></TR>';
   dbms_output.put_line(L_LINE);
-  L_LINE := ' <TR><TD class="td_name">Report generated:</TD><TD>'||S5||'</TD></TR>'||CHR(10)||
+  L_LINE := ' <TR><TD class="td_name">Report generated:</TD><TD>'||S4||'</TD></TR>'||CHR(10)||
             TABLE_CLOSE;
   dbms_output.put_line(L_LINE);
   dbms_output.put_line('<HR>');
@@ -1457,7 +1456,7 @@ BEGIN
 	    '<TH CLASS="th_sub">Gets per Exec</TH>';
   dbms_output.put_line(L_LINE);
   L_LINE := '<TH CLASS="th_sub">% Total</TH><TH CLASS="th_sub">CPU Time (s)</TH>'||
-            '<TH CLASS="th_sub">Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TR>';
+            '<TH CLASS="th_sub">Elapsed Time (s)</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
   dbms_output.put_line(L_LINE);
   FOR R_SQL IN C_SQLByGets(DBID,INST_NUM,BID,EID,GETS) LOOP
     L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.bufgets||'</TD><TD ALIGN="right">'||
