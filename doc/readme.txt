@@ -99,22 +99,28 @@ END_ID.
 ===============================================================================
 
 5) Plugins
----------------
+----------
 
-With v0.1.2 I started to include 1 plugin (if there are more of them, this
-readme.txt has not been updated since ;) Read more on them in the files
-contained in the plugins/ directory.
+With v0.1.2 I started to include 1 plugin (if there are more of them and NOT
+mentioned in this block, this readme.txt has not been updated since ;) Read
+more on them in the files contained in the plugins/ directory.
+
 For the gathering of the wait objects statistics, you need to create the
 table in the perfstat users schema (you may use the waitobj.sql file to do
-this), plus the procedure to gather the information. The latter must be
-installed in the SYS schema - no other schema will work. Please, don't blame
-me, it's not my fault - it's due to some strange behaviour in PL/SQL when
-accessing certain v$ views. It seems that Oracle does know about, so they didn't
-already include this little addon...
-When you used getwaits.sql to create the procedure, the perfstat user is able
-to run it (if your perfstat schema is not named "perfstat", you may need to
-edit the file first: look at the line starting with "GRANT"). So if you do
+this), plus the procedure (getwaits.sql) to gather the information. When doing
 your snapshots for the statspack, do not forget to run this procedure with it.
+
+The very same applies to the datafiles growth statistics - a new plugin
+introduced with v0.1.5: use the fileobj.sql file to create the data structs,
+plus getfilestat.sql for the collector procedure.
+
+A different "PlugIn" is the script fts_plans.sh in the root directory of this
+bundle. It obeys the same syntax as the main (sreport.sh) script, but does a
+different job: it collects the statements and execution plans for all queries
+that caused full table scans (FTS). These are most likely to require some
+optimization - usually creation of new indices or rewrite of the queries (e.g.
+placing index hints). The output is written into the file <ORACLE_SID>_fts.html
+in the report directory.
 
 
 Have fun!
