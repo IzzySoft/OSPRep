@@ -43,4 +43,8 @@ EXC_PERF_FOR="SYS SYSTEM"
 #--- Arguments on the command line override these settings.
 START_ID=0
 END_ID=0
+
+# --------------------------------------------------------------[ Features ]---
+# Include Background Waits? [0|1]
+MK_BGWAITS=0
 # ===================================================================[ EOF ]===

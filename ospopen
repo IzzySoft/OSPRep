@@ -10,6 +10,7 @@
 
 cat>>$SQLSET<<ENDSQL
 DECLARE
+  MK_BGWAITS NUMBER;
   L_LINE VARCHAR2(4000);
   R_TITLE VARCHAR(200);
   TABLE_OPEN VARCHAR(100); -- Table Attributes
@@ -142,30 +143,6 @@ DECLARE
        AND e.total_waits > NVL(b.total_waits,0)
        AND e.event NOT LIKE '%timer%'
        AND e.event NOT LIKE 'rdbms ipc%'
-       AND i.event(+)    = e.event
-     ORDER BY idle, time desc, waits desc;
-
-  CURSOR C_BGWait (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER, tran NUMBER) IS
-    SELECT e.event event,
-           to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
-	   to_char(e.total_timeouts - NVL(b.total_timeouts,0),'9,999,999,999') timeouts,
-	   to_char((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000000,'99,999,990.00') time,
-	   decode ((e.total_waits - NVL(b.total_waits,0)),
-	          0,'0.00',to_char(
-		    ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
-		    / (e.total_waits - NVL(b.total_waits,0)),'9,999,990.00') ) wt,
-	   to_char((e.total_waits - NVL(b.total_waits,0))/tran,'99,990.00') txwaits,
-	   decode(i.event,NULL,0,99) idle,
-	   decode(i.event,NULL,' ','*') idlemark
-      FROM stats\$bg_event_summary b, stats\$bg_event_summary e, stats\$idle_event i
-     WHERE b.snap_id(+)  = bid
-       AND e.snap_id     = eid
-       AND b.dbid(+)     = db_id
-       AND e.dbid        = db_id
-       AND b.instance_number(+) = instnum
-       AND e.instance_number    = instnum
-       AND b.event(+)    = e.event
-       AND e.total_waits > NVL(b.total_waits,0)
        AND i.event(+)    = e.event
      ORDER BY idle, time desc, waits desc;
 
@@ -1101,12 +1078,17 @@ ENDSQL
 . $GETWAITS
 . $GETDF
 
+if [ -n "$BGWAITHEAD" ]; then
+  cat $BGWAITHEAD>>$SQLSET
+fi
+
 cat>>$SQLSET<<ENDSQL
 BEGIN
   -- Configuration
   OSPVER := '$version';
   TOP_N_SQL := $TOP_N_SQL;
   TOP_N_WAITS := $TOP_N_WAITS;
+  MK_BGWAITS := :MK_BGWAITS;
   dbms_output.enable(1000000);
   R_TITLE := 'StatsPack Report for $ORACLE_SID';
   TABLE_OPEN := '<TABLE ALIGN="center" BORDER="1">';
@@ -1173,7 +1155,10 @@ BEGIN
   print(L_LINE);
   L_LINE :=  ' [ <A HREF="#efficiency">Efficiency</A> ]'||
              ' [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#top5wait">Top 5 Wait</A>'||
-            ' ] [ <A HREF="#waitevents">Wait Events</A> ] [ <A HREF="#bgwaitevents">Background Waits</A> ]';
+            ' ] [ <A HREF="#waitevents">Wait Events</A> ]';
+  IF MK_BGWAITS = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#bgwaitevents">Background Waits</A> ]';
+  END IF;
   print(L_LINE);
   S1 := 'istats\$waitobjects'; I1 := 1; I2 := 0;
   tab_exists(S1,I1,I2);
