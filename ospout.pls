@@ -428,8 +428,8 @@
   print('<HR>');
 
   -- Buffer Pool
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="bufpool">Buffer Pool Statistics</A></TH></TR>'||
-            ' <TR><TD COLSPAN="9" ALIGN="center">Standard Block Size Pools ';
+  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="bufpool">Buffer Pool Statistics</A></TH></TR>'||
+            ' <TR><TD COLSPAN="10" ALIGN="center">Standard Block Size Pools ';
   print(L_LINE);
   L_LINE := 'D:Default, K:Keep, R:Recycle<BR>Default Pools for other block '||
 	    'sizes: 2k, 4k, 8k, 16k, 32k</TD></TR>';
@@ -439,7 +439,8 @@
 	    '<TH CLASS="th_sub">PhyReads</TH>';
   print(L_LINE);
   L_LINE:= '<TH CLASS="th_sub">PhyWrites</TH><TH CLASS="th_sub">FreeBuf Waits</TH>'||
-           '<TH CLASS="th_sub">Wrt complete Waits</TH><TH CLASS="th_sub">Buffer Busy Waits</TH></TR>';
+           '<TH CLASS="th_sub">Wrt complete Waits</TH><TH CLASS="th_sub">Buffer Busy Waits</TH>'||
+	   '<TH CLASS="th_sub">HitRatio (%)</TH></TR>';
   print(L_LINE);
   FOR R_Buff IN C_BuffP(DBID,INST_NUM,BID,EID,BS) LOOP
     L_LINE := ' <TR><TD CLASS="td_name">'||R_Buff.name||'</TD><TD ALIGN="right">'||
@@ -449,7 +450,7 @@
     print(L_LINE);
     L_LINE := R_Buff.phwrite||'</TD><TD ALIGN="right">'||R_Buff.fbwait||
               '</TD><TD ALIGN="right">'||R_Buff.wcwait||'</TD><TD ALIGN="right">'||
-	      R_Buff.bbwait||'</TD></TR>';
+	      R_Buff.bbwait||'</TD><TD ALIGN="right">'||R_Buff.ratio||'</TD></TR>';
     print(L_LINE);
   END LOOP;
   L_LINE := TABLE_CLOSE;

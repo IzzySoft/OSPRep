@@ -4,10 +4,12 @@ History for OSPRep
 ==================
 
 v0.0.1 (03.11.2003) initial version
+-----------------------------------
 + Output intro: Common instance information
 + simple SnapShot info (id, time, comment)
 
 v0.0.2 (04.11.2003)
+-------------------
 + collecting statspack report info via statspack.stat_changes
 + added Session and Cursor/Session to SnapShot Info
 + added Cache Sizes and Load Profile
@@ -15,12 +17,14 @@ v0.0.2 (04.11.2003)
 + added Shared Pool Stats
 
 v0.0.3 (05.11.2003)
+-------------------
 + added Top 5 Wait Events
 + added All Wait Events
 + added BG Wait Events
 + added Top n SQL by Gets
 
 v0.0.4 (06.11.2003)
+-------------------
 * a little code cleanup
 + added Top n SQL by Reads / Exec / Parse
 + made "n" (for the Top-N Stats) a config var
@@ -29,6 +33,7 @@ v0.0.4 (06.11.2003)
 + added FileIO Summary Stats
 
 v0.0.5 (07.11.2003)
+-------------------
 + added Buffer Pool Stats
 + added Instance Recovery Statistics
 + added Buffer Wait Statistics
@@ -40,12 +45,14 @@ v0.0.5 (07.11.2003)
 + added Cache Stats
 
 v0.0.6 (10.11.2003)
+-------------------
 + added SGA stats
 + added Resource Limits
 + added Init Params
 ! SnapShot Info now regards dbid and instnum
 
 v0.0.7 (11.11.2003)
+-------------------
 + added possibility to auto-evaluate the latest possible SnapShot interval
 + -"- up to a specified Snap_End (only Start_ID will be eval'd)
 * some descriptions changed (th)
@@ -56,6 +63,7 @@ v0.0.7 (11.11.2003)
   statement. Fixed.
 
 v0.0.8 (11.11.2003)
+-------------------
 + modularized spreport.sh - it now consists of multiple files. spreport.sh
   itself remains as a wrapper, the real script is generated at runtime. This
   is due to different parameter structure in the call to the collector
@@ -68,12 +76,18 @@ v0.0.8 (11.11.2003)
   any more
 
 v0.1.0 (12.11.2003)
+-------------------
 + added example output
 + added some docu
 
 v0.1.1 (16.11.2003)
+-------------------
 + optimization: wrote wrapper for dbms_output.put_line
 * moved some hardcoded font formatting to stylesheet
 * some code cleanup
 ! fixed Optim W/A Execs in PGA stats (statement from Oracle Statspack
   didn't work correctly - replaced by own statement)
+
+v0.1.2
+-------------------
++ added HitRatio to Buffer Pool Stats
