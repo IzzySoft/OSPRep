@@ -56,6 +56,11 @@ done
 if [ -z "$ORACLE_CONNECT" ]; then
   ORACLE_CONNECT=$ORACLE_SID
 fi
+if [ -n $START_ID ]; then
+  if [ -z $END_ID ]; then
+    END_ID=$START_ID
+  fi
+fi
 
 . ./version
 SQLSET=$TMPDIR/osprep_sqlset_$ORACLE_SID.$$
