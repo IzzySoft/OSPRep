@@ -18,6 +18,8 @@ DECLARE
   MK_LACT NUMBER;
   MK_LMS NUMBER;
   MK_IORA NUMBER;
+  MK_SGASUM NUMBER;
+  MK_SGABREAK NUMBER;
   WR_IE_BUFFNW NUMBER;
   AR_IE_BUFFNW NUMBER;
   WR_IE_REDONW NUMBER;
@@ -817,35 +819,6 @@ DECLARE
        AND e.gets - b.gets   > 0
      ORDER BY namespace;
 
-  CURSOR C_SGASum (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT name,
-           to_char(value,'999,999,999,990') val,
-	   value rawval
-      FROM stats\$sga
-     WHERE snap_id = eid
-       AND dbid    = db_id
-       AND instance_number = instnum
-     ORDER BY name;
-
-  CURSOR C_SGABreak (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
-    SELECT nvl(replace(b.pool,'pool',''),'&nbsp;') pool,
-           b.name name,
-	   to_char(b.bytes,'999,999,999,999') snap1,
-	   to_char(e.bytes,'999,999,999,999') snap2,
-	   to_char(100* (e.bytes - b.bytes)/b.bytes,'9,990.00') diff
-      FROM stats\$sgastat b, stats\$sgastat e
-     WHERE b.snap_id = bid
-       AND e.snap_id = eid
-       AND b.dbid    = db_id
-       AND e.dbid    = db_id
-       AND b.dbid    = e.dbid
-       AND b.instance_number = instnum
-       AND e.instance_number = instnum
-       AND b.instance_number = e.instance_number
-       AND b.name    = e.name
-       AND nvl(b.pool,'a')   = nvl(e.pool,'a')
-     ORDER BY b.pool, b.name;
-
   CURSOR C_RLim (db_id IN NUMBER, instnum IN NUMBER, bid IN NUMBER, eid IN NUMBER) IS
     SELECT resource_name rname,
            to_char(current_utilization,'999,999,990') curu,
@@ -1081,6 +1054,9 @@ if [ -n "$LACTHEAD" ]; then
     cat $LMSHEAD>>$SQLSET
   fi
 fi
+if [ -n "$SGAHEAD" ]; then
+  cat $SGAHEAD>>$SQLSET
+fi
 if [ -n "$IORAHEAD" ]; then
   cat $IORAHEAD>>$SQLSET
 fi
@@ -1092,11 +1068,13 @@ BEGIN
   TOP_N_SQL := $TOP_N_SQL;
   TOP_N_WAITS := $TOP_N_WAITS;
   MK_ALLWAITS := :MK_ALLWAITS;
-  MK_BGWAITS := :MK_BGWAITS;
-  MK_INSTACT := :MK_INSTACT;
-  MK_USSTAT  := :MK_USSTAT;
-  MK_LACT    := :MK_LACT;
-  MK_IORA    := :MK_IORA;
+  MK_BGWAITS  := :MK_BGWAITS;
+  MK_INSTACT  := :MK_INSTACT;
+  MK_USSTAT   := :MK_USSTAT;
+  MK_LACT     := :MK_LACT;
+  MK_IORA     := :MK_IORA;
+  MK_SGASUM   := :MK_SGASUM;
+  MK_SGABREAK := :MK_SGABREAK;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
   WR_IE_REDONW := :WR_IE_REDONW;

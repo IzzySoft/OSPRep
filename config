@@ -60,6 +60,10 @@ MK_LACT=0
 MK_LMS=0
 # Include init.ora parameter changes? [0|1]
 MK_IORA=1
+# Include SGA Summary and BreakDown stats? [0|1]
+# If MK_SGASUM=0, SGABREAK is excluded automatically
+MK_SGASUM=1
+MK_SGABREAK=0
 
 # -------------------------------------------------------------[ Go4Colors ]---
 # WR_* stands for WarnRatio, AR_* for AlertRatio. The next letters indicate the

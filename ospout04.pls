@@ -57,38 +57,3 @@
   print(L_LINE);
   print('<HR>');
 
-  -- SGA Memory Summary
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="2"><A NAME="sga">SGA Memory Summary</A></TH></TR>'||
-            ' <TR><TD COLSPAN="2" ALIGN="center">Values at the time of the End SnapShot</TD></TR>';
-  print(L_LINE);
-  L_LINE := ' <TR><TH CLASS="th_sub">SGA Region</TH><TH CLASS="th_sub">Size in Bytes</TH>';
-  print(L_LINE);
-  I1 := 0;
-  FOR R_SGASum in C_SGASum(DBID,INST_NUM,BID,EID) LOOP
-    I1 := I1 + R_SGASum.rawval;
-    L_LINE := ' <TR><TD CLASS="td_name">'||R_SGASum.name||'</TD><TD ALIGN="right">'||
-              R_SGASum.val||'</TD></TR>';
-    print(L_LINE);
-  END LOOP;
-  L_LINE := ' <TR><TD>Sum</TD><TD ALIGN="right">'||to_char(I1,'999,999,999,990')||
-            '</TD></TR>'||TABLE_CLOSE;
-  print(L_LINE);
-
-  -- SGA breakdown diff
-  L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">SGA BreakDown Difference</TH></TR>'||
-            ' <TR><TH CLASS="th_sub">Pool</TH><TH CLASS="th_sub">Name</TH>'||
-	    '<TH CLASS="th_sub">Begin Value</TH>';
-  print(L_LINE);
-  L_LINE := '<TH CLASS="th_sub">End Value</TH><TH CLASS="th_sub">% Diff</TH></TR>';
-  print(L_LINE);
-  FOR R_SGASum in C_SGABreak(DBID,INST_NUM,BID,EID) LOOP
-    L_LINE := ' <TR><TD CLASS="td_name">'||R_SGASum.pool||'</TD><TD CLASS="td_name">'||
-              R_SGASum.name||'</TD><TD ALIGN="right">'||R_SGASum.snap1||
-	      '</TD><TD ALIGN="right">'||R_SGASum.snap2||'</TD><TD ALIGN="right">'||
-	      R_SGASum.diff||'</TD></TR>';
-    print(L_LINE);
-  END LOOP;
-  L_LINE := TABLE_CLOSE;
-  print(L_LINE);
-  print('<HR>');
-
