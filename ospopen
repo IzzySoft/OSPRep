@@ -567,12 +567,6 @@ BEGIN
   IF MK_RECO = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#recover">Instance Recovery</A> ]';
   END IF;
-  IF MK_SPSTAT = 1 THEN
-    L_LINE := L_LINE||' [ <A HREF="#sharedpool">Shared Pool</A> ]';
-  END IF;
-  IF MK_BUFFP + MK_BUFFW > 0 THEN
-    L_LINE := L_LINE||' [ <A HREF="#buffstat">Buffer Stats</A> ]';
-  END IF;
   IF LENGTH(L_LINE) > 0 THEN
     print(L_LINE);
   END IF;
@@ -599,10 +593,16 @@ BEGIN
   IF LENGTH(L_LINE) > 0 THEN
     print(L_LINE);
   END IF;
-  IF MK_CACHSIZ + MK_DC + MK_LC > 0 THEN
-    L_LINE := ' [ <A HREF="#caches">Caches</A> ]';
+  IF MK_SPSTAT = 1 THEN
+    L_LINE := ' [ <A HREF="#sharedpool">Shared Pool</A> ]';
   ELSE
     L_LINE := '';
+  END IF;
+  IF MK_BUFFP + MK_BUFFW > 0 THEN
+    L_LINE := L_LINE||' [ <A HREF="#buffstat">Buffer Stats</A> ]';
+  END IF;
+  IF MK_CACHSIZ + MK_DC + MK_LC > 0 THEN
+    L_LINE := L_LINE||' [ <A HREF="#caches">Caches</A> ]';
   END IF;
   IF MK_SGASUM = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#sga">SGA</A> ]';
