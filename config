@@ -22,7 +22,7 @@ CSS=../iceage.css
 export ORACLE_SID=$1
 # login information
 user=perfstat
-password="pyha#"
+password="perfstat"
 
 # -------------------------------------------------------------------[ SQL ]---
 # Top settings: Display Top N Statements [Number]

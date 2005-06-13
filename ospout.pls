@@ -12,7 +12,7 @@
     print(L_LINE);
     L_LINE := ' <TR><TD>End</TD><TD ALIGN="right">'||Rec_SnapInfo.end_snap_id||'</TD><TD>'||
               Rec_SnapInfo.end_snap_time||'</TD><TD ALIGN="right">'||ELOG||'</TD><TD ALIGN="right">'||
-	      to_char(EOCUR/ELOG,'9,990.00')||'<TD>'||Rec_SnapInfo.end_snap_comment||'</TD></TR>';
+	      to_char(EOCUR/ELOG,'9,999,990.00')||'<TD>'||Rec_SnapInfo.end_snap_comment||'</TD></TR>';
     print(L_LINE);
     L_LINE := ' <TR><TD COLSPAN="6" ALIGN="center">Elapsed: '||Rec_SnapInfo.elapsed||
               ' min</TD></TR>';
