@@ -149,7 +149,7 @@
                   R_Buff.icnt||'</TD><TD ALIGN="right">'||format_stime(R_Buff.itim,1)||
 	          '</TD><TD ALIGN="right">'||format_stime(R_Buff.iavg,1);
         print(L_LINE);
-        L_LINE := '</TD><TD ALIGN="right">'||R_Buff.wps||'</TD></TR>';
+        L_LINE := '</TD><TD ALIGN="right">'||NVL(R_Buff.wps,'&nbsp;')||'</TD></TR>';
         print(L_LINE);
       END LOOP;
       print(TABLE_CLOSE);
