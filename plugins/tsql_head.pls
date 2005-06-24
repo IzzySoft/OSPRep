@@ -89,7 +89,7 @@
                 '</CODE></DIV></TD><TD'||TDI||'>'||rplan.object_owner||'.'||rplan.object_name||
                 '</TD><TD'||TDI||'>'||NVL(rplan.optimizer,'&nbsp;'));
           print('</TD><TD ALIGN="right"'||TDI||'>'||rplan.vcost||'</TD><TD ALIGN="right"'||TDI||'>'||
-                NVL(TO_CHAR(rplan.cpu_cost,'999,990'),'&nbsp;')||
+                NVL(TO_CHAR(rplan.cpu_cost,'99,999,999,990'),'&nbsp;')||
                 '</TD><TD ALIGN="right"'||TDI||'>'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
                 '</TD><TD ALIGN="right"'||TDI||'><DIV STYLE="width:'||CI||'em">'||OSIZE||'</DIV></TD></TR>');
         END LOOP;

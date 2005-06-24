@@ -6,6 +6,7 @@ v0.3.3 (2005)
 -------------------
 + some formating updates (fixed '#####' fields)
 * little reorganization (moved the shared_pool block to the other SGA info)
+* corrected navbar information (top x wait)
 
 v0.3.2 (22.11.2004)
 -------------------

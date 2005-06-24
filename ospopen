@@ -521,7 +521,7 @@ BEGIN
     L_LINE := L_LINE||' [ <A HREF="#instact">Instance Activity</A> ]';
   END IF;
   IF MK_TOPWAITS = 1 THEN
-    L_LINE := L_LINE||' [ <A HREF="#top5wait">Top 5 Wait</A> ] ';
+    L_LINE := L_LINE||' [ <A HREF="#top5wait">Top '||TOP_N_WAITS||' Wait</A> ] ';
   END IF;
   IF MK_ALLWAITS = 1 THEN
     L_LINE := L_LINE||' [ <A HREF="#waitevents">Wait Events</A> ]';
