@@ -12,8 +12,65 @@
          AND e.instance_number=INST_NUM
          AND b.dbid=DB_ID
          AND e.dbid=DB_ID;
+
+    PROCEDURE poolsize(aval IN VARCHAR2, bval OUT VARCHAR2, eval OUT VARCHAR2) IS
+      BEGIN
+        SELECT DECODE(SIGN( LENGTH(value) - LENGTH(TRANSLATE(value,'0123456789GMKgmk','0123456789')) ),
+              0,DECODE(SIGN(LENGTH(ROUND(value/1000))-1),
+                0,to_char(nvl(value,0)/1024,'999,999,990.00')||' K',
+                to_char(nvl(value,0)/1024/1024,'999,999,990.00')||' M'),
+              1,value,'&nbsp;')
+          INTO bval
+	  FROM stats$parameter
+         WHERE name=aval
+           AND snap_id=BID
+           AND instance_number=INST_NUM
+           AND dbid=DB_ID;
+        SELECT DECODE(SIGN( LENGTH(value) - LENGTH(TRANSLATE(value,'0123456789GMKgmk','0123456789')) ),
+              0,DECODE(SIGN(LENGTH(ROUND(value/1000))-1),
+                0,to_char(nvl(value,0)/1024,'999,999,990.00')||' K',
+                to_char(nvl(value,0)/1024/1024,'999,999,990.00')||' M'),
+              1,value,'&nbsp;')
+          INTO eval
+	  FROM stats$parameter
+         WHERE name=aval
+           AND snap_id=EID
+           AND instance_number=INST_NUM
+           AND dbid=DB_ID;
+      EXCEPTION
+        WHEN NO_DATA_FOUND THEN NULL;
+      END;
+
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="sharedpool">Shared Pool Statistics</A></TH></TR>'||CHR(10)||
+    -- Pool Sizes
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="sharedpool">Pool Sizes</A></TH></TR>'||CHR(10)||
+                ' <TR><TH CLASS="th_sub">Pool</TH><TH CLASS="th_sub">Begin</TH><TH CLASS="th_sub">End</TH></TR>';
+      print(L_LINE);
+      poolsize('shared_pool_size',S1,S2);
+      L_LINE := ' <TR><TD>Shared_Pool_Size</TD><TD ALIGN="right">'||NVL(S1,'&nbsp;')||'</TD>'||
+                '<TD ALIGN="right">'||NVL(S2,'&nbsp;')||'</TD></TR>'||CHR(10);
+      poolsize('shared_pool_reserved_size',S1,S2);
+      L_LINE := L_LINE||' <TR><TD>Shared_Pool_Reserved_Size</TD><TD ALIGN="right">'||NVL(S1,'&nbsp;')||'</TD>'||
+                '<TD ALIGN="right">'||NVL(S2,'&nbsp;')||'</TD></TR>'||CHR(10);
+      print(L_LINE);
+      poolsize('large_pool_size',S1,S2);
+      L_LINE := ' <TR><TD>Large_Pool_Size</TD><TD ALIGN="right">'||NVL(S1,'&nbsp;')||'</TD>'||
+                '<TD ALIGN="right">'||NVL(S2,'&nbsp;')||'</TD></TR>'||CHR(10);
+      poolsize('java_pool_size',S1,S2);
+      L_LINE := L_LINE||' <TR><TD>Java_Pool_Size</TD><TD ALIGN="right">'||NVL(S1,'&nbsp;')||'</TD>'||
+                '<TD ALIGN="right">'||NVL(S2,'&nbsp;')||'</TD></TR>'||CHR(10);
+      print(L_LINE);
+      poolsize('sort_area_size',S1,S2);
+      L_LINE := ' <TR><TD>Sort_Area_Size</TD><TD ALIGN="right">'||NVL(S1,'&nbsp;')||'</TD>'||
+                '<TD ALIGN="right">'||NVL(S2,'&nbsp;')||'</TD></TR>'||CHR(10);
+      poolsize('sort_area_retained_size',S1,S2);
+      L_LINE := L_LINE||' <TR><TD>Sort_Area_Retained_Size</TD><TD ALIGN="right">'||NVL(S1,'&nbsp;')||'</TD>'||
+                '<TD ALIGN="right">'||NVL(S2,'&nbsp;')||'</TD></TR>'||CHR(10);
+      print(L_LINE);
+      print(TABLE_CLOSE);
+
+    -- Shared Pool Stats
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3">Shared Pool Statistics</TH></TR>'||CHR(10)||
                 ' <TR><TH CLASS="th_sub">Name</TH><TH CLASS="th_sub">Begin</TH>'||
 	        '<TH CLASS="th_sub">End</TH></TR>';
       print(L_LINE);
