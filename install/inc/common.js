@@ -7,14 +7,10 @@ if (maxval == 0 || isNaN(maxval)) maxval = 1;
 function mkdiag() {
   var left  = Math.max(0,(document.body.clientWidth - 460) / 2);
   var right = left + 460;
-  D.SetFrame(left, 120, right, 380);
- // ScreenLeftX, TopY, RightX, BottomY
-  D.SetBorder(bid, eid, 0, maxval + maxval/20);
- // DiagLeftX, RightX, BottomY, TopY
-  D.SetText("", "", "");
- // ScaleX, ScaleY, Title
-  D.Draw("#DDDDDD", "#000000", false, "");
- // DrawColor, TextColor, isScaleText [, ToolTip [, Action]]
+  D.SetFrame(left, 120, right, 380); // ScreenLeftX, TopY, RightX, BottomY
+  D.SetBorder(bid, eid, 0, maxval + maxval/20); // DiagLeftX, RightX, BottomY, TopY
+  D.SetText("", "", ""); // ScaleX, ScaleY, Title
+  D.Draw("#DDDDDD", "#000000", false, ""); // DrawColor, TextColor, isScaleText [, ToolTip [, Action]]
 }
 
 // Draw diagram for specified stat

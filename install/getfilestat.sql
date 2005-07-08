@@ -2,10 +2,8 @@
 -- Oracle StatsPack Report 2 Html    (c) 2003 by IzzySoft  (devel@izzysoft.de)
 -- ---------------------------------------------------------------------------
 -- Additional Procedure to collect information on growth of datafiles.
--- If you want to use this feature, run this script in e.g.
- SQL*Plus as
--- PERFSTAT
- (you need to GRANT SELECT ANY TABLE TO PERFSTAT first)
+-- If you want to use this feature, run this script in e.g. SQL*Plus as
+-- PERFSTAT (you need to GRANT SELECT ANY TABLE TO PERFSTAT first)
 -- ---------------------------------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE get_fileinfo IS
@@ -38,4 +36,3 @@ EXCEPTION
  WHEN NO_DATA_FOUND THEN NULL;
 END;
 /
-

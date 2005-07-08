@@ -4,8 +4,7 @@
 -- Additional Procedure to collect information on selected wait objects, i.e.
 -- objects causing wait events. In order to successfully install and use this
 -- procedure, make sure to GRANT SELECT ANY TABLE TO PERFSTAT first, and then
--- run this script in e.g.
- SQL*Plus as PERFSTAT
+-- run this script in e.g. SQL*Plus as PERFSTAT
 -- ---------------------------------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE get_waitevents AUTHID DEFINER IS
@@ -49,4 +48,3 @@ EXCEPTION
  WHEN NO_DATA_FOUND THEN NULL;
 END;
 /
-

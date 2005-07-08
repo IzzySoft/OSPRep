@@ -2,10 +2,8 @@
 -- Oracle StatsPack Report 2 Html    (c) 2003 by IzzySoft  (devel@izzysoft.de)
 -- ---------------------------------------------------------------------------
 -- Table for the additional Procedure to collect information growth of
--- datafiles. Adjust the settings e.g. for the table space,
- to reflect the
--- settings of your database. This table should be created in
- the schema of
+-- datafiles. Adjust the settings e.g. for the table space, to reflect the
+-- settings of your database. This table should be created in the schema of
 -- the perfstat user.
 -- ---------------------------------------------------------------------------
 
