@@ -28,9 +28,10 @@
   L_LINE := ' <TR><TD>Buffer Hit</TD><TD ALIGN="right"'||S2||'>'||
             to_char(round(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),2),'990.00');
   print(L_LINE);
-  L_LINE := '</TD><TD CLASS="text">A low buffer hit ratio does not necessarily '||
-            'mean the cache is too small: it may very well be that potentially '||
-	    'valid full-table-scans are artificially ';
+  L_LINE := '</TD><TD CLASS="text">A low <A HREF="JavaScript:popup('||CHR(39)||
+            'buffhits'||CHR(39)||')">buffer hit ratio</A> does not necessarily mean '||
+            'the cache is too small: it may very well be that potentially valid '||
+	    'full-table-scans are artificially ';
   print(L_LINE);
   L_LINE := 'reducing what is otherwise a good ratio. A too-small buffer cache '||
             'can sometimes be identified by the appearance of write complete waits '||

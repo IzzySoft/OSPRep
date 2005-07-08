@@ -8,6 +8,7 @@ v0.3.3 (2005)
 * little reorganization (moved the shared_pool block to the other SGA info)
 * corrected navbar information (top x wait)
 + added pool sizes to shared pool stats block
++ added hints on buffer cache management
 
 v0.3.2 (22.11.2004)
 -------------------
