@@ -25,11 +25,11 @@
 	    'quickly whenever the current log fills up.</TD></TR>';
   print(L_LINE);
   S2 := alert_lt_warn(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),AR_IE_BUFFHIT,WR_IE_BUFFHIT);
-  L_LINE := ' <TR><TD>Buffer Hit</TD><TD ALIGN="right"'||S2||'>'||
-            to_char(round(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),2),'990.00');
+  L_LINE := ' <TR><TD>Buffer Hit&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'buffhits'||CHR(39)||
+            ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A>'||
+            '</TD><TD ALIGN="right"'||S2||'>'||to_char(round(100*(1-(PHYR-PHYRD-PHYRDL)/GETS),2),'990.00');
   print(L_LINE);
-  L_LINE := '</TD><TD CLASS="text">A low <A HREF="JavaScript:popup('||CHR(39)||
-            'buffhits'||CHR(39)||')">buffer hit ratio</A> does not necessarily mean '||
+  L_LINE := '</TD><TD CLASS="text">A low buffer hit ratio does not necessarily mean '||
             'the cache is too small: it may very well be that potentially valid '||
 	    'full-table-scans are artificially ';
   print(L_LINE);
@@ -64,12 +64,13 @@
             'parsing issue.</TD></TR>';
   print(L_LINE);
   S2 := alert_lt_warn(100*(1-HPRS/PRSE),AR_IE_SOFTPRS,WR_IE_SOFTPRS);
-  L_LINE := ' <TR><TD>Soft Parse</TD><TD ALIGN="right"'||S2||'>'||
+  L_LINE := ' <TR><TD>Soft Parse&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'softparse'||CHR(39)||
+            ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A>'||
+            '</TD><TD ALIGN="right"'||S2||'>'||
             to_char(round(100*(1-HPRS/PRSE),2),'990.00')||'</TD><TD CLASS="text">'||
-            'When the <A HREF="JavaScript:popup('||CHR(39)||'softparse'||CHR(39)||
-	    ')">soft parse</A> ';
+            'When the soft parse ';
   print(L_LINE);
-  L_LINE := ' ratio falls much below 80%, investigate whether you can share '||
+  L_LINE := 'ratio falls much below 80%, investigate whether you can share '||
             'SQL by using bind variables or force cursor sharing. But before '||
             'drawing any conclusions, compare the soft parse ';
   print(L_LINE);
@@ -77,8 +78,10 @@
             '<A HREF="#loads">Loads Profile</A>. Furthermore, investigate the '||
             'number of <I>Parse CPU to Parse Elapsed</I> below.</TD></TR>';
   print(L_LINE);
-  L_LINE := ' <TR><TD>Execute to Parse</TD><TD ALIGN="right">'||
-            to_char(round(100*(1-PRSE/EXE),2),'990.00')||
+  L_LINE := ' <TR><TD>Execute to Parse<A HREF="JavaScript:popup('||CHR(39)||'parseexec'||CHR(39)||
+            ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD>';
+  print(L_LINE);
+  L_LINE := '<TD ALIGN="right">'||to_char(round(100*(1-PRSE/EXE),2),'990.00')||
 	    '</TD><TD CLASS="text">A low value here indicates that there is no '||
             'much re-usable SQL (see <I>Soft Parse</I> for possible actions).';
   print(L_LINE);
