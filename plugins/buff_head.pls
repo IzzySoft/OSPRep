@@ -43,7 +43,11 @@
 
     BEGIN
     -- Pool Sizes
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="sharedpool">Pool Sizes</A></TH></TR>'||CHR(10)||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="sharedpool">Pool Sizes</A>'||
+                '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'poolsize'||CHR(39)||
+                ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A>';
+      print(L_LINE);
+      L_LINE := '</TH></TR>'||CHR(10)||
                 ' <TR><TH CLASS="th_sub">Pool</TH><TH CLASS="th_sub">Begin</TH><TH CLASS="th_sub">End</TH></TR>';
       print(L_LINE);
       poolsize('shared_pool_size',S1,S2);

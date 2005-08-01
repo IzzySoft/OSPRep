@@ -2,7 +2,11 @@ $Id$
 
 History for OSPRep
 ==================
-v0.3.3 (12.07.2005)
+v0.3.4
+-------------------
++ added hints for pool size configuration
+
+v0.3.3 (2005)
 -------------------
 + some formating updates (fixed '#####' fields)
 * little reorganization (moved the shared_pool block to the other SGA info)

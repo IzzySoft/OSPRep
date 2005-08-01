@@ -78,7 +78,7 @@
             '<A HREF="#loads">Loads Profile</A>. Furthermore, investigate the '||
             'number of <I>Parse CPU to Parse Elapsed</I> below.</TD></TR>';
   print(L_LINE);
-  L_LINE := ' <TR><TD>Execute to Parse<A HREF="JavaScript:popup('||CHR(39)||'parseexec'||CHR(39)||
+  L_LINE := ' <TR><TD>Execute to Parse&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'parseexec'||CHR(39)||
             ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD>';
   print(L_LINE);
   L_LINE := '<TD ALIGN="right">'||to_char(round(100*(1-PRSE/EXE),2),'990.00')||
