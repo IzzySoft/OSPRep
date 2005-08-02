@@ -5,6 +5,8 @@ History for OSPRep
 v0.3.4
 -------------------
 + added hints for pool size configuration
+! fixed a little error in fts_plans.sh and charts.sh which prevented
+  a connection in some cases
 
 v0.3.3 (2005)
 -------------------

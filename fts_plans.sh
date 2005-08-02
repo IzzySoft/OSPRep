@@ -96,7 +96,7 @@ fi
 
 # -------------------------------[ Prepare and run the final report script ]---
 cat >$SQLSET<<ENDSQLFTS
-CONNECT $user/$password@$ORACLE_SID
+CONNECT $user/$password@$ORACLE_CONNECT
 Set TERMOUT OFF
 Set SCAN OFF
 Set SERVEROUTPUT On Size 1000000
