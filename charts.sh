@@ -96,6 +96,7 @@ ENDTXT
 # -------------------------------[ Prepare and run the final report script ]---
 cat >$SQLSET<<ENDSQLFTS
 CONNECT $user/$password@$ORACLE_CONNECT
+ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,';
 Set TERMOUT OFF
 Set SCAN OFF
 Set SERVEROUTPUT On Size 1000000
