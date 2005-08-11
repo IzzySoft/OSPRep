@@ -19,8 +19,11 @@
                   ORDER BY time desc, waits desc )
        WHERE rownum <= TOP_N_WAITS;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="top5wait">Top '||TOP_N_WAITS||' Wait Events</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="4" ALIGN="center">Ordered by Wait Time (desc), Waits (desc)';
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="top5wait">Top '||TOP_N_WAITS||' Wait Events</A>'||
+                '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'waitevents'||CHR(39)||
+	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></TH></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TD COLSPAN="4" ALIGN="center">Ordered by Wait Time (desc), Waits (desc)';
       print(L_LINE);
       L_LINE:= '<DIV ALIGN="justify">Start with these topmost events and find out '||
                'about details in the corresponding block, e.g. for "db file * read" '||
