@@ -15,6 +15,8 @@ v0.3.4 (2005)
 ! In some cases OSPRep crashed when START_ID and END_ID have been
   specified (invalid range -- e.g. START_ID > END_ID or Statspack
   had a gap in its snap_ids)
++ added info on possible incorrect values concerning open cursors
+  (due to Oracle bug 3926058)
 
 v0.3.3 (12.07.2005)
 -------------------

@@ -496,7 +496,6 @@ BEGIN
   IF BID >= EID THEN
     RAISE invalid_snap_range;
   END IF;
-  print('Report for SnapID '||BID||' - '||EID);
 
   MK_RLIMS := have_rlims;
 
