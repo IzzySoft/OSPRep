@@ -3,7 +3,7 @@ $Id$
 History for OSPRep
 ==================
 
-v0.3.4 (2005)
+v0.3.4 (12.08.2005)
 -------------------
 + added hints for pool size configuration
 ! fixed a little error in fts_plans.sh and charts.sh which prevented
