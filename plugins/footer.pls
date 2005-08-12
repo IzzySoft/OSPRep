@@ -15,6 +15,21 @@
   L_LINE := '</BODY></HTML>'||CHR(10);
   print(L_LINE);
 
+EXCEPTION
+  WHEN invalid_snap_range THEN
+    print(CHR(10)||'The value of the last snapshot specified is equal or less the value of the');
+    print('first snapshot specified. The reason can be:');
+    print('- you specified a wrong range on the command line (parameters -b and -e)');
+    print('- you specified a wrong range in the config file');
+    L_LINE := '- StatsPack skipped some Snap_IDs, and we tried to find the closest matching;'||CHR(10)||
+              '  but due to the "whole" the values crossed';
+    print(L_LINE);
+    print(CHR(10)||'Your range specification: '||START_ID||' - '||END_ID);
+    print('Adjusted by OSPRep to: '||BID||' - '||EID);
+    print(CHR(10)||'If the values specified by you differ from the adjusted ones, it is most likely');
+    print('that there is a gap in Statspacks snap_ids. To find out about this, check the');
+    print('stats$snapshot table with e.g.'||CHR(10)||
+          '  SELECT snap_id FROM stats$snapshot WHERE snap_id between '||EID||' AND '||BID||CHR(10));
 END;
 /
 

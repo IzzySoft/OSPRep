@@ -16,6 +16,7 @@ fi
 
 cat>>$SQLSET<<ENDSQL
 DECLARE
+  invalid_snap_range EXCEPTION;
   EXCLUDE_OWNERS VARCHAR2(255);
   MK_INSTEFF NUMBER;
   MK_RLIMS BOOLEAN;
@@ -86,6 +87,8 @@ DECLARE
   AR_LC_INVPRQ NUMBER;
   WR_ET NUMBER;
   AR_ET NUMBER;
+  START_ID NUMBER;
+  END_ID NUMBER;
   DB_UPTIME NUMBER; DB_BLOCKSIZE NUMBER;
   L_LINE VARCHAR2(4000);
   R_TITLE VARCHAR(200);
@@ -129,6 +132,11 @@ DECLARE
     SELECT MAX(snap_id) maxid FROM stats\$snapshot
      WHERE dbid = DB_ID AND instance_number = INST_NUM;
 
+  CURSOR C_MaxSnapRel(id IN NUMBER) IS
+    SELECT MAX(snap_id) maxid FROM stats\$snapshot
+     WHERE dbid = DB_ID AND instance_number = INST_NUM
+       AND snap_id < id;
+
   CURSOR C_MaxSnapFor IS
     SELECT MAX(snap_id) maxid FROM stats\$snapshot
      WHERE dbid = DB_ID AND instance_number = INST_NUM
@@ -142,7 +150,15 @@ DECLARE
        AND startup_time = (SELECT startup_time FROM stats\$snapshot
                             WHERE dbid = DB_ID AND instance_number = INST_NUM
 			      AND snap_id = EID);
-  
+
+  CURSOR C_MinSnapRel(id IN NUMBER) IS
+    SELECT MIN(snap_id) minid FROM stats\$snapshot
+     WHERE dbid = DB_ID AND instance_number = INST_NUM
+       AND snap_id > id
+       AND startup_time = (SELECT startup_time FROM stats\$snapshot
+                            WHERE dbid = DB_ID AND instance_number = INST_NUM
+			      AND snap_id = EID);
+
   CURSOR C_SnapBind IS
     SELECT parallel,version,host_name
       FROM stats\$database_instance di,stats\$snapshot s
@@ -424,6 +440,8 @@ BEGIN
   AR_LC_INVPRQ := :AR_LC_INVPRQ;
   WR_ET := :WR_ET;
   AR_ET := :AR_ET;
+  START_ID := $START_ID;
+  END_ID := $END_ID;
   dbms_output.enable(1000000);
   R_TITLE := 'StatsPack Report for $ORACLE_SID';
   TABLE_OPEN := '<TABLE ALIGN="center" BORDER="1">';
@@ -437,15 +455,19 @@ BEGIN
     I1 := R_SnapID.maxid;
   END LOOP;
 
+  --- Get Max Snap_ID:
   IF NVL($END_ID,0) = 0 THEN
     EID := I1;
   ELSE
     IF $END_ID > I1 THEN
       EID := I1;
     ELSE
-      EID := $END_ID;
+      FOR R_SnapID IN C_MaxSnapRel($END_ID +1) LOOP
+        EID := R_SnapId.maxid;
+      END LOOP;
     END IF;
   END IF;
+  --- Get Min Snap_id:
   IF NVL($START_ID,0) = 0
   THEN
     FOR R_SnapID IN C_MinSnap LOOP
@@ -461,13 +483,20 @@ BEGIN
       BID := I1;
     END IF;
   ELSE
-    BID := $START_ID;
+    FOR R_Snap_ID IN C_MinSnapRel($START_ID -1) LOOP
+      BID := R_Snap_ID.minid;
+    END LOOP;
     IF NVL($END_ID,0) = 0 THEN
       FOR R_SnapID IN C_MaxSnapFor LOOP
         EID := R_SnapID.maxid;
       END LOOP;
     END IF;
   END IF;
+  --- Check the range
+  IF BID >= EID THEN
+    RAISE invalid_snap_range;
+  END IF;
+  print('Report for SnapID '||BID||' - '||EID);
 
   MK_RLIMS := have_rlims;
 

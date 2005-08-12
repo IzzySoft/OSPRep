@@ -12,6 +12,9 @@ v0.3.4 (2005)
   NLS_NUMERIC_CHARACTERS, since JavaScript requires the '.' as
   decimal separator)
 + added explanations and hints for the top wait events
+! In some cases OSPRep crashed when START_ID and END_ID have been
+  specified (invalid range -- e.g. START_ID > END_ID or Statspack
+  had a gap in its snap_ids)
 
 v0.3.3 (12.07.2005)
 -------------------
