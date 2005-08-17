@@ -1,5 +1,5 @@
 -- ===========================================================================
--- Oracle StatsPack Report 2 Html    (c) 2003 by IzzySoft  (devel@izzysoft.de)
+-- Oracle StatsPack Report 2 Html (c)2003-2005 by IzzySoft (devel@izzysoft.de)
 -- ---------------------------------------------------------------------------
 -- Additional Procedure to collect information on selected wait objects, i.e.
 -- objects causing wait events. In order to successfully install and use this

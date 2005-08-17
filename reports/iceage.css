@@ -16,8 +16,8 @@ CODE {
  font-style:italic;
  font-size:115%;
 }
-.small {
- font-family:serif;
+.small, span.small {
+ font-family: sans-serif;
  font-size:10px;
 }
 .code {
@@ -44,7 +44,7 @@ H2 {
  background-color:#F6F6EB;
  border: 1px ridge #0080c0;
 }
-H3 { text-align:center; }
+H3,H4 { text-align:center; }
 
 /* ------------------------------------------------------------------------ */
 /*                          Tables and Table Classes                        */

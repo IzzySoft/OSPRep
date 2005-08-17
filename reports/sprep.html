@@ -1,3 +1,4 @@
+Report for SnapID 905 - 1118
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD>
  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">
@@ -9,7 +10,7 @@
 pos = (screen.width/2)-400;
      helpwin = eval("window.open(url,'help','toolbar=no,location=no,titlebar=no,directories=no,status=yes,copyhistory=no,scrollbars=yes,width=600,height=400,top=0,left="+pos+"')");
 }
-  version="0.3.3";
+  version="0.3.4";
  </SCRIPT>
 </HEAD><BODY>
 <H2>StatsPack Report for oradb</H2>
@@ -18,7 +19,7 @@ pos = (screen.width/2)-400;
 [ <A HREF="#efficiency">Efficiency</A> ] [ <A HREF="#top5wait">Top 10 Wait</A> ]
 [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ] [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]
 [ <A HREF="#fileio">File IO</A> ] [ <A HREF="#segstat">Segment Stats</A> ] [ <A HREF="#recover">Instance Recovery</A> ]
-[ <A HREF="#pga">Memory Stats</A> ] [ <A HREF="#enq">Enqueue Activity</A> ] [ <A HREF="#undo">Undo Segs</A> ] [ <A HREF="#rbs">RBS</A> ]
+[ <A HREF="#pga">Memory Stats</A> ] [ <A HREF="#enq">Enqueue Activity</A> ] [ <A HREF="#undo">Undo Segs</A> ]
 [ <A HREF="#sharedpool">Shared Pool</A> ] [ <A HREF="#buffstat">Buffer Stats</A> ] [ <A HREF="#caches">Caches</A> ] [ <A HREF="#sga">SGA</A> ] [ <A HREF="#initora">Init Params</A> ]</DIV></TD></TR>
 </TABLE>
 <BR CLEAR="all">
@@ -29,35 +30,34 @@ pos = (screen.width/2)-400;
 <TR><TD class="td_name">Version:</TD><TD>9.2.0.5.0</TD></TR>
  <TR><TD class="td_name">Cluster:</TD><TD>NO</TD></TR>
 
-<TR><TD class="td_name">FileSize (Data+Log)</TD><TD>       1,770.00 MB</TD></TR>
- <TR><TD class="td_name">Startup / Uptime</TD><TD>04.07.2005 15:11 /     7.66 d</TD></TR>
-<TR><TD class="td_name">Report generated:</TD><TD>12.07.2005 07:04</TD></TR>
+<TR><TD class="td_name">FileSize (Data+Log)</TD><TD>       2,120.00 MB</TD></TR>
+ <TR><TD class="td_name">Startup / Uptime</TD><TD>16.07.2005 11:19 /    27.15 d</TD></TR>
+<TR><TD class="td_name">Report generated:</TD><TD>12.08.2005 14:50</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
-<TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="6"><A NAME="snapinfo">SnapShot Info</A></TH></TR>
- <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Snap ID</TH>
-<TH CLASS="th_sub">Snap Time</TH><TH CLASS="th_sub">Sessions</TH><TH CLASS="th_sub">Curs/Sess</TH><TH CLASS="th_sub">Comment</TH></TR>
-<TR><TD>Start</TD><TD ALIGN="right">605</TD><TD>04.07.2005 16:00</TD><TD ALIGN="right">15</TD><TD ALIGN="right">    22.93<TD>&nbsp;</TD></TR>
-<TR><TD>End</TD><TD ALIGN="right">788</TD><TD>12.07.2005 07:00</TD><TD ALIGN="right">14</TD><TD ALIGN="right">       611.71<TD>&nbsp;</TD></TR>
-<TR><TD COLSPAN="6" ALIGN="center">Elapsed:     10,979.97 min</TD></TR>
+<TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="6"><A NAME="snapinfo">SnapShot Info</A>&nbsp;<A HREF="JavaScript:popup('opencurbug')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></TH></TR>
+<TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Snap ID</TH> <TH CLASS="th_sub">Snap Time</TH><TH CLASS="th_sub">Sessions</TH><TH CLASS="th_sub">Curs/Sess</TH><TH CLASS="th_sub">Comment</TH></TR>
+<TR><TD>Start</TD><TD ALIGN="right">905</TD><TD>16.07.2005 11:19</TD><TD ALIGN="right">9</TD><TD ALIGN="right">     4.22<TD>&nbsp;</TD></TR>
+<TR><TD>End</TD><TD ALIGN="right">1118</TD><TD>25.07.2005 08:00</TD><TD ALIGN="right">13</TD><TD ALIGN="right">       746.00<TD>&nbsp;</TD></TR>
+<TR><TD COLSPAN="6" ALIGN="center">Elapsed:     12,760.25 min</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="3"><A NAME="loads">Load Profile</A></TH></TR>
  <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Per Second</TH><TH CLASS="th_sub">Per Transaction</TH></TR>
-<TR><TD CLASS="td_name">Redo Size</TD><TD ALIGN="right">          1,280.63</TD><TD ALIGN="right">          2,297.23</TD></TR>
-<TR><TD CLASS="td_name">Logical Reads</TD><TD ALIGN="right">            812.06</TD><TD ALIGN="right">     1,456.69</TD></TR>
-<TR><TD CLASS="td_name">Block Changes</TD><TD ALIGN="right">              8.38</TD><TD ALIGN="right">        15.03</TD></TR>
-<TR><TD CLASS="td_name">Physical Reads</TD><TD ALIGN="right">             52.50</TD><TD ALIGN="right">        94.18</TD></TR>
-<TR><TD CLASS="td_name">Physical Writes</TD><TD ALIGN="right">              0.19</TD><TD ALIGN="right">         0.34</TD></TR>
-<TR><TD CLASS="td_name">User Calls</TD><TD ALIGN="right">              8.26</TD><TD ALIGN="right">        14.82</TD></TR>
-<TR><TD CLASS="td_name">Parses</TD><TD ALIGN="right">              0.73</TD><TD ALIGN="right">         1.31</TD></TR>
-<TR><TD CLASS="td_name">Hard Parses</TD><TD ALIGN="right">              0.02</TD><TD ALIGN="right">         0.03</TD></TR>
-<TR><TD CLASS="td_name">Sorts</TD><TD ALIGN="right">              1.01</TD><TD ALIGN="right">         1.81</TD></TR>
-<TR><TD CLASS="td_name">Logons</TD><TD ALIGN="right">              0.01</TD><TD ALIGN="right">         0.02</TD></TR>
-<TR><TD CLASS="td_name">Executes</TD><TD ALIGN="right">             11.01</TD><TD ALIGN="right">        19.76</TD></TR>
-<TR><TD CLASS="td_name">Transactions</TD><TD ALIGN="right">              0.56</TD><TD ALIGN="right">&nbsp;</TD></TR>
+<TR><TD CLASS="td_name">Redo Size</TD><TD ALIGN="right">            587.33</TD><TD ALIGN="right">          1,939.65</TD></TR>
+<TR><TD CLASS="td_name">Logical Reads</TD><TD ALIGN="right">             86.40</TD><TD ALIGN="right">       285.34</TD></TR>
+<TR><TD CLASS="td_name">Block Changes</TD><TD ALIGN="right">              3.56</TD><TD ALIGN="right">        11.76</TD></TR>
+<TR><TD CLASS="td_name">Physical Reads</TD><TD ALIGN="right">             16.87</TD><TD ALIGN="right">        55.70</TD></TR>
+<TR><TD CLASS="td_name">Physical Writes</TD><TD ALIGN="right">              0.09</TD><TD ALIGN="right">         0.31</TD></TR>
+<TR><TD CLASS="td_name">User Calls</TD><TD ALIGN="right">              5.72</TD><TD ALIGN="right">        18.89</TD></TR>
+<TR><TD CLASS="td_name">Parses</TD><TD ALIGN="right">              0.52</TD><TD ALIGN="right">         1.73</TD></TR>
+<TR><TD CLASS="td_name">Hard Parses</TD><TD ALIGN="right">              0.01</TD><TD ALIGN="right">         0.04</TD></TR>
+<TR><TD CLASS="td_name">Sorts</TD><TD ALIGN="right">              0.76</TD><TD ALIGN="right">         2.51</TD></TR>
+<TR><TD CLASS="td_name">Logons</TD><TD ALIGN="right">              0.01</TD><TD ALIGN="right">         0.03</TD></TR>
+<TR><TD CLASS="td_name">Executes</TD><TD ALIGN="right">              6.79</TD><TD ALIGN="right">        22.42</TD></TR>
+<TR><TD CLASS="td_name">Transactions</TD><TD ALIGN="right">              0.30</TD><TD ALIGN="right">&nbsp;</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -68,48 +68,48 @@ pos = (screen.width/2)-400;
 </TD><TD CLASS="text">If this ratio is low, check the <A HREF="#bufwait">Buffer Wait Stats</A> section for more detail on which type of block is being contended for.</TD></TR>
 <TR><TD>Redo Nowait</TD><TD ALIGN="right"> 100.00</TD><TD CLASS="text">A value close to 100% indicates minimal time spent waiting for redo logs
 to become available, either because the logs are not filling up very often or because the database is able to switch to a new log quickly whenever the current log fills up.</TD></TR>
-<TR><TD>Buffer Hit&nbsp;<A HREF="JavaScript:popup('buffhits')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD><TD ALIGN="right">  93.56
+<TR><TD>Buffer Hit&nbsp;<A HREF="JavaScript:popup('buffhits')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD><TD ALIGN="right">  80.66
 </TD><TD CLASS="text">A low buffer hit ratio does not necessarily mean the cache is too small: it may very well be that potentially valid full-table-scans are artificially
 reducing what is otherwise a good ratio. A too-small buffer cache can sometimes be identified by the appearance of write complete waits event indicating hot blocks
 (i.e. blocks still being modified) are aging out of the cache while they are still needed; check the <A HREF="#waitevents">Wait Events</A> list for evidence of this event.</TD></TR>
 <TR><TD>In-Memory Sort</TD><TD ALIGN="right">  99.99</TD><TD CLASS="text">A too low ratio indicates too many disk sorts appearing. One possible
 solution could be increasing the sort area/SGA size.</TD></TR>
-<TR><TD>Library Hit</TD><TD ALIGN="right">  99.72
+<TR><TD>Library Hit</TD><TD ALIGN="right">  99.70
 </TD><TD CLASS="text">A low library hit ratio could imply that SQL is prematurely aging out of a too-small shared pool, or that non-shareable SQL is being used.
 If the soft parse ratio is also low, check whether there is a parsing issue.</TD></TR>
-<TR><TD>Soft Parse&nbsp;<A HREF="JavaScript:popup('softparse')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD><TD ALIGN="right">  97.75</TD><TD CLASS="text">When the soft parse
+<TR><TD>Soft Parse&nbsp;<A HREF="JavaScript:popup('softparse')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD><TD ALIGN="right">  97.97</TD><TD CLASS="text">When the soft parse
 ratio falls much below 80%, investigate whether you can share SQL by using bind variables or force cursor sharing. But before drawing any conclusions, compare the soft parse
 ratio against the actual hard and soft parse rates shown in the <A HREF="#loads">Loads Profile</A>. Furthermore, investigate the number of <I>Parse CPU to Parse Elapsed</I> below.</TD></TR>
-<TR><TD>Execute to Parse<A HREF="JavaScript:popup('parseexec')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD>
-<TD ALIGN="right">  93.38</TD><TD CLASS="text">A low value here indicates that there is no much re-usable SQL (see <I>Soft Parse</I> for possible actions).
+<TR><TD>Execute to Parse&nbsp;<A HREF="JavaScript:popup('parseexec')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD>
+<TD ALIGN="right">  92.28</TD><TD CLASS="text">A low value here indicates that there is no much re-usable SQL (see <I>Soft Parse</I> for possible actions).
 Negative values connote that there are more Parses than Executes, which could point to syntactically incorrect SQL statements (or missing privileges).</TD></TR>
 <TR><TD>Latch Hit</TD><TD ALIGN="right"> 100.00
 </TD><TD CLASS="text">A low value for this ratio indicates a latching problem, whereas a high value is generally good. However, a high latch hit ratio can artificially mask a low
 get rate on a specific latch. Cross-check this value with the <A HREF="#top5wait">Top 5 Wait Events</A> to see if latch free is in the list, and refer to the
 <A HREF="#latches">Latch</A> sections of this report.</TD></TR>
-<TR><TD>Parse CPU to Parse Elapsed</TD><TD ALIGN="right">  91.93</TD><TD>See <I>Soft Parse</I> above.</TD></TR> <TR><TD>Non-Parse CPU</TD><TD ALIGN="right">  97.76</TD><TD>&nbsp;</TD></TR>
+<TR><TD>Parse CPU to Parse Elapsed</TD><TD ALIGN="right">  91.92</TD><TD>See <I>Soft Parse</I> above.</TD></TR> <TR><TD>Non-Parse CPU</TD><TD ALIGN="right">  95.84</TD><TD>&nbsp;</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
 <HR>
-<TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="4"><A NAME="top5wait">Top 10 Wait Events</A></TH></TR>
- <TR><TD COLSPAN="4" ALIGN="center">Ordered by Wait Time (desc), Waits (desc)
+<TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="4"><A NAME="top5wait">Top 10 Wait Events</A>&nbsp;<A HREF="JavaScript:popup('waitevents')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></TH></TR>
+<TR><TD COLSPAN="4" ALIGN="center">Ordered by Wait Time (desc), Waits (desc)
 <DIV ALIGN="justify">Start with these topmost events and find out about details in the corresponding block, e.g. for "db file * read" check the <A HREF="#tsio">TableSpace IO</A>
 (and <A HREF="#fileio">File IO</A>) blocks to identify the possibly affected schemas, and then the <A HREF="#sqlbyreads">SQL Statements by Reads</A> (and
 <A HREF="#waitobjects">Wait Objects</A>) to find out what statements (and/or objects) may need some tuning , for "enqueue" waits look up the <A HREF="#enq">Enqueue Activity</A>
 section of this document. If the CPU is indicated as a bottleneck, check the <A HREF="#sqlbygets">SQL Statements by Gets</A>. Then continue the same
 with the next block, <A HREF="#waitevents">All Wait Events</A></DIV></TD></TR>
 <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH><TH CLASS="th_sub">Wait Time</TH><TH CLASS="th_sub">Total Wt Time</TH></TR>
-<TR><TD CLASS="td_name">enqueue</TD><TD ALIGN="right">         1,348</TD><TD ALIGN="right">1:04:15.847</TD><TD ALIGN="right">    56.33%</TD></TR>
-<TR><TD CLASS="td_name">db file scattered read</TD><TD ALIGN="right">     5,317,461</TD><TD ALIGN="right">18:48.554</TD><TD ALIGN="right">    15.60%</TD></TR>
-<TR><TD CLASS="td_name">log file sync</TD><TD ALIGN="right">       368,361</TD><TD ALIGN="right">14:48.559</TD><TD ALIGN="right">    12.09%</TD></TR>
-<TR><TD CLASS="td_name">control file parallel write</TD><TD ALIGN="right">       215,039</TD><TD ALIGN="right">8:38.775</TD><TD ALIGN="right">     6.69%</TD></TR>
-<TR><TD CLASS="td_name">log file parallel write</TD><TD ALIGN="right">       382,494</TD><TD ALIGN="right">5:37.689</TD><TD ALIGN="right">     4.04%</TD></TR>
-<TR><TD CLASS="td_name">db file sequential read</TD><TD ALIGN="right">       695,352</TD><TD ALIGN="right">2:18.711</TD><TD ALIGN="right">     2.01%</TD></TR>
-<TR><TD CLASS="td_name">db file parallel write</TD><TD ALIGN="right">        16,745</TD><TD ALIGN="right">2:39.213</TD><TD ALIGN="right">     1.45%</TD></TR>
-<TR><TD CLASS="td_name">direct path read (lob) </TD><TD ALIGN="right">        24,032</TD><TD ALIGN="right">26.288</TD><TD ALIGN="right">     0.38%</TD></TR>
-<TR><TD CLASS="td_name">SQL*Net message from dblink</TD><TD ALIGN="right">            60</TD><TD ALIGN="right">20.455</TD><TD ALIGN="right">     0.30%</TD></TR>
-<TR><TD CLASS="td_name">SQL*Net more data to client</TD><TD ALIGN="right">       829,218</TD><TD ALIGN="right">20.604</TD><TD ALIGN="right">     0.29%</TD></TR>
+<TR><TD CLASS="td_name">log file sync</TD><TD ALIGN="right">       231,744</TD><TD ALIGN="right">12:10.758</TD><TD ALIGN="right">    31.06%</TD></TR>
+<TR><TD CLASS="td_name">db file scattered read</TD><TD ALIGN="right">     1,998,032</TD><TD ALIGN="right">9:45.361</TD><TD ALIGN="right">    22.36%</TD></TR>
+<TR><TD CLASS="td_name">control file parallel write</TD><TD ALIGN="right">       249,206</TD><TD ALIGN="right">8:25.192</TD><TD ALIGN="right">    21.50%</TD></TR>
+<TR><TD CLASS="td_name">log file parallel write</TD><TD ALIGN="right">       248,170</TD><TD ALIGN="right">5:34.339</TD><TD ALIGN="right">    11.68%</TD></TR>
+<TR><TD CLASS="td_name">db file parallel write</TD><TD ALIGN="right">         8,435</TD><TD ALIGN="right">2:32.043</TD><TD ALIGN="right">     3.92%</TD></TR>
+<TR><TD CLASS="td_name">db file sequential read</TD><TD ALIGN="right">       173,722</TD><TD ALIGN="right">1:26.983</TD><TD ALIGN="right">     3.66%</TD></TR>
+<TR><TD CLASS="td_name">direct path read (lob) </TD><TD ALIGN="right">        27,036</TD><TD ALIGN="right">1:43.166</TD><TD ALIGN="right">     1.84%</TD></TR>
+<TR><TD CLASS="td_name">SQL*Net more data to client</TD><TD ALIGN="right">       970,909</TD><TD ALIGN="right">21.073</TD><TD ALIGN="right">     0.90%</TD></TR>
+<TR><TD CLASS="td_name">SQL*Net message from dblink</TD><TD ALIGN="right">           343</TD><TD ALIGN="right">19.864</TD><TD ALIGN="right">     0.80%</TD></TR>
+<TR><TD CLASS="td_name">process startup</TD><TD ALIGN="right">           211</TD><TD ALIGN="right">12.237</TD><TD ALIGN="right">     0.52%</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -121,16 +121,16 @@ it is possible and valid for the summed total % to exceed 100.<BR>If your primar
 (CPU) plus <A HREF="#sqlbyreads">SQL by Reads</A> (File IO).</P></TD></TR>
  <TR><TH CLASS="th_sub">Buffer Gets</TH><TH CLASS="th_sub">Executions</TH>
 <TH CLASS="th_sub">Gets per Exec</TH><TH CLASS="th_sub">Total</TH><TH CLASS="th_sub">CPU Time</TH><TH CLASS="th_sub">Elapsed Time</TH><TH CLASS="th_sub">Hash Value</TH></TR>
-<TR><TD ALIGN="right">      3,837,195</TD><TD ALIGN="right">      39,999</TD><TD ALIGN="right">          95.9</TD><TD ALIGN="right">           0.7%</TD><TD ALIGN="right">
-2:19.620</TD><TD ALIGN="right">1:02.390</TD><TD ALIGN="right">1686291633</TD></TR>
+<TR><TD ALIGN="right">      2,925,319</TD><TD ALIGN="right">      29,846</TD><TD ALIGN="right">          98.0</TD><TD ALIGN="right">           4.4%</TD><TD ALIGN="right">
+1:53.220</TD><TD ALIGN="right">1:45.174</TD><TD ALIGN="right">1686291633</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
 begin delete ant where rowid in ( select ANT . rowid from ANT ,
 AUF where AUF . STSID not in ( 'EIN' , 'FGB' , 'IAB' ) and AUF .
 AUTID = 1 and AUF . AUFID = ANT . AUFID and ANT . STSID = 'EIN'
 ) ; :COUNT := sql % rowcount ; end ;
 </TD></TR>
-<TR><TD ALIGN="right">      3,163,402</TD><TD ALIGN="right">      32,934</TD><TD ALIGN="right">          96.1</TD><TD ALIGN="right">           0.6%</TD><TD ALIGN="right">
-2:43.120</TD><TD ALIGN="right">1:46.884</TD><TD ALIGN="right">4177894216</TD></TR>
+<TR><TD ALIGN="right">      2,924,320</TD><TD ALIGN="right">      29,840</TD><TD ALIGN="right">          98.0</TD><TD ALIGN="right">           4.4%</TD><TD ALIGN="right">
+1:48.840</TD><TD ALIGN="right">1:41.830</TD><TD ALIGN="right">4177894216</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
 DELETE ANT WHERE ROWID IN ( SELECT ANT . ROWID FROM ANT , AUF WH
 ERE AUF . STSID NOT IN ( 'EIN' , 'FGB' , 'IAB' ) AND AUF . AUTID
@@ -151,30 +151,28 @@ Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">CPUCost</TH><TH C
 </TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
 <TR><TD CLASS="inner"><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. . . . . NESTED LOOPS </CODE></DIV></TD><TD CLASS="inner">.</TD><TD CLASS="inner">&nbsp;
 </TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
-<TR CLASS="warn"><TD><DIV STYLE="width:19,012345679012345679012345679012345679em"><CODE>. . . . . . TABLE ACCESS FULL</CODE></DIV></TD><TD>PETER.AUF</TD><TD>ANALYZED
+<TR CLASS="warn"><TD><DIV STYLE="width:19,012345679012345679012345679012345679em"><CODE>. . . . . . TABLE ACCESS FULL</CODE></DIV></TD><TD>FRODO.AUF</TD><TD>ANALYZED
 </TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
-<TR><TD CLASS="inner"><DIV STYLE="width:19,012345679012345679012345679012345679em"><CODE>. . . . . . INDEX RANGE SCAN</CODE></DIV></TD><TD CLASS="inner">PETER.XIE4ANT</TD><TD CLASS="inner">ANALYZED
+<TR><TD CLASS="inner"><DIV STYLE="width:19,012345679012345679012345679012345679em"><CODE>. . . . . . INDEX RANGE SCAN</CODE></DIV></TD><TD CLASS="inner">FRODO.XIE4ANT</TD><TD CLASS="inner">ANALYZED
 </TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
-<TR><TD CLASS="inner"><DIV STYLE="width:21,049382716049382716049382716049382716em"><CODE>. . . TABLE ACCESS BY USER ROWID</CODE></DIV></TD><TD CLASS="inner">PETER.ANT</TD><TD CLASS="inner">ANALYZED
+<TR><TD CLASS="inner"><DIV STYLE="width:21,049382716049382716049382716049382716em"><CODE>. . . TABLE ACCESS BY USER ROWID</CODE></DIV></TD><TD CLASS="inner">FRODO.ANT</TD><TD CLASS="inner">ANALYZED
 </TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
 </TABLE></TD></TR>
-<TR><TD ALIGN="right">      1,371,143</TD><TD ALIGN="right">      95,342</TD><TD ALIGN="right">          14.4</TD><TD ALIGN="right">           0.3%</TD><TD ALIGN="right">
-22.450</TD><TD ALIGN="right">1:05.096</TD><TD ALIGN="right">43038154</TD></TR>
+<TR><TD ALIGN="right">      1,469,542</TD><TD ALIGN="right">       2,002</TD><TD ALIGN="right">         734.0</TD><TD ALIGN="right">           2.2%</TD><TD ALIGN="right">
+20.190</TD><TD ALIGN="right">20.654</TD><TD ALIGN="right">3324404337</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-begin :LICENSE_ID := pit_ctrl . get_next_license ( :PROCESS_ID ,
-:STATE:ind_STATE , :ORDER_ID:ind_ORDER_ID , :PME_ID:ind_PME_ID
-) ; end ;
+select 'datapoint: '||count(*) from all_tab_privs    where grant
+ee = 'PATRON'
 </TD></TR>
-<TR><TD ALIGN="right">      1,231,297</TD><TD ALIGN="right">      75,151</TD><TD ALIGN="right">          16.4</TD><TD ALIGN="right">           0.2%</TD><TD ALIGN="right">
-2:33.840</TD><TD ALIGN="right">1:22.257</TD><TD ALIGN="right">2937610609</TD></TR>
+<TR><TD ALIGN="right">        992,635</TD><TD ALIGN="right">      76,355</TD><TD ALIGN="right">          13.0</TD><TD ALIGN="right">           1.5%</TD><TD ALIGN="right">
+18.150</TD><TD ALIGN="right">2:57.012</TD><TD ALIGN="right">2276398955</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-begin pit_xprt . set_license_state ( :LICENSE_ID , :NEW_STATE )
-; end ;
+begin :DONE := pw_mgr . watch_processes ; end ;
 </TD></TR>
-<TR><TD ALIGN="right">      1,069,778</TD><TD ALIGN="right">     265,793</TD><TD ALIGN="right">           4.0</TD><TD ALIGN="right">           0.2%</TD><TD ALIGN="right">
-1:33.010</TD><TD ALIGN="right">6:35.508</TD><TD ALIGN="right">1712657913</TD></TR>
+<TR><TD ALIGN="right">        921,044</TD><TD ALIGN="right">     229,056</TD><TD ALIGN="right">           4.0</TD><TD ALIGN="right">           1.4%</TD><TD ALIGN="right">
+0.370</TD><TD ALIGN="right">5:56.772</TD><TD ALIGN="right">1712657913</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-begin pit_common . update_timestamp ( :PROCESS_ID ) ; end ;
+begin pw_common . update_timestamp ( :PROCESS_ID ) ; end ;
 </TD></TR>
 </TABLE>
 <BR CLEAR="all">
@@ -184,10 +182,24 @@ begin pit_common . update_timestamp ( :PROCESS_ID ) ; end ;
 goal is to reduce resource usage, start by tuning these statements/objects (File IO) plus <A HREF="#sqlbygets">SQL by Gets (CPU)</A>.</TD></TR>
 <TR><TH CLASS="th_sub">Pysical Reads</TH><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Reads per Exec</TH><TH CLASS="th_sub">Total</TH>
 <TH CLASS="th_sub">CPU Time</TH><TH CLASS="th_sub">Elapsed Time</TH><TH CLASS="th_sub">Hash Value</TH></TR>
-<TR><TD ALIGN="right">          3,149</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       3,149.0</TD><TD ALIGN="right">           0.0%</TD><TD ALIGN="right">
-1.490</TD><TD ALIGN="right">8.558</TD><TD ALIGN="right">973039809</TD></TR>
+<TR><TD ALIGN="right">          3,169</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       3,169.0</TD><TD ALIGN="right">           0.2%</TD><TD ALIGN="right">
+2.910</TD><TD ALIGN="right">3.827</TD><TD ALIGN="right">1971852235</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-SELECT /*+NESTED_TABLE_GET_REFS+*/ "PETER"."IMP".* FROM "PETER
+SELECT /*+NESTED_TABLE_GET_REFS+*/ "PERFSTAT"."STATS$SQL_SUMMARY
+".* FROM "PERFSTAT"."STATS$SQL_SUMMARY"
+</TD></TR>
+<TR><TD>&nbsp;</TD><TD COLSPAN="6">
+<TABLE ALIGN="center" BORDER="1"><TR><TH CLASS="th_sub2">Operation</TH><TH CLASS="th_sub2">Object</TH><TH CLASS="th_sub2">
+Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">CPUCost</TH><TH CLASS="th_sub2">IOCost</TH><TH CLASS="th_sub2">Size</TH></TR>
+<TR><TD CLASS="inner"><DIV STYLE="width:11,11111111111111111111111111111111111111em"><CODE>SELECT STATEMENT </CODE></DIV></TD><TD CLASS="inner">.</TD><TD CLASS="inner">CHOOSE
+</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
+<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>PERFSTAT.STATS$SQL_SUMMARY</TD><TD>&nbsp;
+</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
+</TABLE></TD></TR>
+<TR><TD ALIGN="right">          3,141</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       3,141.0</TD><TD ALIGN="right">           0.1%</TD><TD ALIGN="right">
+1.250</TD><TD ALIGN="right">4.739</TD><TD ALIGN="right">973039809</TD></TR>
+ <TR><TD>&nbsp;</TD><TD COLSPAN="6">
+SELECT /*+NESTED_TABLE_GET_REFS+*/ "FRODO"."IMP".* FROM "FRODO
 "."IMP"
 </TD></TR>
 <TR><TD>&nbsp;</TD><TD COLSPAN="6">
@@ -195,49 +207,51 @@ SELECT /*+NESTED_TABLE_GET_REFS+*/ "PETER"."IMP".* FROM "PETER
 Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">CPUCost</TH><TH CLASS="th_sub2">IOCost</TH><TH CLASS="th_sub2">Size</TH></TR>
 <TR><TD CLASS="inner"><DIV STYLE="width:11,11111111111111111111111111111111111111em"><CODE>SELECT STATEMENT </CODE></DIV></TD><TD CLASS="inner">.</TD><TD CLASS="inner">CHOOSE
 </TD><TD ALIGN="right" CLASS="inner">     852</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
-<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>PETER.IMP</TD><TD>ANALYZED
+<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>FRODO.IMP</TD><TD>ANALYZED
 </TD><TD ALIGN="right">     852</TD><TD ALIGN="right">    110,524,207</TD><TD ALIGN="right">     834</TD><TD ALIGN="right"><DIV STYLE="width:4,5em">      14,875 k</DIV></TD></TR>
 </TABLE></TD></TR>
 <TR><TD ALIGN="right">          2,372</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       2,372.0</TD><TD ALIGN="right">           0.0%</TD><TD ALIGN="right">
-1.110</TD><TD ALIGN="right">1.956</TD><TD ALIGN="right">3835363457</TD></TR>
+1.870</TD><TD ALIGN="right">1.942</TD><TD ALIGN="right">3835363457</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-SELECT /*+NESTED_TABLE_GET_REFS+*/ "PETER"."INF_BACKUP".* FROM
-"PETER"."INF_BACKUP"
+SELECT /*+NESTED_TABLE_GET_REFS+*/ "FRODO"."INF_BACKUP".* FROM
+"FRODO"."INF_BACKUP"
 </TD></TR>
 <TR><TD>&nbsp;</TD><TD COLSPAN="6">
 <TABLE ALIGN="center" BORDER="1"><TR><TH CLASS="th_sub2">Operation</TH><TH CLASS="th_sub2">Object</TH><TH CLASS="th_sub2">
 Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">CPUCost</TH><TH CLASS="th_sub2">IOCost</TH><TH CLASS="th_sub2">Size</TH></TR>
 <TR><TD CLASS="inner"><DIV STYLE="width:11,11111111111111111111111111111111111111em"><CODE>SELECT STATEMENT </CODE></DIV></TD><TD CLASS="inner">.</TD><TD CLASS="inner">CHOOSE
 </TD><TD ALIGN="right" CLASS="inner">     655</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
-<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>PETER.INF_BACKUP</TD><TD>ANALYZED
+<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>FRODO.INF_BACKUP</TD><TD>ANALYZED
 </TD><TD ALIGN="right">     655</TD><TD ALIGN="right">     68,028,356</TD><TD ALIGN="right">     644</TD><TD ALIGN="right"><DIV STYLE="width:4,5em">      15,970 k</DIV></TD></TR>
 </TABLE></TD></TR>
-<TR><TD ALIGN="right">          2,305</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       2,305.0</TD><TD ALIGN="right">           0.0%</TD><TD ALIGN="right">
-1.170</TD><TD ALIGN="right">2.137</TD><TD ALIGN="right">3052337814</TD></TR>
+<TR><TD ALIGN="right">          2,279</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       2,279.0</TD><TD ALIGN="right">           0.1%</TD><TD ALIGN="right">
+2.500</TD><TD ALIGN="right">3.778</TD><TD ALIGN="right">1898264937</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-SELECT /*+NESTED_TABLE_GET_REFS+*/ "PETER"."INF".* FROM "PETER
-"."INF"
+SELECT /*+NESTED_TABLE_GET_REFS+*/ "PERFSTAT"."STATS$LATCH".* FR
+OM "PERFSTAT"."STATS$LATCH"
 </TD></TR>
 <TR><TD>&nbsp;</TD><TD COLSPAN="6">
 <TABLE ALIGN="center" BORDER="1"><TR><TH CLASS="th_sub2">Operation</TH><TH CLASS="th_sub2">Object</TH><TH CLASS="th_sub2">
 Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">CPUCost</TH><TH CLASS="th_sub2">IOCost</TH><TH CLASS="th_sub2">Size</TH></TR>
 <TR><TD CLASS="inner"><DIV STYLE="width:11,11111111111111111111111111111111111111em"><CODE>SELECT STATEMENT </CODE></DIV></TD><TD CLASS="inner">.</TD><TD CLASS="inner">CHOOSE
-</TD><TD ALIGN="right" CLASS="inner">     650</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
-<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>PETER.INF</TD><TD>ANALYZED
-</TD><TD ALIGN="right">     650</TD><TD ALIGN="right">     67,900,170</TD><TD ALIGN="right">     639</TD><TD ALIGN="right"><DIV STYLE="width:4,5em">      15,970 k</DIV></TD></TR>
+</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
+<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>PERFSTAT.STATS$LATCH</TD><TD>&nbsp;
+</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
 </TABLE></TD></TR>
-<TR><TD ALIGN="right">          2,132</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       2,132.0</TD><TD ALIGN="right">           0.0%</TD><TD ALIGN="right">
-1.140</TD><TD ALIGN="right">2.731</TD><TD ALIGN="right">1971852235</TD></TR>
+<TR><TD ALIGN="right">          1,928</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       1,928.0</TD><TD ALIGN="right">           0.0%</TD><TD ALIGN="right">
+1.050</TD><TD ALIGN="right">2.568</TD><TD ALIGN="right">3658914384</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-SELECT /*+NESTED_TABLE_GET_REFS+*/ "PERFSTAT"."STATS$SQL_SUMMARY
-".* FROM "PERFSTAT"."STATS$SQL_SUMMARY"
+SELECT /*+NESTED_TABLE_GET_REFS+*/ "PERFSTAT"."STATS$SYSSTAT".*
+FROM "PERFSTAT"."STATS$SYSSTAT"
 </TD></TR>
-<TR><TD ALIGN="right">          1,828</TD><TD ALIGN="right">          10</TD><TD ALIGN="right">         182.8</TD><TD ALIGN="right">           0.4%</TD><TD ALIGN="right">
-2.980</TD><TD ALIGN="right">2.943</TD><TD ALIGN="right">2661378477</TD></TR>
- <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-begin pit_xprt . order_statistic_art_border1 ( :ORDER_ID , :ART_
-CNT , :ART_ERR ) ; end ;
-</TD></TR>
+<TR><TD>&nbsp;</TD><TD COLSPAN="6">
+<TABLE ALIGN="center" BORDER="1"><TR><TH CLASS="th_sub2">Operation</TH><TH CLASS="th_sub2">Object</TH><TH CLASS="th_sub2">
+Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">CPUCost</TH><TH CLASS="th_sub2">IOCost</TH><TH CLASS="th_sub2">Size</TH></TR>
+<TR><TD CLASS="inner"><DIV STYLE="width:11,11111111111111111111111111111111111111em"><CODE>SELECT STATEMENT </CODE></DIV></TD><TD CLASS="inner">.</TD><TD CLASS="inner">CHOOSE
+</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
+<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>PERFSTAT.STATS$SYSSTAT</TD><TD>&nbsp;
+</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
+</TABLE></TD></TR>
 </TABLE>
 <BR CLEAR="all">
 <HR>
@@ -246,18 +260,18 @@ CNT , :ART_ERR ) ; end ;
 statements if your primary goal is to increase the response time.</TD></TR>
 <TR><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Rows Processed</TH><TH CLASS="th_sub">Rows per Exec</TH><TH CLASS="th_sub">CPU per Exec</TH>
 <TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">Hash Value</TH></TR>
-<TR><TD ALIGN="right">     649,994</TD><TD ALIGN="right">              0</TD><TD ALIGN="right">             0.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
+<TR><TD ALIGN="right">     459,461</TD><TD ALIGN="right">              0</TD><TD ALIGN="right">             0.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
 0.000</TD><TD ALIGN="right">1053795750</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
 COMMIT
 </TD></TR>
-<TR><TD ALIGN="right">     292,042</TD><TD ALIGN="right">        292,042</TD><TD ALIGN="right">             1.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
+<TR><TD ALIGN="right">     229,058</TD><TD ALIGN="right">        229,058</TD><TD ALIGN="right">             1.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
 0.000</TD><TD ALIGN="right">876411139</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-begin pit_common . set_process_state ( :PROCESS_ID , :STATUS ) ;
+begin pw_common . set_process_state ( :PROCESS_ID , :STATUS ) ;
 end ;
 </TD></TR>
-<TR><TD ALIGN="right">     292,040</TD><TD ALIGN="right">          8,872</TD><TD ALIGN="right">             0.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
+<TR><TD ALIGN="right">     229,056</TD><TD ALIGN="right">              4</TD><TD ALIGN="right">             0.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
 0.000</TD><TD ALIGN="right">694256415</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
 UPDATE PRO SET PRO.STSID = :B2, PROAENAM=SYSDATE, PROAENDURCH=US
@@ -271,17 +285,17 @@ Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">CPUCost</TH><TH C
 </TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
 <TR><TD CLASS="inner"><DIV STYLE="width:11,11111111111111111111111111111111111111em"><CODE>. UPDATE </CODE></DIV></TD><TD CLASS="inner">.</TD><TD CLASS="inner">&nbsp;
 </TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
-<TR><TD CLASS="inner"><DIV STYLE="width:20,37037037037037037037037037037037037033em"><CODE>. . TABLE ACCESS BY INDEX ROWID</CODE></DIV></TD><TD CLASS="inner">PETER.PRO</TD><TD CLASS="inner">ANALYZED
+<TR><TD CLASS="inner"><DIV STYLE="width:20,37037037037037037037037037037037037033em"><CODE>. . TABLE ACCESS BY INDEX ROWID</CODE></DIV></TD><TD CLASS="inner">FRODO.PRO</TD><TD CLASS="inner">ANALYZED
 </TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
-<TR><TD CLASS="inner"><DIV STYLE="width:20,37037037037037037037037037037037037033em"><CODE>. . . INDEX UNIQUE SCAN</CODE></DIV></TD><TD CLASS="inner">PETER.XPKPRO</TD><TD CLASS="inner">ANALYZED
+<TR><TD CLASS="inner"><DIV STYLE="width:20,37037037037037037037037037037037037033em"><CODE>. . . INDEX UNIQUE SCAN</CODE></DIV></TD><TD CLASS="inner">FRODO.XPKPRO</TD><TD CLASS="inner">ANALYZED
 </TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
 </TABLE></TD></TR>
-<TR><TD ALIGN="right">     265,793</TD><TD ALIGN="right">        265,793</TD><TD ALIGN="right">             1.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
+<TR><TD ALIGN="right">     229,056</TD><TD ALIGN="right">        229,056</TD><TD ALIGN="right">             1.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
 0.001</TD><TD ALIGN="right">1712657913</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-begin pit_common . update_timestamp ( :PROCESS_ID ) ; end ;
+begin pw_common . update_timestamp ( :PROCESS_ID ) ; end ;
 </TD></TR>
-<TR><TD ALIGN="right">     265,792</TD><TD ALIGN="right">        265,790</TD><TD ALIGN="right">             1.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
+<TR><TD ALIGN="right">     229,054</TD><TD ALIGN="right">        229,053</TD><TD ALIGN="right">             1.0</TD><TD ALIGN="right">0.000</TD><TD ALIGN="right">
 0.000</TD><TD ALIGN="right">853794241</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
 select to_char(sysdate,'DD.MM.YYYY') ,to_char(sysdate,'HH24:MI:S
@@ -292,9 +306,9 @@ S') into :b0,:b1  from dual
 <HR>
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="4"><A NAME="sqlbyparse">Top 5 SQL ordered by Parse Calls</A></TH></TR>
  <TR><TD COLSPAN="4" ALIGN="center">End Parse Calls Treshold: 1000<BR>Consider tuning these
-statements/objects, if the percentage of CPU used for parsing is high. Currently, parsing takes avg.            2.24%% of all CPU usage by all sessions.</TD></TR>
+statements/objects, if the percentage of CPU used for parsing is high. Currently, parsing takes avg.            4.16%% of all CPU usage by all sessions.</TD></TR>
 <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Total Parses</TH><TH CLASS="th_sub">Hash Value</TH></TR>
-<TR><TD ALIGN="right">      37,341</TD><TD ALIGN="right">      37,341</TD><TD ALIGN="right">   0.08%</TD><TD ALIGN="right">2609822319</TD></TR>
+<TR><TD ALIGN="right">      29,846</TD><TD ALIGN="right">      29,846</TD><TD ALIGN="right">   0.07%</TD><TD ALIGN="right">2609822319</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
 lock table AUF in exclusive mode
 </TD></TR>
@@ -303,27 +317,33 @@ lock table AUF in exclusive mode
 Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">CPUCost</TH><TH CLASS="th_sub2">IOCost</TH><TH CLASS="th_sub2">Size</TH></TR>
 <TR><TD CLASS="inner"><DIV STYLE="width:11,11111111111111111111111111111111111111em"><CODE>DDL STATEMENT </CODE></DIV></TD><TD CLASS="inner">.</TD><TD CLASS="inner">RULE
 </TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner">&nbsp;</TD><TD ALIGN="right" CLASS="inner"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
-<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>PETER.AUF</TD><TD>ANALYZED
+<TR CLASS="warn"><TD><DIV STYLE="width:12,22222222222222222222222222222222222222em"><CODE>. TABLE ACCESS FULL</CODE></DIV></TD><TD>FRODO.AUF</TD><TD>ANALYZED
 </TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right"><DIV STYLE="width:2,1em">&nbsp;</DIV></TD></TR>
 </TABLE></TD></TR>
-<TR><TD ALIGN="right">      30,098</TD><TD ALIGN="right">      30,098</TD><TD ALIGN="right">   0.06%</TD><TD ALIGN="right">3867936055</TD></TR>
+<TR><TD ALIGN="right">      27,349</TD><TD ALIGN="right">      27,349</TD><TD ALIGN="right">   0.07%</TD><TD ALIGN="right">3867936055</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
 commit
 </TD></TR>
-<TR><TD ALIGN="right">       4,410</TD><TD ALIGN="right">       4,410</TD><TD ALIGN="right">   0.01%</TD><TD ALIGN="right">207971982</TD></TR>
+<TR><TD ALIGN="right">       6,626</TD><TD ALIGN="right">       6,626</TD><TD ALIGN="right">   0.02%</TD><TD ALIGN="right">3997906522</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-begin pit_common . init_session ( :VERSION ) ; end ;
+select user# from sys.user$ where name = 'OUTLN'
 </TD></TR>
-<TR><TD ALIGN="right">       4,410</TD><TD ALIGN="right">       4,473</TD><TD ALIGN="right">   0.01%</TD><TD ALIGN="right">732247665</TD></TR>
+<TR><TD ALIGN="right">       6,612</TD><TD ALIGN="right">       6,612</TD><TD ALIGN="right">   0.02%</TD><TD ALIGN="right">1356713530</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-begin :DBLOGLEVEL := pit_common . read_db_loglevel ( :MACHINE_ID
-) ; end ;
+select privilege#,level from sysauth$ connect by grantee#=prior
+privilege# and privilege#&gt;0 start with (grantee#=:1 or grantee#=
+1) and privilege#&gt;0
 </TD></TR>
-<TR><TD ALIGN="right">       4,410</TD><TD ALIGN="right">       4,410</TD><TD ALIGN="right">   0.01%</TD><TD ALIGN="right">2289187641</TD></TR>
+<TR><TD ALIGN="right">       6,373</TD><TD ALIGN="right">       6,373</TD><TD ALIGN="right">   0.02%</TD><TD ALIGN="right">2176627595</TD></TR>
  <TR><TD>&nbsp;</TD><TD COLSPAN="6">
-begin :PROCESS_ID := pit_common . register_process ( :MACHINE_ID
-, :PROCESS_TYPE , :PID , :PRO_ID:ind_PRO_ID , :PID_RUNNING:ind_
-PID_RUNNING , :STATE_RUNNING:ind_STATE_RUNNING ) ; end ;
+ALTER SESSION SET NLS_LANGUAGE= 'AMERICAN' NLS_TERRITORY= 'GERMA
+NY' NLS_CURRENCY= '€' NLS_ISO_CURRENCY= 'GERMANY' NLS_NUMERIC_CH
+ARACTERS= ',.' NLS_CALENDAR= 'GREGORIAN' NLS_DATE_FORMAT= 'DD.MM
+.YYYY' NLS_DATE_LANGUAGE= 'GERMAN'  NLS_SORT= 'BINARY' TIME_ZONE
+= '+02:00' NLS_DUAL_CURRENCY = '€' NLS_TIME_FORMAT = 'HH24:MI:SS
+XFF' NLS_TIMESTAMP_FORMAT = 'DD.MM.RR HH24:MI:SSXFF' NLS_TIME_TZ
+_FORMAT = 'HH24:MI:SSXFF TZR' NLS_TIMESTAMP_TZ_FORMAT = 'DD.MM.R
+R HH24:MI:SSXFF TZR'
 </TD></TR>
 </TABLE>
 <BR CLEAR="all">
@@ -333,27 +353,27 @@ PID_RUNNING , :STATE_RUNNING:ind_STATE_RUNNING ) ; end ;
 <TR><TD COLSPAN="11" ALIGN="center">Ordered by IOs (Reads + Writes) desc<BR>ReadSize/WriteSize report the physical IO Size</TD></TR>
 <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Reads</TH><TH CLASS="th_sub">AvgReads/s</TH><TH CLASS="th_sub">AvgRd (ms)</TH><TH CLASS="th_sub">Avg Blks/Rd</TH>
 <TH CLASS="th_sub">Writes</TH><TH CLASS="th_sub">Avg Wrt/s</TH><TH CLASS="th_sub">ReadSize</TH><TH CLASS="th_sub">WriteSize</TH><TH CLASS="th_sub">Buffer Waits</TH><TH CLASS="th_sub">Avg Buf Wt (ms)</TH></TR>
-<TR><TD CLASS="td_name">DATA</TD><TD ALIGN="right">     5,999,020</TD><TD ALIGN="right">     9.11</TD><TD ALIGN="right">       0.2
-</TD><TD ALIGN="right">     5.7</TD><TD ALIGN="right">        13,167</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right"> 262.7 G</TD>
-<TD ALIGN="right"> 102.9 M</TD><TD ALIGN="right">             537</TD><TD ALIGN="right">     0.2</TD></TR>
-<TR><TD CLASS="td_name">ROLLBACK</TD><TD ALIGN="right">            98</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">       3.3
-</TD><TD ALIGN="right">     1.0</TD><TD ALIGN="right">        41,492</TD><TD ALIGN="right">     0.06</TD><TD ALIGN="right"> 784.0 K</TD>
-<TD ALIGN="right"> 324.2 M</TD><TD ALIGN="right">             467</TD><TD ALIGN="right">     0.1</TD></TR>
-<TR><TD CLASS="td_name">TOOLS</TD><TD ALIGN="right">        15,328</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right">       2.8
-</TD><TD ALIGN="right">     4.9</TD><TD ALIGN="right">        12,820</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right"> 587.2 M</TD>
-<TD ALIGN="right"> 100.2 M</TD><TD ALIGN="right">               0</TD><TD ALIGN="right">     0.0</TD></TR>
-<TR><TD CLASS="td_name">SYSTEM</TD><TD ALIGN="right">        13,288</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right">       5.0
-</TD><TD ALIGN="right">     1.7</TD><TD ALIGN="right">         1,129</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right"> 180.2 M</TD>
-<TD ALIGN="right">   8.8 M</TD><TD ALIGN="right">               0</TD><TD ALIGN="right">     0.0</TD></TR>
-<TR><TD CLASS="td_name">TEMP</TD><TD ALIGN="right">         8,685</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right" CLASS="alert">   1,751.4
-</TD><TD ALIGN="right">     5.5</TD><TD ALIGN="right">         5,702</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right"> 370.2 M</TD>
-<TD ALIGN="right"> 378.0 M</TD><TD ALIGN="right">               0</TD><TD ALIGN="right">     0.0</TD></TR>
-<TR><TD CLASS="td_name">INDEX1</TD><TD ALIGN="right">         6,382</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">       3.1
-</TD><TD ALIGN="right">     1.1</TD><TD ALIGN="right">         6,923</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">  53.6 M</TD>
-<TD ALIGN="right">  54.1 M</TD><TD ALIGN="right">             335</TD><TD ALIGN="right">     0.2</TD></TR>
-<TR><TD CLASS="td_name">MONITORING</TD><TD ALIGN="right">         3,221</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">       0.7
-</TD><TD ALIGN="right">     1.0</TD><TD ALIGN="right">         2,329</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">  25.3 M</TD>
-<TD ALIGN="right">  18.2 M</TD><TD ALIGN="right">               0</TD><TD ALIGN="right">     0.0</TD></TR>
+<TR><TD CLASS="td_name">DATA</TD><TD ALIGN="right">     2,161,985</TD><TD ALIGN="right">     2.82</TD><TD ALIGN="right">       0.3
+</TD><TD ALIGN="right">     5.9</TD><TD ALIGN="right">         7,378</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">  97.3 G</TD>
+<TD ALIGN="right">  57.6 M</TD><TD ALIGN="right">             521</TD><TD ALIGN="right">     0.2</TD></TR>
+<TR><TD CLASS="td_name">TOOLS</TD><TD ALIGN="right">        18,252</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right">       3.8
+</TD><TD ALIGN="right">     6.3</TD><TD ALIGN="right">        14,660</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right"> 900.0 M</TD>
+<TD ALIGN="right"> 114.5 M</TD><TD ALIGN="right">               0</TD><TD ALIGN="right">     0.0</TD></TR>
+<TR><TD CLASS="td_name">ROLLBACK</TD><TD ALIGN="right">            60</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">      11.0
+</TD><TD ALIGN="right">     1.0</TD><TD ALIGN="right">        24,467</TD><TD ALIGN="right">     0.03</TD><TD ALIGN="right"> 480.0 K</TD>
+<TD ALIGN="right"> 191.1 M</TD><TD ALIGN="right">              26</TD><TD ALIGN="right">     0.0</TD></TR>
+<TR><TD CLASS="td_name">SYSTEM</TD><TD ALIGN="right">         9,498</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">       5.6
+</TD><TD ALIGN="right">     1.9</TD><TD ALIGN="right">           631</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right"> 137.4 M</TD>
+<TD ALIGN="right">   4.9 M</TD><TD ALIGN="right">               1</TD><TD ALIGN="right">    10.0</TD></TR>
+<TR><TD CLASS="td_name">INDEX1</TD><TD ALIGN="right">         6,470</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">       1.6
+</TD><TD ALIGN="right">     1.3</TD><TD ALIGN="right">         1,306</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">  65.6 M</TD>
+<TD ALIGN="right">  10.2 M</TD><TD ALIGN="right">              13</TD><TD ALIGN="right">     6.2</TD></TR>
+<TR><TD CLASS="td_name">TEMP</TD><TD ALIGN="right">         3,610</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right" CLASS="alert">     346.7
+</TD><TD ALIGN="right">     5.1</TD><TD ALIGN="right">         2,665</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right"> 144.0 M</TD>
+<TD ALIGN="right"> 158.3 M</TD><TD ALIGN="right">               0</TD><TD ALIGN="right">     0.0</TD></TR>
+<TR><TD CLASS="td_name">MONITORING</TD><TD ALIGN="right">         2,852</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">       0.5
+</TD><TD ALIGN="right">     1.0</TD><TD ALIGN="right">         2,089</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">  22.4 M</TD>
+<TD ALIGN="right">  16.3 M</TD><TD ALIGN="right">               0</TD><TD ALIGN="right">     0.0</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -362,27 +382,35 @@ PID_RUNNING , :STATE_RUNNING:ind_STATE_RUNNING ) ; end ;
 <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Filename</TH><TH CLASS="th_sub">Reads</TH><TH CLASS="th_sub">Avg Reads/s</TH><TH CLASS="th_sub">AvgRd (ms)</TH>
 <TH CLASS="th_sub">Avg Blks/Rd</TH><TH CLASS="th_sub">Writes</TH><TH CLASS="th_sub">Avg Wrt/s</TH><TH CLASS="th_sub">Read Size</TH><TH CLASS="th_sub">Write Size</TH>
 <TH CLASS="th_sub">Buffer Waits</TH><TH CLASS="th_sub">Avg Buf Wt (ms)</TH></TR>
-<TR><TD CLASS="td_name">DATA</TD><TD CLASS="td_name">/database/oradb/data_1.dbf</TD><TD ALIGN="right">     5,999,020</TD><TD ALIGN="right">     9.11</TD><TD ALIGN="right">       0.2
-</TD><TD ALIGN="right">     5.7</TD><TD ALIGN="right">        13,167</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right"> 262.7 G</TD>
-<TD ALIGN="right"> 102.9 M</TD><TD ALIGN="right">         537</TD><TD ALIGN="right">     0.2</TD></TR>
-<TR><TD CLASS="td_name">INDEX1</TD><TD CLASS="td_name">/database/oradb_index/index_1.dbf</TD><TD ALIGN="right">         6,382</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">       3.1
-</TD><TD ALIGN="right">     1.1</TD><TD ALIGN="right">         6,923</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">  53.6 M</TD>
-<TD ALIGN="right">  54.1 M</TD><TD ALIGN="right">         335</TD><TD ALIGN="right">     0.2</TD></TR>
-<TR><TD CLASS="td_name">MONITORING</TD><TD CLASS="td_name">/database/oradb/monitoring_1.dbf</TD><TD ALIGN="right">         3,221</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">       0.7
-</TD><TD ALIGN="right">     1.0</TD><TD ALIGN="right">         2,329</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">  25.3 M</TD>
-<TD ALIGN="right">  18.2 M</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">     0.0</TD></TR>
-<TR><TD CLASS="td_name">ROLLBACK</TD><TD CLASS="td_name">/database/oradb/rollback_1.dbf</TD><TD ALIGN="right">            98</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">       3.3
-</TD><TD ALIGN="right">     1.0</TD><TD ALIGN="right">        41,492</TD><TD ALIGN="right">     0.06</TD><TD ALIGN="right"> 784.0 K</TD>
-<TD ALIGN="right"> 324.2 M</TD><TD ALIGN="right">         467</TD><TD ALIGN="right">     0.1</TD></TR>
-<TR><TD CLASS="td_name">SYSTEM</TD><TD CLASS="td_name">/database/oradb/system_1.dbf</TD><TD ALIGN="right">        13,288</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right">       5.0
-</TD><TD ALIGN="right">     1.7</TD><TD ALIGN="right">         1,129</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right"> 180.2 M</TD>
-<TD ALIGN="right">   8.8 M</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">     0.0</TD></TR>
-<TR><TD CLASS="td_name">TEMP</TD><TD CLASS="td_name">/database/oradb/temp_1.dbf</TD><TD ALIGN="right">         8,685</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right" CLASS="alert">   1,751.4
-</TD><TD ALIGN="right">     5.5</TD><TD ALIGN="right">         5,702</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right"> 370.2 M</TD>
-<TD ALIGN="right"> 378.0 M</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">     0.0</TD></TR>
-<TR><TD CLASS="td_name">TOOLS</TD><TD CLASS="td_name">/database/oradb/tools_1.dbf</TD><TD ALIGN="right">        15,328</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right">       2.8
-</TD><TD ALIGN="right">     4.9</TD><TD ALIGN="right">        12,820</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right"> 587.2 M</TD>
-<TD ALIGN="right"> 100.2 M</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">     0.0</TD></TR>
+<TR><TD CLASS="td_name">DATA</TD><TD CLASS="td_name">/database/oradb/data_1.dbf</TD><TD ALIGN="right">     2,161,985</TD><TD ALIGN="right">     2.82</TD><TD ALIGN="right">       0.3
+</TD><TD ALIGN="right">     5.9</TD><TD ALIGN="right">         7,378</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">  97.3 G</TD>
+<TD ALIGN="right">  57.6 M</TD><TD ALIGN="right">         521</TD><TD ALIGN="right">     0.2</TD></TR>
+<TR><TD CLASS="td_name">INDEX1</TD><TD CLASS="td_name">/database/oradb_index/index_1.dbf</TD><TD ALIGN="right">         6,470</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">       1.6
+</TD><TD ALIGN="right">     1.3</TD><TD ALIGN="right">         1,306</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">  65.6 M</TD>
+<TD ALIGN="right">  10.2 M</TD><TD ALIGN="right">          13</TD><TD ALIGN="right">     6.2</TD></TR>
+<TR><TD CLASS="td_name">MONITORING</TD><TD CLASS="td_name">/database/oradb/monitoring_1.dbf</TD><TD ALIGN="right">         2,852</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">       0.5
+</TD><TD ALIGN="right">     1.0</TD><TD ALIGN="right">         2,089</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">  22.4 M</TD>
+<TD ALIGN="right">  16.3 M</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">     0.0</TD></TR>
+<TR><TD CLASS="td_name">ROLLBACK</TD><TD CLASS="td_name">/database/oradb/rollback_1.dbf</TD><TD ALIGN="right">            60</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right">      11.0
+</TD><TD ALIGN="right">     1.0</TD><TD ALIGN="right">        24,467</TD><TD ALIGN="right">     0.03</TD><TD ALIGN="right"> 480.0 K</TD>
+<TD ALIGN="right"> 191.1 M</TD><TD ALIGN="right">          26</TD><TD ALIGN="right">     0.0</TD></TR>
+<TR><TD CLASS="td_name">SYSTEM</TD><TD CLASS="td_name">/database/oradb/system_1.dbf</TD><TD ALIGN="right">         9,498</TD><TD ALIGN="right">     0.01</TD><TD ALIGN="right">       5.6
+</TD><TD ALIGN="right">     1.9</TD><TD ALIGN="right">           631</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right"> 137.4 M</TD>
+<TD ALIGN="right">   4.9 M</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">    10.0</TD></TR>
+<TR><TD CLASS="td_name">TEMP</TD><TD CLASS="td_name">/database/oradb/temp_1.dbf</TD><TD ALIGN="right">         3,610</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right" CLASS="alert">     346.7
+</TD><TD ALIGN="right">     5.1</TD><TD ALIGN="right">         2,665</TD><TD ALIGN="right">     0.00</TD><TD ALIGN="right"> 144.0 M</TD>
+<TD ALIGN="right"> 158.3 M</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">     0.0</TD></TR>
+<TR><TD CLASS="td_name">TOOLS</TD><TD CLASS="td_name">/database/oradb/tools_1.dbf</TD><TD ALIGN="right">        18,252</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right">       3.8
+</TD><TD ALIGN="right">     6.3</TD><TD ALIGN="right">        14,660</TD><TD ALIGN="right">     0.02</TD><TD ALIGN="right"> 900.0 M</TD>
+<TD ALIGN="right"> 114.5 M</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">     0.0</TD></TR>
+</TABLE>
+<BR CLEAR="all">
+
+<TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="3">Redo Log Sizes</TH></TR><TR><TD COLSPAN="3" ALIGN="center">at the time the report was generated</TD></TR>
+<TR><TH CLASS="th_sub">Group#</TH><TH CLASS="th_sub">Members</TH><TH CLASS="th_sub">FileSize</TH></TR>
+<TR><TD ALIGN="right">1</TD><TD ALIGN="right">2</TD><TD ALIGN="right">  10.0 M</TD></TR>
+<TR><TD ALIGN="right">2</TD><TD ALIGN="right">2</TD><TD ALIGN="right">  10.0 M</TD></TR>
+<TR><TD ALIGN="right">3</TD><TD ALIGN="right">2</TD><TD ALIGN="right">  10.0 M</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -390,104 +418,82 @@ PID_RUNNING , :STATE_RUNNING:ind_STATE_RUNNING ) ; end ;
 <A NAME="segstat"></A>
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="5">Top 10 Logical Reads per Segment</TH></TR>
 <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Object</TH><TH CLASS="th_sub">Type</TH><TH CLASS="th_sub">LogReads</TH><TH CLASS="th_sub">Ratio</TH></TR>
-<TR><TD>DATA</TD><TD>PETER.INF</TD><TD>TABLE</TD>
-<TD ALIGN="right">     258,439,952</TD><TD ALIGN="right">  48.49%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XPKINF</TD><TD>INDEX</TD>
-<TD ALIGN="right">     181,095,616</TD><TD ALIGN="right">  33.98%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.BEA</TD><TD>TABLE</TD>
-<TD ALIGN="right">      38,228,160</TD><TD ALIGN="right">   7.17%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.ANT</TD><TD>TABLE</TD>
-<TD ALIGN="right">       9,953,328</TD><TD ALIGN="right">   1.87%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XIE4ANT</TD><TD>INDEX</TD>
-<TD ALIGN="right">       8,409,904</TD><TD ALIGN="right">   1.58%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.ATP</TD><TD>TABLE</TD>
-<TD ALIGN="right">       5,293,728</TD><TD ALIGN="right">   0.99%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.PRO</TD><TD>TABLE</TD>
-<TD ALIGN="right">       2,093,296</TD><TD ALIGN="right">   0.39%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.BAB</TD><TD>TABLE</TD>
-<TD ALIGN="right">       1,985,280</TD><TD ALIGN="right">   0.37%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.BAM</TD><TD>TABLE</TD>
-<TD ALIGN="right">       1,968,304</TD><TD ALIGN="right">   0.37%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XIE3ANT</TD><TD>INDEX</TD>
-<TD ALIGN="right">       1,936,528</TD><TD ALIGN="right">   0.36%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.BED</TD><TD>TABLE</TD>
+<TD ALIGN="right">      11,347,264</TD><TD ALIGN="right">  17.35%</TD></TR>
+<TR><TD>INDEX1</TD><TD>FRODO.XIE4ANT</TD><TD>INDEX</TD>
+<TD ALIGN="right">       7,179,920</TD><TD ALIGN="right">  10.98%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.INF</TD><TD>TABLE</TD>
+<TD ALIGN="right">       6,655,600</TD><TD ALIGN="right">  10.18%</TD></TR>
+<TR><TD>INDEX1</TD><TD>FRODO.XPKZTL</TD><TD>INDEX</TD>
+<TD ALIGN="right">       6,551,216</TD><TD ALIGN="right">  10.02%</TD></TR>
+<TR><TD>INDEX1</TD><TD>FRODO.XPKINF</TD><TD>INDEX</TD>
+<TD ALIGN="right">       6,479,648</TD><TD ALIGN="right">   9.91%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.ZTL</TD><TD>TABLE</TD>
+<TD ALIGN="right">       3,366,976</TD><TD ALIGN="right">   5.15%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.PRO</TD><TD>TABLE</TD>
+<TD ALIGN="right">       1,919,024</TD><TD ALIGN="right">   2.93%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.BEA</TD><TD>TABLE</TD>
+<TD ALIGN="right">       1,758,032</TD><TD ALIGN="right">   2.69%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.AUF</TD><TD>TABLE</TD>
+<TD ALIGN="right">       1,680,512</TD><TD ALIGN="right">   2.57%</TD></TR>
+<TR><TD>SYSTEM</TD><TD>SYS.USER$</TD><TD>TABLE</TD>
+<TD ALIGN="right">       1,461,904</TD><TD ALIGN="right">   2.24%</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="5">Top 10 Physical Reads per Segment</TH></TR>
 <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Object</TH><TH CLASS="th_sub">Type</TH>
 <TH CLASS="th_sub">PhyReads</TH><TH CLASS="th_sub">Ratio</TH></TR>
-<TR><TD>DATA</TD><TD>PETER.BEA
-</TD><TD>TABLE</TD><TD ALIGN="right">      33,967,762</TD><TD ALIGN="right">  98.40%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.BED
-</TD><TD>TABLE</TD><TD ALIGN="right">         132,330</TD><TD ALIGN="right">   0.38%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.SYS_LOB0000012058C00002$$
-</TD><TD>LOB</TD><TD ALIGN="right">          88,664</TD><TD ALIGN="right">   0.26%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.INF
-</TD><TD>TABLE</TD><TD ALIGN="right">          77,425</TD><TD ALIGN="right">   0.22%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.IMP
-</TD><TD>TABLE</TD><TD ALIGN="right">          44,870</TD><TD ALIGN="right">   0.13%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.ZTL
-</TD><TD>TABLE</TD><TD ALIGN="right">          24,815</TD><TD ALIGN="right">   0.07%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.INF_BACKUP
-</TD><TD>TABLE</TD><TD ALIGN="right">          21,350</TD><TD ALIGN="right">   0.06%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.BED
+</TD><TD>TABLE</TD><TD ALIGN="right">      10,936,280</TD><TD ALIGN="right">  84.93%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.BEA
+</TD><TD>TABLE</TD><TD ALIGN="right">       1,188,903</TD><TD ALIGN="right">   9.23%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.IMP
+</TD><TD>TABLE</TD><TD ALIGN="right">         229,648</TD><TD ALIGN="right">   1.78%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.INF
+</TD><TD>TABLE</TD><TD ALIGN="right">         133,458</TD><TD ALIGN="right">   1.04%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.SYS_LOB0000012058C00002$$
+</TD><TD>LOB</TD><TD ALIGN="right">          99,747</TD><TD ALIGN="right">   0.77%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.IST
+</TD><TD>TABLE</TD><TD ALIGN="right">          32,590</TD><TD ALIGN="right">   0.25%</TD></TR>
 <TR><TD>TOOLS</TD><TD>PERFSTAT.STATS$SQL_SUMMARY
-</TD><TD>TABLE</TD><TD ALIGN="right">          15,847</TD><TD ALIGN="right">   0.05%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.PWA
-</TD><TD>TABLE</TD><TD ALIGN="right">          13,357</TD><TD ALIGN="right">   0.04%</TD></TR>
-<TR><TD>SYSTEM</TD><TD>SYS.TAB$
-</TD><TD>TABLE</TD><TD ALIGN="right">          11,890</TD><TD ALIGN="right">   0.03%</TD></TR>
+</TD><TD>TABLE</TD><TD ALIGN="right">          25,920</TD><TD ALIGN="right">   0.20%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.INF_BACKUP
+</TD><TD>TABLE</TD><TD ALIGN="right">          23,379</TD><TD ALIGN="right">   0.18%</TD></TR>
+<TR><TD>TOOLS</TD><TD>PERFSTAT.STATS$LATCH
+</TD><TD>TABLE</TD><TD ALIGN="right">          18,943</TD><TD ALIGN="right">   0.15%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.HGI
+</TD><TD>TABLE</TD><TD ALIGN="right">          17,782</TD><TD ALIGN="right">   0.14%</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="5">Top 10 Buffer Busy Waits per Segment</TH></TR>
 <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Object</TH><TH CLASS="th_sub">Type</TH>
 <TH CLASS="th_sub">Waits</TH><TH CLASS="th_sub">Ratio</TH></TR>
-<TR><TD>DATA</TD><TD>PETER.PRO
-</TD><TD>TABLE</TD><TD ALIGN="right">         416</TD><TD ALIGN="right">  48.32%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XIE1ANT
-</TD><TD>INDEX</TD><TD ALIGN="right">         124</TD><TD ALIGN="right">  14.40%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XIE3ANT
-</TD><TD>INDEX</TD><TD ALIGN="right">         111</TD><TD ALIGN="right">  12.89%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XIE4ANT
-</TD><TD>INDEX</TD><TD ALIGN="right">          87</TD><TD ALIGN="right">  10.10%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.ANT
-</TD><TD>TABLE</TD><TD ALIGN="right">          41</TD><TD ALIGN="right">   4.76%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.PRO
+</TD><TD>TABLE</TD><TD ALIGN="right">         506</TD><TD ALIGN="right">  92.50%</TD></TR>
 <TR><TD>SYSTEM</TD><TD>SYS.TAB$
-</TD><TD>TABLE</TD><TD ALIGN="right">          33</TD><TD ALIGN="right">   3.83%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.AUF
-</TD><TD>TABLE</TD><TD ALIGN="right">          26</TD><TD ALIGN="right">   3.02%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.SLG
-</TD><TD>TABLE</TD><TD ALIGN="right">           7</TD><TD ALIGN="right">   0.81%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XIE1ART
-</TD><TD>INDEX</TD><TD ALIGN="right">           5</TD><TD ALIGN="right">   0.58%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XPKPRO
-</TD><TD>INDEX</TD><TD ALIGN="right">           4</TD><TD ALIGN="right">   0.46%</TD></TR>
+</TD><TD>TABLE</TD><TD ALIGN="right">          27</TD><TD ALIGN="right">   4.94%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.SLG
+</TD><TD>TABLE</TD><TD ALIGN="right">           6</TD><TD ALIGN="right">   1.10%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.PWA
+</TD><TD>TABLE</TD><TD ALIGN="right">           3</TD><TD ALIGN="right">   0.55%</TD></TR>
+<TR><TD>DATA</TD><TD>FRODO.AUF
+</TD><TD>TABLE</TD><TD ALIGN="right">           2</TD><TD ALIGN="right">   0.37%</TD></TR>
+<TR><TD>INDEX1</TD><TD>FRODO.XIE3ANT
+</TD><TD>INDEX</TD><TD ALIGN="right">           2</TD><TD ALIGN="right">   0.37%</TD></TR>
+<TR><TD>INDEX1</TD><TD>FRODO.XPKPRO
+</TD><TD>INDEX</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">   0.18%</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="5">Top 10 Row Lock Waits per Segment</TH></TR>
 <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Object</TH><TH CLASS="th_sub">Type</TH>
 <TH CLASS="th_sub">Waits</TH><TH CLASS="th_sub">Ratio</TH></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XPKANT
-</TD><TD>INDEX</TD><TD ALIGN="right">         371</TD><TD ALIGN="right">  82.44%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XIE4ANT
-</TD><TD>INDEX</TD><TD ALIGN="right">          26</TD><TD ALIGN="right">   5.78%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XPKZTL
-</TD><TD>INDEX</TD><TD ALIGN="right">          18</TD><TD ALIGN="right">   4.00%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XIE3ANT
-</TD><TD>INDEX</TD><TD ALIGN="right">          11</TD><TD ALIGN="right">   2.44%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XIE1ANT
-</TD><TD>INDEX</TD><TD ALIGN="right">          11</TD><TD ALIGN="right">   2.44%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XPKAUF
-</TD><TD>INDEX</TD><TD ALIGN="right">           4</TD><TD ALIGN="right">   0.89%</TD></TR>
-<TR><TD>DATA</TD><TD>PETER.AUF
-</TD><TD>TABLE</TD><TD ALIGN="right">           2</TD><TD ALIGN="right">   0.44%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XPKBEA
-</TD><TD>INDEX</TD><TD ALIGN="right">           2</TD><TD ALIGN="right">   0.44%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XPKART
-</TD><TD>INDEX</TD><TD ALIGN="right">           2</TD><TD ALIGN="right">   0.44%</TD></TR>
-<TR><TD>INDEX1</TD><TD>PETER.XPKIPI
-</TD><TD>INDEX</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">   0.22%</TD></TR>
+<TR><TD>INDEX1</TD><TD>FRODO.XPKZTL
+</TD><TD>INDEX</TD><TD ALIGN="right">          11</TD><TD ALIGN="right">  91.67%</TD></TR>
+<TR><TD>INDEX1</TD><TD>FRODO.XIE3ANT
+</TD><TD>INDEX</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">   8.33%</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -501,9 +507,9 @@ PID_RUNNING , :STATE_RUNNING:ind_STATE_RUNNING ) ; end ;
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="9"><A NAME="recover">Instance Recovery Statistics</A></TH></TR> <TR><TD COLSPAN="9" ALIGN="center">B: Begin SnapShot, E: End SnapShot</TD></TR>
 <TR><TH CLASS="th_sub">&nbsp;</TH><TH CLASS="th_sub">Target MTTR</TH><TH CLASS="th_sub">Estd MTTR</TH><TH CLASS="th_sub">Recovery Estd IOs</TH><TH CLASS="th_sub">Actual Redo Blks</TH>
 <TH CLASS="th_sub">Target Redo Blks</TH><TH CLASS="th_sub">LogFile Size Redo Blks</TH><TH CLASS="th_sub">Log Ckpt Timeout Redo Blks</TH><TH CLASS="th_sub">Log Ckpt Interval Redo Blks</TH></TR>
-<TR><TD CLASS="td_name">B</TD><TD ALIGN="right">0</TD><TD ALIGN="right">7</TD><TD ALIGN="right">       279</TD><TD ALIGN="right">      3,731</TD><TD ALIGN="right">
+<TR><TD CLASS="td_name">B</TD><TD ALIGN="right">0</TD><TD ALIGN="right">7</TD><TD ALIGN="right">       139</TD><TD ALIGN="right">        684</TD><TD ALIGN="right">
 18,432</TD><TD ALIGN="right">     18,432</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">     10,000,000</TD></TR>
-<TR><TD CLASS="td_name">E</TD><TD ALIGN="right">0</TD><TD ALIGN="right">9</TD><TD ALIGN="right">       752</TD><TD ALIGN="right">     18,981</TD><TD ALIGN="right">
+<TR><TD CLASS="td_name">E</TD><TD ALIGN="right">0</TD><TD ALIGN="right">9</TD><TD ALIGN="right">       801</TD><TD ALIGN="right">     18,957</TD><TD ALIGN="right">
 18,432</TD><TD ALIGN="right">     18,432</TD><TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">     10,000,000</TD></TR>
 </TABLE>
 <BR CLEAR="all">
@@ -518,7 +524,9 @@ PID_RUNNING , :STATE_RUNNING:ind_STATE_RUNNING ) ; end ;
 
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="4">PGA Memory Statistics</TH></TR> <TR><TD COLSPAN="4" ALIGN="center">WorkArea (W/A) memory is used for: sort, bitmap merge, and hash join ops</TD></TR>
 <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Begin</TH><TH CLASS="th_sub">End</TH><TH CLASS="th_sub">Diff</TH></TR>
-<TR><TD CLASS="td_name">maximum PGA allocated</TD><TD ALIGN="right">  25.5 M</TD><TD ALIGN="right">  47.8 M</TD><TD ALIGN="right">            87.70%</TD></TR>
+<TR><TD CLASS="td_name">maximum PGA allocated</TD><TD ALIGN="right">  12.3 M</TD><TD ALIGN="right">  28.8 M</TD><TD ALIGN="right">           133.75%</TD></TR>
+<TR><TD CLASS="td_name">total PGA allocated</TD><TD ALIGN="right">  12.3 M</TD><TD ALIGN="right">  17.3 M</TD><TD ALIGN="right">            40.26%</TD></TR>
+<TR><TD CLASS="td_name">total PGA inuse</TD><TD ALIGN="right">  10.6 M</TD><TD ALIGN="right">  11.5 M</TD><TD ALIGN="right">             9.08%</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -527,14 +535,12 @@ PID_RUNNING , :STATE_RUNNING:ind_STATE_RUNNING ) ; end ;
 <TR><TD COLSPAN="8" ALIGN="center">Enqueue Stats gathered prior to 9i should not be compared with 9i data<BR>Ordered by Waits desc, Requests desc
 <TR><TH CLASS="th_sub">Eq</TH><TH CLASS="th_sub">Requests</TH><TH CLASS="th_sub">Succ Gets</TH><TH CLASS="th_sub">Failed Gets</TH><TH CLASS="th_sub">PctFail</TH>
 <TH CLASS="th_sub">Waits</TH><TH CLASS="th_sub">Avg Wt Time</TH><TH CLASS="th_sub">Wait Time</TH></TR>
-<TR><TD CLASS="td_name">TM</TD><TD ALIGN="right">       2,687,789</TD><TD ALIGN="right">       2,687,786</TD><TD ALIGN="right">          0</TD>
-<TD ALIGN="right">   0.00</TD><TD ALIGN="right">      59</TD><TD ALIGN="right">1:07.903</TD><TD ALIGN="right">1:06:47.298</TD></TR>
-<TR><TD CLASS="td_name">TX</TD><TD ALIGN="right">         382,699</TD><TD ALIGN="right">         382,700</TD><TD ALIGN="right">          0</TD>
-<TD ALIGN="right">   0.00</TD><TD ALIGN="right">       6</TD><TD ALIGN="right">0.016</TD><TD ALIGN="right">0.095</TD></TR>
-<TR><TD CLASS="td_name">SQ</TD><TD ALIGN="right">           4,623</TD><TD ALIGN="right">           4,623</TD><TD ALIGN="right">          0</TD>
-<TD ALIGN="right">   0.00</TD><TD ALIGN="right">       3</TD><TD ALIGN="right">0.003</TD><TD ALIGN="right">0.009</TD></TR>
-<TR><TD CLASS="td_name">HW</TD><TD ALIGN="right">           3,383</TD><TD ALIGN="right">           3,383</TD><TD ALIGN="right">          0</TD>
-<TD ALIGN="right">   0.00</TD><TD ALIGN="right">       2</TD><TD ALIGN="right">0.001</TD><TD ALIGN="right">0.001</TD></TR>
+<TR><TD CLASS="td_name">TM</TD><TD ALIGN="right">       2,179,005</TD><TD ALIGN="right">       2,179,004</TD><TD ALIGN="right">          0</TD>
+<TD ALIGN="right">   0.00</TD><TD ALIGN="right">      51</TD><TD ALIGN="right">0.004</TD><TD ALIGN="right">0.217</TD></TR>
+<TR><TD CLASS="td_name">SQ</TD><TD ALIGN="right">             379</TD><TD ALIGN="right">             379</TD><TD ALIGN="right">          0</TD>
+<TD ALIGN="right">   0.00</TD><TD ALIGN="right">       3</TD><TD ALIGN="right">0.002</TD><TD ALIGN="right">0.005</TD></TR>
+<TR><TD CLASS="td_name">TX</TD><TD ALIGN="right">         240,978</TD><TD ALIGN="right">         240,978</TD><TD ALIGN="right">          0</TD>
+<TD ALIGN="right">   0.00</TD><TD ALIGN="right">       1</TD><TD ALIGN="right">0.098</TD><TD ALIGN="right">0.098</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -549,61 +555,8 @@ eS - expired Stolen, eR - expired Released, eU - expired reUsed</TD></TR>
 <BR CLEAR="all">
 
 <HR>
-<A NAME="rbs"></A>
-<TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="7">Rollback Segments Stats&nbsp;<A HREF="JavaScript:popup('rollstat')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>
-<TR><TD COLSPAN="7" ALIGN="justify">A high value for "Pct Waits" suggests more rollback segments may be required.
-A large number of transaction table waits also results in high values of "buffer busy waits" for undo segment header blocks; cross-reference with the <A HREF="#bufwait">Buffer Wait Statistics</A>
-to confirm this correlation.<DIV ALIGN="center">RBS stats may not be accurate between begin and end snaps when using Auto Undo Management, as RBS may be dynamically
-created and dropped as needed</DIV></TD></TR>
-<TR><TH CLASS="th_sub">RBS#</TH><TH CLASS="th_sub">Trans Table Gets</TH><TH CLASS="th_sub">Pct Waits</TH><TH CLASS="th_sub">Undo Bytes Written</TH><TH CLASS="th_sub">Wraps</TH>
-<TH CLASS="th_sub">Shrinks</TH><TH CLASS="th_sub">Extends</TH></TR>
-<TR><TD CLASS="td_name" ALIGN="right">0</TD><TD ALIGN="right">         3,508.0</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">   0.0 K</TD>
-<TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">1</TD><TD ALIGN="right">       439,929.0</TD><TD ALIGN="right">   0.01</TD><TD ALIGN="right"> 150.6 M</TD>
-<TD ALIGN="right">     170</TD><TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">2</TD><TD ALIGN="right">        92,878.0</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">  35.3 M</TD>
-<TD ALIGN="right">      38</TD><TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">3</TD><TD ALIGN="right">        50,151.0</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">  13.2 M</TD>
-<TD ALIGN="right">      14</TD><TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">4</TD><TD ALIGN="right">        53,186.0</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">  18.9 M</TD>
-<TD ALIGN="right">      21</TD><TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">5</TD><TD ALIGN="right">        53,338.0</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">  20.7 M</TD>
-<TD ALIGN="right">      23</TD><TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">6</TD><TD ALIGN="right">        49,745.0</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">  13.3 M</TD>
-<TD ALIGN="right">      14</TD><TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">7</TD><TD ALIGN="right">        51,681.0</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">  16.3 M</TD>
-<TD ALIGN="right">      18</TD><TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">8</TD><TD ALIGN="right">        49,852.0</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">  13.5 M</TD>
-<TD ALIGN="right">      15</TD><TD ALIGN="right">       0</TD><TD ALIGN="right">       0</TD></TR>
-</TABLE>
-<BR CLEAR="all">
-
-<TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="5">Rollback Segments Storage&nbsp;<A HREF="JavaScript:popup('rollstat')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>
-<TR><TD COLSPAN="5" ALIGN="center">Optimal Size should be larger than Avg Active<BR>Values are taken from the End SnapShot</TD></TR>
-<TR><TH CLASS="th_sub">RBS#</TH><TH CLASS="th_sub">Segment Size</TH><TH CLASS="th_sub">Avg Active</TH><TH CLASS="th_sub">Optimal Size</TH><TH CLASS="th_sub">Maximum Size</TH></TR>
-<TR><TD CLASS="td_name" ALIGN="right">0</TD><TD ALIGN="right"> 712.0 K</TD><TD ALIGN="right">   0.0 K</TD><TD ALIGN="right">&nbsp;</TD>
-<TD ALIGN="right"> 712.0 K</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">1</TD><TD ALIGN="right">  20.3 M</TD><TD ALIGN="right">   1.0 M</TD><TD ALIGN="right">&nbsp;</TD>
-<TD ALIGN="right">  20.3 M</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">2</TD><TD ALIGN="right">  29.4 M</TD><TD ALIGN="right">   1.0 M</TD><TD ALIGN="right">&nbsp;</TD>
-<TD ALIGN="right">  29.4 M</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">3</TD><TD ALIGN="right">  10.1 M</TD><TD ALIGN="right"> 801.0 K</TD><TD ALIGN="right">&nbsp;</TD>
-<TD ALIGN="right">  10.1 M</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">4</TD><TD ALIGN="right">  10.1 M</TD><TD ALIGN="right">   1.3 M</TD><TD ALIGN="right">&nbsp;</TD>
-<TD ALIGN="right">  10.1 M</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">5</TD><TD ALIGN="right">  23.4 M</TD><TD ALIGN="right">   1.3 M</TD><TD ALIGN="right">&nbsp;</TD>
-<TD ALIGN="right">  23.4 M</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">6</TD><TD ALIGN="right">  10.1 M</TD><TD ALIGN="right"> 801.1 K</TD><TD ALIGN="right">&nbsp;</TD>
-<TD ALIGN="right">  10.1 M</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">7</TD><TD ALIGN="right">  10.1 M</TD><TD ALIGN="right"> 883.2 K</TD><TD ALIGN="right">&nbsp;</TD>
-<TD ALIGN="right">  10.1 M</TD></TR>
-<TR><TD CLASS="td_name" ALIGN="right">8</TD><TD ALIGN="right">  10.1 M</TD><TD ALIGN="right"> 825.6 K</TD><TD ALIGN="right">&nbsp;</TD>
-<TD ALIGN="right">  10.1 M</TD></TR>
-</TABLE>
-<BR CLEAR="all">
-
-<HR>
-<TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="3"><A NAME="sharedpool">Pool Sizes</A></TH></TR>
+<TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="3"><A NAME="sharedpool">Pool Sizes</A>&nbsp;<A HREF="JavaScript:popup('poolsize')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A>
+</TH></TR>
  <TR><TH CLASS="th_sub">Pool</TH><TH CLASS="th_sub">Begin</TH><TH CLASS="th_sub">End</TH></TR>
 <TR><TD>Shared_Pool_Size</TD><TD ALIGN="right">          48.00 M</TD><TD ALIGN="right">          48.00 M</TD></TR>
  <TR><TD>Shared_Pool_Reserved_Size</TD><TD ALIGN="right">           2.38 M</TD><TD ALIGN="right">           2.38 M</TD></TR>
@@ -619,9 +572,9 @@ created and dropped as needed</DIV></TD></TR>
 
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="3">Shared Pool Statistics</TH></TR>
  <TR><TH CLASS="th_sub">Name</TH><TH CLASS="th_sub">Begin</TH><TH CLASS="th_sub">End</TH></TR>
-<TR><TD CLASS="td_name">Memory Usage %</TD><TD>  86.18</TD><TD>  94.39</TD></TR>
-<TR><TD CLASS="td_name">% SQL with executions &gt; 1</TD><TD>  52.62</TD><TD>  67.76</TD></TR>
-<TR><TD CLASS="td_name">% Memory for SQL with executions &gt; 1</TD><TD>  46.88</TD><TD>  74.97</TD></TR>
+<TR><TD CLASS="td_name">Memory Usage %</TD><TD>  60.26</TD><TD>  95.26</TD></TR>
+<TR><TD CLASS="td_name">% SQL with executions &gt; 1</TD><TD>  46.97</TD><TD>  61.88</TD></TR>
+<TR><TD CLASS="td_name">% Memory for SQL with executions &gt; 1</TD><TD>  30.20</TD><TD>  72.25</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -629,13 +582,11 @@ created and dropped as needed</DIV></TD></TR>
 <TABLE ALIGN="center" BORDER="1"><TR><TH COLSPAN="5">Buffer Wait Statistics&nbsp;<A HREF="JavaScript:popup('buffwaits')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>
 <TR><TD COLSPAN="5" ALIGN="center">Ordered by Wait Time desc, Waits desc</TD></TR>
 <TR><TH CLASS="th_sub">Class</TH><TH CLASS="th_sub">Waits</TH><TH CLASS="th_sub">Tot Wait Time</TH><TH CLASS="th_sub">Avg Wait Time</TH><TH CLASS="th_sub">Waits/s</TH></TR>
-<TR><TD CLASS="td_name">data block</TD><TD ALIGN="right">             870</TD><TD ALIGN="right">0</TD><TD ALIGN="right">0
-</TD><TD ALIGN="right">   4,833.33</TD></TR>
-<TR><TD CLASS="td_name">undo header</TD><TD ALIGN="right">             227</TD><TD ALIGN="right">0</TD><TD ALIGN="right">0
-</TD><TD ALIGN="right">  11,350.00</TD></TR>
-<TR><TD CLASS="td_name">undo block</TD><TD ALIGN="right">             240</TD><TD ALIGN="right">0</TD><TD ALIGN="right">0
-</TD><TD ALIGN="right">  24,000.00</TD></TR>
-<TR><TD CLASS="td_name">segment header</TD><TD ALIGN="right">               2</TD><TD ALIGN="right">0</TD><TD ALIGN="right">0
+<TR><TD CLASS="td_name">data block</TD><TD ALIGN="right">             530</TD><TD ALIGN="right">0</TD><TD ALIGN="right">0
+</TD><TD ALIGN="right">   2,789.47</TD></TR>
+<TR><TD CLASS="td_name">segment header</TD><TD ALIGN="right">               5</TD><TD ALIGN="right">0</TD><TD ALIGN="right">4
+</TD><TD ALIGN="right">     250.00</TD></TR>
+<TR><TD CLASS="td_name">undo header</TD><TD ALIGN="right">              26</TD><TD ALIGN="right">0</TD><TD ALIGN="right">0
 </TD><TD ALIGN="right">&nbsp;</TD></TR>
 </TABLE>
 <BR CLEAR="all">
@@ -653,40 +604,40 @@ created and dropped as needed</DIV></TD></TR>
 "Cache Usage" is the number of cache entries being used<BR>"Pct SGA" is the ratio of usage to allocated size for that cache</TD></TR>
 <TR><TH CLASS="th_sub">Cache</TH><TH CLASS="th_sub">Get Requests</TH><TH CLASS="th_sub">Pct Miss</TH><TH CLASS="th_sub">Scan Reqs</TH><TH CLASS="th_sub">Pct Miss</TH>
 <TH CLASS="th_sub">Mod Reqs</TH><TH CLASS="th_sub">Final Usage</TH><TH CLASS="th_sub">Pct SGA</TH></TR>
-<TR><TD CLASS="td_name">dc_database_links</TD><TD ALIGN="right">            24</TD><TD ALIGN="right">   8.33</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">         0</TD><TD ALIGN="right">   0.00</TD></TR>
-<TR><TD CLASS="td_name">dc_files</TD><TD ALIGN="right">         7,380</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">     0</TD>
+<TR><TD CLASS="td_name">dc_database_links</TD><TD ALIGN="right">           170</TD><TD ALIGN="right">   1.76</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">         3</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_files</TD><TD ALIGN="right">         6,759</TD><TD ALIGN="right">   0.01</TD><TD ALIGN="right">     0</TD>
 <TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">         1</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_free_extents</TD><TD ALIGN="right">         4,532</TD><TD ALIGN="right">   8.47</TD><TD ALIGN="right">   306</TD>
-<TD ALIGN="right">   0.00</TD><TD ALIGN="right">         863</TD><TD ALIGN="right">         2</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_global_oids</TD><TD ALIGN="right">           140</TD><TD ALIGN="right">  22.86</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">         8</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_histogram_defs</TD><TD ALIGN="right">        75,016</TD><TD ALIGN="right">  17.66</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">       1,002</TD><TD ALIGN="right">     1,059</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_object_ids</TD><TD ALIGN="right">       146,602</TD><TD ALIGN="right">   1.72</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       535</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_objects</TD><TD ALIGN="right">        59,620</TD><TD ALIGN="right">   5.26</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">         837</TD><TD ALIGN="right">       889</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_profiles</TD><TD ALIGN="right">         6,220</TD><TD ALIGN="right">   0.02</TD><TD ALIGN="right">     0</TD>
+<TR><TD CLASS="td_name">dc_free_extents</TD><TD ALIGN="right">         4,505</TD><TD ALIGN="right">   1.15</TD><TD ALIGN="right">    51</TD>
+<TD ALIGN="right">   0.00</TD><TD ALIGN="right">          51</TD><TD ALIGN="right">         2</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_global_oids</TD><TD ALIGN="right">           145</TD><TD ALIGN="right">   6.21</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">        10</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_histogram_defs</TD><TD ALIGN="right">        61,438</TD><TD ALIGN="right">  18.20</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">       1,002</TD><TD ALIGN="right">     1,590</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_object_ids</TD><TD ALIGN="right">       145,687</TD><TD ALIGN="right">   1.22</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           1</TD><TD ALIGN="right">       505</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_objects</TD><TD ALIGN="right">        46,892</TD><TD ALIGN="right">   3.38</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">         737</TD><TD ALIGN="right">       756</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_profiles</TD><TD ALIGN="right">         6,681</TD><TD ALIGN="right">   0.01</TD><TD ALIGN="right">     0</TD>
 <TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">         2</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_rollback_segments</TD><TD ALIGN="right">        25,017</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">     0</TD>
+<TR><TD CLASS="td_name">dc_rollback_segments</TD><TD ALIGN="right">        27,917</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">     0</TD>
 <TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">        10</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_segments</TD><TD ALIGN="right">        31,628</TD><TD ALIGN="right">   9.23</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">       1,261</TD><TD ALIGN="right">       382</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_sequences</TD><TD ALIGN="right">         4,620</TD><TD ALIGN="right">   0.71</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">       4,620</TD><TD ALIGN="right">         3</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_tablespace_quotas</TD><TD ALIGN="right">           588</TD><TD ALIGN="right">   1.70</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">         483</TD><TD ALIGN="right">         2</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_tablespaces</TD><TD ALIGN="right">     2,558,518</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">     0</TD>
+<TR><TD CLASS="td_name">dc_segments</TD><TD ALIGN="right">        21,870</TD><TD ALIGN="right">  10.90</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">         763</TD><TD ALIGN="right">       431</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_sequences</TD><TD ALIGN="right">           376</TD><TD ALIGN="right">   3.19</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">         376</TD><TD ALIGN="right">         4</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_tablespace_quotas</TD><TD ALIGN="right">           176</TD><TD ALIGN="right">   1.14</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">          44</TD><TD ALIGN="right">         2</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_tablespaces</TD><TD ALIGN="right">       960,658</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">     0</TD>
 <TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">         5</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_used_extents</TD><TD ALIGN="right">           469</TD><TD ALIGN="right">  65.25</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">         469</TD><TD ALIGN="right">         0</TD><TD ALIGN="right">   0.00</TD></TR>
-<TR><TD CLASS="td_name">dc_user_grants</TD><TD ALIGN="right">        47,516</TD><TD ALIGN="right">   0.09</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">        24</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_usernames</TD><TD ALIGN="right">        42,619</TD><TD ALIGN="right">   0.06</TD><TD ALIGN="right">     0</TD>
+<TR><TD CLASS="td_name">dc_used_extents</TD><TD ALIGN="right">            51</TD><TD ALIGN="right"> 100.00</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">          51</TD><TD ALIGN="right">         0</TD><TD ALIGN="right">   0.00</TD></TR>
+<TR><TD CLASS="td_name">dc_user_grants</TD><TD ALIGN="right">        52,904</TD><TD ALIGN="right">   0.05</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">        22</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_usernames</TD><TD ALIGN="right">        38,024</TD><TD ALIGN="right">   0.03</TD><TD ALIGN="right">     0</TD>
 <TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">        10</TD><TD ALIGN="right"> 100.00</TD></TR>
-<TR><TD CLASS="td_name">dc_users</TD><TD ALIGN="right">     2,687,560</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">     0</TD>
-<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">          12</TD><TD ALIGN="right">        25</TD><TD ALIGN="right"> 100.00</TD></TR>
+<TR><TD CLASS="td_name">dc_users</TD><TD ALIGN="right">     1,117,693</TD><TD ALIGN="right">   0.00</TD><TD ALIGN="right">     0</TD>
+<TD ALIGN="right">&nbsp;</TD><TD ALIGN="right">           0</TD><TD ALIGN="right">        23</TD><TD ALIGN="right"> 100.00</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -694,18 +645,18 @@ created and dropped as needed</DIV></TD></TR>
 <TR><TD COLSPAN="7" ALIGN="center">"Pct Misses" should be very low (&lt; 10%), "Reloads" should not be significantly high.</TD></TR>
 <TR><TH CLASS="th_sub">NameSpace</TH><TH CLASS="th_sub">Get Requests</TH><TH CLASS="th_sub">Pct Miss</TH><TH CLASS="th_sub">Pin Reqs</TH><TH CLASS="th_sub">Pct Miss</TH>
 <TH CLASS="th_sub">Reloads</TH><TH CLASS="th_sub">Invalidations</TH></TR>
-<TR><TD CLASS="td_name">BODY</TD><TD ALIGN="right">          13,539</TD><TD ALIGN="right">   1.65</TD><TD ALIGN="right">        13,542</TD>
-<TD ALIGN="right">   1.76</TD><TD ALIGN="right">        13</TD><TD ALIGN="right">           0</TD></TR>
-<TR><TD CLASS="td_name">CLUSTER</TD><TD ALIGN="right">           9,862</TD><TD ALIGN="right">   0.26</TD><TD ALIGN="right">         5,796</TD>
-<TD ALIGN="right">   0.90</TD><TD ALIGN="right">         0</TD><TD ALIGN="right">           0</TD></TR>
-<TR><TD CLASS="td_name">INDEX</TD><TD ALIGN="right">             540</TD><TD ALIGN="right" CLASS="warn">  20.74</TD><TD ALIGN="right">           629</TD>
-<TD ALIGN="right">  33.23</TD><TD ALIGN="right">         0</TD><TD ALIGN="right">           0</TD></TR>
-<TR><TD CLASS="td_name">SQL AREA</TD><TD ALIGN="right">         439,940</TD><TD ALIGN="right">   1.23</TD><TD ALIGN="right">     8,483,501</TD>
-<TD ALIGN="right">   0.21</TD><TD ALIGN="right">     6,147</TD><TD ALIGN="right">       3,844</TD></TR>
-<TR><TD CLASS="td_name">TABLE/PROCEDURE</TD><TD ALIGN="right">         181,826</TD><TD ALIGN="right">   1.75</TD><TD ALIGN="right">     4,384,696</TD>
-<TD ALIGN="right">   0.39</TD><TD ALIGN="right">     6,788</TD><TD ALIGN="right">           0</TD></TR>
-<TR><TD CLASS="td_name">TRIGGER</TD><TD ALIGN="right">             580</TD><TD ALIGN="right">   3.45</TD><TD ALIGN="right">           580</TD>
-<TD ALIGN="right">   3.62</TD><TD ALIGN="right">         1</TD><TD ALIGN="right">           0</TD></TR>
+<TR><TD CLASS="td_name">BODY</TD><TD ALIGN="right">          15,561</TD><TD ALIGN="right">   0.71</TD><TD ALIGN="right">        15,561</TD>
+<TD ALIGN="right">   0.77</TD><TD ALIGN="right">         7</TD><TD ALIGN="right">           0</TD></TR>
+<TR><TD CLASS="td_name">CLUSTER</TD><TD ALIGN="right">           8,049</TD><TD ALIGN="right">   0.30</TD><TD ALIGN="right">         4,403</TD>
+<TD ALIGN="right">   1.09</TD><TD ALIGN="right">         0</TD><TD ALIGN="right">           0</TD></TR>
+<TR><TD CLASS="td_name">INDEX</TD><TD ALIGN="right">             504</TD><TD ALIGN="right" CLASS="warn">  21.03</TD><TD ALIGN="right">           593</TD>
+<TD ALIGN="right">  34.23</TD><TD ALIGN="right">         0</TD><TD ALIGN="right">           0</TD></TR>
+<TR><TD CLASS="td_name">SQL AREA</TD><TD ALIGN="right">         353,849</TD><TD ALIGN="right">   1.25</TD><TD ALIGN="right">     6,140,671</TD>
+<TD ALIGN="right">   0.21</TD><TD ALIGN="right">     4,429</TD><TD ALIGN="right">       3,427</TD></TR>
+<TR><TD CLASS="td_name">TABLE/PROCEDURE</TD><TD ALIGN="right">         180,314</TD><TD ALIGN="right">   0.82</TD><TD ALIGN="right">     2,747,068</TD>
+<TD ALIGN="right">   0.48</TD><TD ALIGN="right">     5,949</TD><TD ALIGN="right">           0</TD></TR>
+<TR><TD CLASS="td_name">TRIGGER</TD><TD ALIGN="right">               2</TD><TD ALIGN="right" CLASS="alert">  50.00</TD><TD ALIGN="right">             2</TD>
+<TD ALIGN="right">  50.00</TD><TD ALIGN="right">         0</TD><TD ALIGN="right">           0</TD></TR>
 </TABLE>
 <BR CLEAR="all">
 
@@ -730,7 +681,7 @@ created and dropped as needed</DIV></TD></TR>
 <TR><TD CLASS="td_name">core_dump_dest</TD><TD>/database/oradb_dump/cdump</TD><TD>&nbsp;</TD></TR>
 <TR><TD CLASS="td_name">db_block_buffers</TD><TD>12800</TD><TD>&nbsp;</TD></TR>
 <TR><TD CLASS="td_name">db_block_size</TD><TD>8192</TD><TD>&nbsp;</TD></TR>
-<TR><TD CLASS="td_name">db_domain</TD><TD>sample.com</TD><TD>&nbsp;</TD></TR>
+<TR><TD CLASS="td_name">db_domain</TD><TD>domain.com</TD><TD>&nbsp;</TD></TR>
 <TR><TD CLASS="td_name">db_file_multiblock_read_count</TD><TD>8</TD><TD>&nbsp;</TD></TR>
 <TR><TD CLASS="td_name">db_files</TD><TD>1022</TD><TD>&nbsp;</TD></TR>
 <TR><TD CLASS="td_name">db_name</TD><TD>oradb</TD><TD>&nbsp;</TD></TR>
@@ -765,7 +716,7 @@ created and dropped as needed</DIV></TD></TR>
 <HR>
 <TABLE ALIGN="center" BORDER="1">
 <TR><TD><IMG SRC="w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small">
-Created by OSPRep v0.3.3 &copy; 2003-2005 by <A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> &amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></SPAN>
+Created by OSPRep v0.3.4 &copy; 2003-2005 by <A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> &amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></SPAN>
 <IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"></TD></TR>
 </TABLE>
 <BR CLEAR="all">

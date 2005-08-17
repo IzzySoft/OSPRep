@@ -15,9 +15,14 @@
     Oracle versions up to 10.1.0.4 (and is fixed with 10.1.0.5).</P>
  <P>The workaround recommended by MetaLink (taking the correct values from
     <CODE>V$OPEN_CURSOR</CODE>), or the other inoffial workaround (taking them from
-    <CODE>V$SESSTAT</CODE>) cannot be used with StatsPack, since StatsPack does not snap any
-    data from those views. Hence, if you are affected by this bug, there's no other choice
-    but to accept the second workaround suggested by MetaLink: Ignore the value...</P>
+    <CODE>V$SESSTAT</CODE>) cannot be used here, since StatsPack does not snap any data from
+    those views in levels &lt;= 7. Hence, if you are affected by this bug, and don't want to accept
+    the second workaround suggested by MetaLink ("Ignore the value"), you should install the
+    <code>get_sesstat()</code> procedure provided by OSPRep (see <code>install/get_sesstat.sql</CODE>)
+    and execute it <B><I>after</I></B> each of your <CODE>statspack.snap()</CODE> calls. This
+    will collect the information from <code>v$sesstat</code> into the <code>stats$sesstat</code>
+    table. If OSPRep finds data here for the first and last snap_id, it will use them instead.
+    The column "comment" tells you, where the value for the open cursors is taken from.</P>
 </TD></TR></TABLE>
 
 <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--

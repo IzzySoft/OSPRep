@@ -25,9 +25,10 @@
   Statspack to gather more statistical data; not to confuse with the elements to
   be found in the <code>plugins/</code> directory of the distribution. The latter
   ones are plugins used by the report generator, while the first ones are used to
-  gather the statistics. Right now, there are two of these collector plugins
-  available: one for gathering "Wait Objects" statistics, the other for collecting
-  information on data file growth.
+  gather the statistics. Right now, there are three of these collector plugins
+  available: one for gathering "Wait Objects" statistics, one for collecting
+  information on data file growth, plus one to work around the Oracle bug 3926058
+  (wrong count of open cursors).
  </td></tr>
  <tr><td class="text">
   In order to use these collector plugins, you of course have to install them
@@ -60,12 +61,10 @@
  <tr><th class="th_sub"><a name="lim"></a>Limitations</th></tr>
  <tr><td class="text">
   OSPRep was tested successfully with Oracle versions 9.0.1 and 9.2 - which
-  does not necessarily mean it will not run with other versions (although it
-  was reported to me, that OSPRep could successfully used with other Oracle
-  versions, as e.g. 8.1.7). As always, reports are very welcome especially if
-  you successfully use OSPRep with Oracle versions &lt; 9.0.1 or &gt; 9.2, so
-  I can correct this limitation here. For other limitations, please read the
-  previous paragraph (Shell, PL/SQL, OSes).
+  does not necessarily mean it will not run with other versions. As always,
+  reports are very welcome especially if you successfully use OSPRep with Oracle
+  versions &lt; 9.0.1 or &gt; 9.2, so I can correct this limitation here. For
+  other limitations, please read the previous paragraph (Shell, PL/SQL, OSes).
  </td></tr>
 </table>
 

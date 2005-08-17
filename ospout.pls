@@ -7,14 +7,34 @@
             ' <TH CLASS="th_sub">Snap Time</TH><TH CLASS="th_sub">Sessions</TH>'||
             '<TH CLASS="th_sub">Curs/Sess</TH><TH CLASS="th_sub">Comment</TH></TR>';
   print(L_LINE);
+  BEGIN
+    SELECT value INTO I3 FROM stats$sesstat
+     WHERE snap_id=BID AND dbid=DB_ID AND instance_number=INST_NUM AND statistic#=3;
+    I1 := I3/BLOG;
+    S1 := 'from <code>stats$sesstat</code>';
+  EXCEPTION
+    WHEN OTHERS THEN
+      I1:=BOCUR/BLOG;
+      S1:='from <code>stats$sysstat</code>';
+  END;
+  BEGIN
+    SELECT value INTO I3 FROM stats$sesstat
+     WHERE snap_id=EID AND dbid=DB_ID AND instance_number=INST_NUM AND statistic#=3;
+    I2 := I3/ELOG;
+    S2 := 'from <code>stats$sesstat</code>';
+  EXCEPTION
+    WHEN OTHERS THEN
+      I2:=EOCUR/ELOG;
+      S2:='from <code>stats$sysstat<code>';
+  END;
   FOR Rec_SnapInfo IN C_SnapInfo LOOP
     L_LINE := ' <TR><TD>Start</TD><TD ALIGN="right">'||Rec_SnapInfo.begin_snap_id||'</TD><TD>'||
               Rec_SnapInfo.begin_snap_time||'</TD><TD ALIGN="right">'||BLOG||'</TD><TD ALIGN="right">'||
-	      to_char(BOCUR/BLOG,'9,990.00')||'<TD>'||Rec_SnapInfo.begin_snap_comment||'</TD></TR>';
+	      to_char(I1,'9,990.00')||'<TD>'||Rec_SnapInfo.begin_snap_comment||S1||'</TD></TR>';
     print(L_LINE);
     L_LINE := ' <TR><TD>End</TD><TD ALIGN="right">'||Rec_SnapInfo.end_snap_id||'</TD><TD>'||
               Rec_SnapInfo.end_snap_time||'</TD><TD ALIGN="right">'||ELOG||'</TD><TD ALIGN="right">'||
-	      to_char(EOCUR/ELOG,'9,999,990.00')||'<TD>'||Rec_SnapInfo.end_snap_comment||'</TD></TR>';
+	      to_char(I2,'9,999,990.00')||'<TD>'||Rec_SnapInfo.end_snap_comment||S2||'</TD></TR>';
     print(L_LINE);
     L_LINE := ' <TR><TD COLSPAN="6" ALIGN="center">Elapsed: '||Rec_SnapInfo.elapsed||
               ' min</TD></TR>';

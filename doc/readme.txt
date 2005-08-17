@@ -117,6 +117,13 @@ The very same applies to the datafiles growth statistics - a new plugin
 introduced with v0.1.5: use the fileobj.sql file to create the data structs,
 plus getfilestat.sql for the collector procedure.
 
+The session statistics plugin introduced with v0.3.5 gathers the (summarized)
+session stats into the stats$sesstat table (normally used by StatsPack itself
+when run in level 10 -- so make sure to not combine them). The main reason for
+this is to work around some statistic bugs with v$sysstat in Oracle up to
+10.1.0.4 (see e.g. MetaLink note 3926058.8), so we can find the correct values
+from these (summarized) session stats.
+
 A different "PlugIn" is the script fts_plans.sh in the root directory of this
 bundle. It obeys the same syntax as the main (sreport.sh) script, but does a
 different job: it collects the statements and execution plans for all queries

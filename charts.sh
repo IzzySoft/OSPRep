@@ -200,6 +200,42 @@ DECLARE
       WHEN NO_DATA_FOUND THEN NULL;
     END;
 
+  PROCEDURE get_sesstat(eventname IN VARCHAR2, arrname IN VARCHAR2) IS
+    MAXVAL NUMBER; MAXDELTA NUMBER; MAXAVEDELTA NUMBER; LASTVAL NUMBER;
+    CURSOR C_Sys IS
+      SELECT arrname||'['||a.snap_id||'] = '||a.value||';' line, a.value, a.snap_id
+        FROM stats\$sesstat a,v\$statname b
+       WHERE b.name=eventname
+         AND a.statistic#=b.statistic#
+         AND a.instance_number=INST_NUM
+	 AND a.dbid=DB_ID
+	 AND a.snap_id BETWEEN BID AND EID;
+    BEGIN
+      MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
+      print(CHR(10)||'var '||arrname||' = new Array();');
+      FOR rec IN C_Sys LOOP
+        print(rec.line);
+	IF rec.value > MAXVAL THEN
+	  MAXVAL := rec.value;
+	END IF;
+	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
+          IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
+            MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
+          END IF;
+	END IF;
+	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
+	  MAXDELTA := ABS(rec.value - LASTVAL);
+	END IF;
+	LASTVAL := rec.value;
+      END LOOP;
+      print('amaxval["'||arrname||'"] = '||MAXVAL||';');
+      print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
+      print('amaxdelta["'||arrname||'"] = '||MAXDELTA||';');
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+        get_sysstat(eventname,arrname);
+    END;
+
   PROCEDURE get_sysstat2_ps(event1 IN VARCHAR2, event2 IN VARCHAR2, arrname IN VARCHAR2) IS
     MAXVAL NUMBER; LASTVAL NUMBER; ACTVAL NUMBER; VALUE NUMBER;
     CURSOR C_Sys IS
@@ -513,7 +549,7 @@ BEGIN
   get_sysstat_per('table fetch continued row','table fetch by rowid','cfr',100);
   get_libmiss('libmiss');
   get_sysstat('logons current','logon');
-  get_sysstat('opened cursors current','opencur');
+  get_sesstat('opened cursors current','opencur');
   get_librpp('rpp');
   get_libghr('ghr');
   get_rowcacheratio('rcr');

@@ -3,6 +3,12 @@ $Id$
 History for OSPRep
 ==================
 
+v0.3.5 (2005)
+-------------------
++ added workaround for incorrect cursor values resulting from Oracle
+  bug 3926058 (you need to install the "plugin procedure"
+  get_sesstat() to make use of this)
+
 v0.3.4 (12.08.2005)
 -------------------
 + added hints for pool size configuration
