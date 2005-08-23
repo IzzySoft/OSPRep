@@ -35,6 +35,9 @@
  cache" in your database. For this issue, you may use the <code>SESSION_CACHED_CURSORS</code>
  parameter. You also may want to have a look at the <A HREF="softparse.html">soft parse</A> issue to
  seehow the <code>CURSOR_SHARING</code> parameter may be helpful.</P>
+ <P>Another hint is to use stored procedures whenever it is possible. Multiple users issuing the
+ same stored code use the same shared PL/SQL area automatically. Because stored procedures are stored
+ in a parsed form, their use reduces runtime parsing.</P>
 </TD></TR></TABLE>
 
 <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--

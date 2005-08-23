@@ -46,9 +46,11 @@
   ELSE S1 := to_char(round(100*SRTM/(SRTD+SRTM),2),'990.00');
        S2 := alert_lt_warn(100*SRTM/(SRTD+SRTM),AR_IE_IMSORT,WR_IE_IMSORT);
   END IF;
-  L_LINE := ' <TR><TD>In-Memory Sort</TD><TD ALIGN="right"'||S2||'>'||S1||
-            '</TD><TD CLASS="text">A too low ratio indicates too many '||
-	    'disk sorts appearing. One possible ';
+  L_LINE := ' <TR><TD>In-Memory Sort&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'sorts'||CHR(39)||
+            ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD>';
+  print(L_LINE);
+  L_LINE := '<TD ALIGN="right"'||S2||'>'||S1||'</TD><TD CLASS="text">A too low ratio indicates '||
+	    'too many disk sorts appearing. One possible ';
   print(L_LINE);
   L_LINE := 'solution could be increasing the sort area/SGA size.</TD></TR>';
   print(L_LINE);

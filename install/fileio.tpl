@@ -5,8 +5,8 @@
  <TITLE>OraHelp: File IO</TITLE>
 </HEAD><BODY>
 
+<H3>File I/O and TableSpace I/O</H3>
 <TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
- <H3>File I/O and TableSpace I/O</H3>
  <P>If the value for Avg Blks/Rd is higher than 1, this indicates full table
   scans. If it grows higher than <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE> we
   must assume that almost every operation on this TS is executed as full table
@@ -24,6 +24,14 @@
   are overly busy. Furthermore, if the temporary TableSpaces have the most
   write activity, this may indicate that too much of the sorting is to disk
   and may require optimization.</P>
+ <P>So here are some things you could do: Find the datafiles which have high read
+  time, then check the followings:</P><UL>
+  <LI>If their Time/Call (AvgRd) &gt; 20 ms., check the IO subsystem.</LI>
+  <LI>If busy files are on the same disk, distribute them to different disks.</LI>
+  <LI>If partitioning is available, partition big tables in busy files.</LI>
+  <LI>The Block/Call ratio shows the possibility of Full Table Scan(FTS). If it's
+      1, no FTS occured. If it reaches <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE>,
+      all calls did FTS.</LI>
 </TD></TR></TABLE>
 
 <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
