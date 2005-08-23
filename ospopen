@@ -317,6 +317,9 @@ fi
 if [ -n "$IOHEAD" ]; then
   cat $IOHEAD>>$SQLSET
 fi
+if [ -n "$DBWRHEAD" ]; then
+  cat $DBWRHEAD>>$SQLSET
+fi
 if [ -n "$SEGSTATHEAD" ]; then
   cat $SEGSTATHEAD>>$SQLSET;
 fi
