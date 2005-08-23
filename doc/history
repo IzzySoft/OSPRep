@@ -8,6 +8,13 @@ v0.3.5 (2005)
 + added workaround for incorrect cursor values resulting from Oracle
   bug 3926058 (you need to install the "plugin procedure"
   get_sesstat() to make use of this)
+! Resource Limits and Segment Stats have never been built (error in SQL clause)
++ made Resource Limits optional (MK_RLIMS in config) plus introduced
+  limits for warn/alert (WR_RLIM/AR_RLIM in config)
++ added more hints on sort ratio, file i/o, and instance efficiency
++ added DBWR statistics. Switch them on/off with the MK_DBWR parameter in the
+  config file.
+* print function now splits long strings at spaces (instead of fixed pos 255)
 
 v0.3.4 (12.08.2005)
 -------------------
