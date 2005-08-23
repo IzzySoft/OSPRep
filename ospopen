@@ -72,6 +72,8 @@ DECLARE
   AR_IE_PRSC2E NUMBER;
   WR_IE_LAHIT NUMBER;
   AR_IE_LAHIT NUMBER;
+  WR_RLIM NUMBER;
+  AR_RLIM NUMBER;
   AR_EP_FTS NUMBER;
   WR_DF_CHNG NUMBER;
   AR_DF_CHNG NUMBER;
@@ -209,10 +211,8 @@ $RLIM_CURSOR
         statement := 'SELECT 0 from dual';
       ELSE
         statement := 'SELECT COUNT(resource_name) FROM stats\$resource_limit '||
-                     ' WHERE snap_id = EID AND dbid = DB_ID '||
-                     '   AND instance_number = INST_NUM '||
-		     '   AND (   nvl(current_utilization,0)/limit_value > .8 '||
-                     '        or nvl(max_utilization,0)/limit_value > .8 )';
+                     ' WHERE snap_id = '||EID||' AND dbid = '||DB_ID||
+                     '   AND instance_number = '||INST_NUM;
       END IF;
       EXECUTE IMMEDIATE statement INTO CI;
       IF CI > 0 THEN
@@ -228,8 +228,8 @@ $RLIM_CURSOR
     CI NUMBER; statement VARCHAR2(500);
     BEGIN
       statement := 'SELECT COUNT(logical_reads) FROM stats\$seg_stat '||
-                   ' WHERE snap_id BETWEEN BID AND EID AND dbid = DB_ID '||
-		   '   AND instance_number = INST_NUM ';
+                   ' WHERE snap_id BETWEEN '||BID||' AND '||EID||' AND dbid = '||DB_ID||
+		   '   AND instance_number = '||INST_NUM;
       EXECUTE IMMEDIATE statement INTO CI;
       print(statement);
       IF CI > 0 THEN
@@ -409,6 +409,9 @@ BEGIN
   MK_SEG_LOCK := :MK_SEG_LOCK;
   MK_SEG_ITL  := :MK_SEG_ITL;
   MK_SEGSTAT  := :MK_SEGSTAT;
+  IF :MK_RLIMS = 1 THEN
+    MK_RLIMS := TRUE;
+  END IF;
   WR_IE_BUFFNW := :WR_IE_BUFFNW;
   AR_IE_BUFFNW := :AR_IE_BUFFNW;
   WR_IE_REDONW := :WR_IE_REDONW;
@@ -425,6 +428,8 @@ BEGIN
   AR_IE_PRSC2E := :AR_IE_PRSC2E;
   WR_IE_LAHIT := :WR_IE_LAHIT;
   AR_IE_LAHIT := :AR_IE_LAHIT;
+  WR_RLIM := :WR_RLIM;
+  AR_RLIM := :AR_RLIM;
   AR_EP_FTS := :AR_EP_FTS;
   WR_DF_CHNG := :WR_DF_CHNG;
   AR_DF_CHNG := :AR_DF_CHNG;
@@ -497,8 +502,6 @@ BEGIN
     RAISE invalid_snap_range;
   END IF;
 
-  MK_RLIMS := have_rlims;
-
   FOR R_SnapBind IN C_SnapBind LOOP
     PARA  := R_SnapBind.parallel;
     VERSN := R_SnapBind.version;
@@ -513,6 +516,10 @@ BEGIN
      AND snap_id = EID
      AND instance_number=INST_NUM
      AND dbid=DB_ID;
+
+--  IF MK_RLIMS = 1 THEN
+    MK_RLIMS := have_rlims;
+--  END IF;
 
   -- HTML Head
   L_LINE := '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'||CHR(10)||

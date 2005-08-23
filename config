@@ -13,9 +13,9 @@
 # directory to store temporary files in
 TMPDIR=/tmp
 # in which directory should the report ($ORACLE_SID.html) be placed
-REPDIR=/var/www/html/oracle/statspack
+REPDIR=/tools/oracle/app/product/9.2.0/dba_admin/osprep/reports
 # StyleSheet to use
-CSS=../iceage.css
+CSS=iceage.css
 
 # --------------------------------------------------------------[ DataBase ]---
 # SID of the database to analyse
@@ -108,6 +108,8 @@ MK_LC=1
 # If MK_SGASUM=0, SGABREAK is excluded automatically
 MK_SGASUM=1
 MK_SGABREAK=0
+# Include Resource Limit Stats?
+MK_RLIMS=1
 # Include init.ora parameter changes? [0|1]
 MK_IORA=1
 
@@ -132,6 +134,8 @@ WR_IE_PRSC2E=80
 AR_IE_PRSC2E=60
 WR_IE_LAHIT=85
 AR_IE_LAHIT=70
+WR_RLIM=80
+AR_RLIM=90
 # Full Table Scans will always issue a warning in the execution plans, so there
 # is no WR_* value here
 AR_EP_FTS=1000
