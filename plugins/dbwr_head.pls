@@ -29,7 +29,8 @@
              AND e.instance_number = INST_NUM
              AND b.instance_number = e.instance_number
              AND decode(e.name,last,e.value) IS NOT NULL
-             AND decode(b.name, last,b.value) IS NOT NULL ) b;
+             AND decode(b.name, last,b.value) IS NOT NULL ) b
+          WHERE b.val > 0;
         RETURN erg;
       EXCEPTION
         WHEN OTHERS THEN RETURN '&nbsp;';

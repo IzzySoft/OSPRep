@@ -191,14 +191,25 @@ DECLARE
 
 $RLIM_CURSOR
 
+  FUNCTION strpos (str IN VARCHAR2,needle IN VARCHAR2,startpos NUMBER) RETURN NUMBER IS
+    pos NUMBER; strsub VARCHAR2(255);
+    BEGIN
+      strsub := SUBSTR(str,1,255);
+      pos    := INSTR(strsub,needle,startpos);
+      return pos;
+    END;
+
   PROCEDURE print(line IN VARCHAR2) IS
+    pos NUMBER;
     BEGIN
       dbms_output.put_line(line);
     EXCEPTION
       WHEN OTHERS THEN
         IF SQLERRM LIKE '%ORU-10028%' THEN
-	  print(SUBSTR(line,1,255));
-	  print(SUBSTR(line,256));
+          pos := strpos(line,' ',-1);
+	  print(SUBSTR(line,1,pos));
+	  pos := pos +1;
+	  print(SUBSTR(line,pos));
 	ELSE
           dbms_output.put_line('*!* Problem in print() *!*');
 	END IF;
