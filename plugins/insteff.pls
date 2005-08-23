@@ -85,7 +85,9 @@
   print(L_LINE);
   L_LINE := '<TD ALIGN="right">'||to_char(round(100*(1-PRSE/EXE),2),'990.00')||
 	    '</TD><TD CLASS="text">A low value here indicates that there is no '||
-            'much re-usable SQL (see <I>Soft Parse</I> for possible actions).';
+            'much re-usable SQL (see <I>Soft Parse</I> for possible actions). ';
+  print(L_LINE);
+  L_LINE := 'It may also point to a too small shared pool, or frequent logons/logoffs. ';
   print(L_LINE);
   L_LINE := 'Negative values connote that there are more Parses than Executes, '||
             'which could point to syntactically incorrect SQL statements (or '||
@@ -115,10 +117,14 @@
   ELSE S2 := to_char(round(100*(1-(PRSCPU/TCPU)),2),'990.00');
   END IF;
   L_LINE := ' <TR><TD>Parse CPU to Parse Elapsed</TD><TD ALIGN="right"'||S3||'>'||
-            S1||'</TD><TD>See <I>Soft Parse</I> above.</TD></TR>'||
-            ' <TR><TD>Non-Parse CPU</TD><TD ALIGN="right">'||
-            S2||'</TD><TD>&nbsp;</TD></TR>';
+            S1||'</TD><TD>A low value here indicates high wait time in parse. '||
+            'These will most probably cause shared pool and/or library cache latches.';
+  print(L_LINE);
+  L_LINE := 'See <I>Soft Parse</I> above.</TD></TR>'||' <TR><TD>Non-Parse CPU</TD>'||
+            '<TD ALIGN="right">'||S2||'</TD><TD>A low value here indicates that too much '||
+            'time is spent for parsing.';
+  print(L_LINE);
+  L_LINE := 'See <I>Soft Parse</I> and <I>Execute to Parse</I> above for possible solutions.</TD></TR>';
   print(L_LINE);
   print(TABLE_CLOSE);
   print('<HR>');
-
