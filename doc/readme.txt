@@ -122,7 +122,9 @@ session stats into the stats$sesstat table (normally used by StatsPack itself
 when run in level 10 -- so make sure to not combine them). The main reason for
 this is to work around some statistic bugs with v$sysstat in Oracle up to
 10.1.0.4 (see e.g. MetaLink note 3926058.8), so we can find the correct values
-from these (summarized) session stats.
+from these (summarized) session stats. Currently, it is only used for the open
+cursor statistics, so you will need this only if you are affected by the
+mentioned bug but need accurat open cursor stats.
 
 A different "PlugIn" is the script fts_plans.sh in the root directory of this
 bundle. It obeys the same syntax as the main (sreport.sh) script, but does a

@@ -168,6 +168,11 @@
            The only other difference is: TSIO stats are ordered by IOs, while FIO
            stats are ordered by TS and file names.</td></tr>
    <tr><td class="td_name"><code>MK_FIO</code></td></tr>
+   <tr><td class="td_name"><code>MK_DBWR</code></td>
+       <td class="text">Here you define whether you want to include (1) the DBWriter
+           statistics in your report or not (0). These statistics may help you if
+           you assume problems with the DBWR, since they give more details on DBWR
+           activity.</td></tr>
    <tr><td class="td_name"><code>MK_SEG_LR</code></td>
        <td class="text" rowspan="4">These switches are for the segment statistics
            (Statspack Level 7) introduced with Oracle 9.2 and will have no effect
@@ -239,6 +244,11 @@
            the setting for <code>MK_SGABREAK</code> will be ignored and handled
            as if it was set to 0 as well.</td></tr>
    <tr><td class="td_name"><code>MK_SGABREAK</code></td></tr>
+   <tr><td class="td_name"><code>MK_RLIMS</code></td>
+       <td class="text">With the <code>MK_RLIMS</code> statement you can switch the
+           Resource Limits Report on (1) or off (0). If switched off, of course no
+           resource limits reports will be generated at all. If set to 1, this
+           report segment will be built only if you have resource limits enabled.</td></tr>
    <tr><td class="td_name"><code>MK_IORA</code></td>
        <td class="text">Whether the "Initialization Parameters" segment should be
            included with the report. This block lists up all initialization
