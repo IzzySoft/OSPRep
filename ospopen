@@ -48,6 +48,8 @@ DECLARE
   MK_DFSTAT NUMBER;
   MK_TSIO NUMBER;
   MK_FIO NUMBER;
+  MK_DBWR NUMBER;
+  MK_LGWR NUMBER;
   MK_TOPSQL NUMBER;
   MK_EP NUMBER;
   MK_SEG_LR NUMBER;
@@ -331,6 +333,9 @@ fi
 if [ -n "$DBWRHEAD" ]; then
   cat $DBWRHEAD>>$SQLSET
 fi
+if [ -n "$LGWRHEAD" ]; then
+  cat $LGWRHEAD>>$SQLSET
+fi
 if [ -n "$SEGSTATHEAD" ]; then
   cat $SEGSTATHEAD>>$SQLSET;
 fi
@@ -415,6 +420,8 @@ BEGIN
   MK_DFSTAT   := :MK_DFSTAT;
   MK_TSIO     := :MK_TSIO;
   MK_FIO      := :MK_FIO;
+  MK_DBWR     := :MK_DBWR;
+  MK_LGWR     := :MK_LGWR;
   MK_TOPSQL   := :MK_TOPSQL;
   MK_EP       := :MK_EP;
   MK_SEG_LR   := :MK_SEG_LR;
@@ -607,6 +614,12 @@ BEGIN
   END IF;
   IF MK_TSIO + MK_FIO > 0 THEN
     L_LINE := L_LINE ||' [ <A HREF="#fileio">File IO</A> ]';
+  END IF;
+  IF MK_DBWR = 1 THEN
+    L_LINE := L_LINE ||'[ <A HREF="#dbwr">DBWR</A> ]';
+  END IF;
+  IF MK_LGWR = 1 THEN
+    L_LINE := L_LINE ||'[ <A HREF="#lgwr">LGWR</A> ]';
   END IF;
   IF MK_SEGSTAT = 1 THEN
 --    IF MK_SEG_LR + MK_SEG_PR + MK_SEG_BUSY + MK_SEG_LOCK + MK_SEG_ITL > 0 THEN

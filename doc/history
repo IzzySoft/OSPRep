@@ -3,6 +3,11 @@ $Id$
 History for OSPRep
 ==================
 
+v0.3.6
+-------------------
++ added LGWR statistics. Switch them on/off with the MK_LGWR parameter in the
+  config file
+
 v0.3.5 (24.08.2005)
 -------------------
 + added workaround for incorrect cursor values resulting from Oracle

@@ -46,7 +46,7 @@
         WHEN OTHERS THEN NULL;
       END;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3">Database Writer Statistics&nbsp;'||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="dbwr"></A>Database Writer Statistics&nbsp;'||
                 '<A HREF="JavaScript:popup('||CHR(39)||'dbwr'||CHR(39)||
                 ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>';
       print(L_LINE);

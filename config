@@ -72,6 +72,8 @@ MK_TSIO=1
 MK_FIO=1
 # Include the DBWR statistics? [0|1]
 MK_DBWR=1
+# Include LGWR statistics? [0|1]
+MK_LGWR=1
 # Include Segment Statistics (Level 7, Oracle 9.2+)? [0|1]
 MK_SEG_LR=1
 MK_SEG_PR=1

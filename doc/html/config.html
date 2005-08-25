@@ -169,10 +169,11 @@
            stats are ordered by TS and file names.</td></tr>
    <tr><td class="td_name"><code>MK_FIO</code></td></tr>
    <tr><td class="td_name"><code>MK_DBWR</code></td>
-       <td class="text">Here you define whether you want to include (1) the DBWriter
-           statistics in your report or not (0). These statistics may help you if
-           you assume problems with the DBWR, since they give more details on DBWR
-           activity.</td></tr>
+       <td class="text" rowspan="2">Here you define whether you want to include (1)
+           the DBWriter/LogWriter statistics in your report or not (0). These statistics
+           may help you if you assume problems with the DBWR/LGWR, since they give more
+           details on their activity.</td></tr>
+   <tr><td class="td_name"><code>MK_LGWR</code></td></tr>
    <tr><td class="td_name"><code>MK_SEG_LR</code></td>
        <td class="text" rowspan="4">These switches are for the segment statistics
            (Statspack Level 7) introduced with Oracle 9.2 and will have no effect
