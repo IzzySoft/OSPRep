@@ -100,6 +100,17 @@
                   'completely full. This does not mean a problem: high values just indicate high '||
                   'LGWR activity.';
       swrite('redo wastage',pcomment);
+      pcomment := 'Percentage of redo bytes written "unnecessarily". Naturally, this should be very '||
+                  'low; if it exceeds 20..30% plus you have many log writer wait events, you should '||
+                  'check for unnecessary checkpoints/log switches.';
+      S1 := translate( dbstat('redo wastage'), '0123456789 ,', '0123456789' );
+      S2 := translate( dbstat('redo size'), '0123456789 ,', '0123456789' );
+      I1 := round( to_number(S1) * 100 / to_number(S2),2);
+      S1 := to_char(I1,'9,990.00');
+      S2 := alert_gt_warn(I1,30,20);
+      L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">redo wastage percentage</TD>'||
+                '<TD ALIGN="right"'||S2||'>'||S1||'%</TD><TD ALIGN="justify">'||pcomment||'</TD></TR>';
+      print(L_LINE);
       pcomment := 'Changes to redolog buffer had been flushed out to disk immediately such as '||
                   '<code>COMMIT</code> / <code>ROLLBACK</code>.';
       swrite('redo synch writes',pcomment);
