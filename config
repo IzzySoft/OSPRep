@@ -140,6 +140,8 @@ WR_IE_LAHIT=85
 AR_IE_LAHIT=70
 WR_RLIM=80
 AR_RLIM=90
+WR_RWP=20
+AR_RWP=30
 # Full Table Scans will always issue a warning in the execution plans, so there
 # is no WR_* value here
 AR_EP_FTS=1000

@@ -329,6 +329,8 @@ variable WR_IE_LAHIT NUMBER;
 variable AR_IE_LAHIT NUMBER;
 variable WR_RLIM NUMBER;
 variable AR_RLIM NUMBER;
+variable WR_RWP NUMBER;
+variable AR_RWP NUMBER;
 variable AR_EP_FTS NUMBER;
 variable WR_DF_CHNG NUMBER;
 variable AR_DF_CHNG NUMBER;
@@ -402,6 +404,8 @@ BEGIN
   :AR_IE_LAHIT   := $AR_IE_LAHIT;
   :WR_RLIM       := $WR_RLIM;
   :AR_RLIM       := $AR_RLIM;
+  :WR_RWP        := $WR_RWP;
+  :AR_RWP        := $AR_RWP;
   :AR_EP_FTS     := $AR_EP_FTS;
   :WR_DF_CHNG    := $WR_DF_CHNG;
   :AR_DF_CHNG    := $AR_DF_CHNG;

@@ -180,6 +180,15 @@
                certain operations to reduce the overall rate of redo generation</LI></UL></TD>
        <TD CLASS="inner">Time it takes for the I/Os to complete. Even though redo records are
            written in parallel, the parallel write is not complete until the last I/O is on disk.</TD></TR>
+   <TR><TD CLASS="td_name">log file sequential read</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">The process is waiting for blocks to be read
+           from the online redo log into memory. This primarily occurs at instance startup and
+           when the ARCH process archives filled online redo logs. This also can happen when a
+           new log file is added, a logfile is dumped, or when you switch logs. If this event
+           occurs inacceptable frequent, consider one of the following actions:<UL>
+           <LI>increase the log file size</LI>
+           <LI>increase the number of redo log groups</LI></UL></TD>
+       <TD CLASS="inner">Time it takes to complete the physical I/O (read)</TD></TR>
    <TR><TD CLASS="td_name">log file sync</TD>
        <TD CLASS="inner" STYLE="text-align:justify">When a user session commits, the session's
            redo information needs to be flushed to the redo logfile. The user session will post

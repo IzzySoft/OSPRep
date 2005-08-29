@@ -56,23 +56,19 @@
       EXCEPTION
         WHEN OTHERS THEN RETURN '&nbsp;';
       END;
-    PROCEDURE swrite(first IN VARCHAR2, scomment IN VARCHAR2) IS
-      erg VARCHAR2(20);
+    PROCEDURE writerow(val1 IN VARCHAR2, val2 IN VARCHAR2, val3 IN VARCHAR2) IS
       BEGIN
-        erg := dbstat(first);
-        L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">'||first||'</TD><TD ALIGN="right">'||
-                  erg||'</TD><TD ALIGN="justify">'||scomment||'</TD></TR>';
+        L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">'||val1||'</TD>'||
+                  '<TD ALIGN="right">'||val2||'</TD><TD ALIGN="justify">'||val3||'</TD></TR>';
         print(L_LINE);
       EXCEPTION
         WHEN OTHERS THEN NULL;
       END;
-    PROCEDURE write(first IN VARCHAR2, last IN VARCHAR2, scomment IN VARCHAR2) IS
+    PROCEDURE swrite(first IN VARCHAR2, scomment IN VARCHAR2) IS
       erg VARCHAR2(20);
       BEGIN
-        erg := dbstats(first,last);
-        L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">'||first||' / '||last||'</TD><TD ALIGN="right">'||
-                  erg||'</TD><TD ALIGN="justify">'||scomment||'</TD></TR>';
-        print(L_LINE);
+        erg := dbstat(first);
+        writerow(first,erg,scomment);
       EXCEPTION
         WHEN OTHERS THEN NULL;
       END;
@@ -85,17 +81,29 @@
                   'be allocated for the redolog entries by performing log switches. High values '||
                   'indicate high amount of log switches.';
       swrite('redo log space requests',pcomment);
-      pcomment := 'Total wait time waiting for completion of redo log space requests. High values '||
-                  'cause <i>log file switch...</i> related wait events. If there are many '||
-                  'processes waiting for log switch completion, it is possible to see '||
+      S1 := translate( dbstat('redo log space requests'), '0123456789 ,', '0123456789' );
+      I1 := round ( to_number(S1) / (ELA/60),2 );
+      S1 := to_char(I1,'9,990.00');
+      writerow('redo log space requests per hour',S1,'This number should be as low as possible. '||
+               'When encountering high values here, the reason could be e.g. one of these:<UL>'||
+               '<LI>too small log files</LI><LI>not enough redo log groups</LI><LI>too many '||
+               'checkpoints / log file switches (also indicated by high redo wastage, see below)'||
+               '</LI></UL>');
+      pcomment := 'Total wait time waiting for completion of redo log space requests in 1/10 ms. '||
+                  'High values cause <i>log file switch...</i> related wait events. If there are '||
+                  'many processes waiting for log switch completion, it is possible to see '||
                   '<i>log buffer space wait</i> event after log switch is completed. Since redo '||
                   'generation is disabled during log switch, there can be high volume of redo '||
                   'generation after log switch. This may cause <i>log buffer space</i> wait event.';
       swrite('redo log space wait time',pcomment);
-      pcomment := 'If this ratio is high, check the followings:<UL><LI>Increase the size of '||
+      pcomment := 'ms/request. If this ratio is high, check the followings:<UL><LI>Increase the size of '||
                   'redolog files and/or add new redolog groups</LI><LI>Ensure that log switches '||
                   'are occurred in around 20-30 minutes</LI></UL>';
-      write('redo log space wait time','redo log space requests',pcomment);
+      S1 := translate( dbstat('redo log space wait time'), '0123456789 ,', '0123456789' );
+      S2 := translate( dbstat('redo log space requests'), '0123456789 ,', '0123456789' );
+      I1 := round ( (to_number(S1)/10) / to_number(S2), 2);
+      S1 := to_char(I1,'9,990.00');
+      writerow('redo log space wait time / redo log space requests',S1,pcomment);
       pcomment := 'Log buffer blocks had been needed to be flushed out to disk before they were '||
                   'completely full. This does not mean a problem: high values just indicate high '||
                   'LGWR activity.';
@@ -107,7 +115,7 @@
       S2 := translate( dbstat('redo size'), '0123456789 ,', '0123456789' );
       I1 := round( to_number(S1) * 100 / to_number(S2),2);
       S1 := to_char(I1,'9,990.00');
-      S2 := alert_gt_warn(I1,30,20);
+      S2 := alert_gt_warn(I1,AR_RWP,WR_RWP);
       L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">redo wastage percentage</TD>'||
                 '<TD ALIGN="right"'||S2||'>'||S1||'%</TD><TD ALIGN="justify">'||pcomment||'</TD></TR>';
       print(L_LINE);
@@ -117,29 +125,29 @@
       pcomment := 'Elapsed time of all redo synch writes in 1/10 ms. High values cause '||
                   '<i>log file sync</i> wait event.';
       swrite('redo synch time',pcomment);
-      pcomment := 'If this ratio is high, check the followings:<UL><LI>Do not set '||
+      pcomment := 'Seconds per write. If this ratio is high, check the followings:<UL><LI>Do not set '||
                   '<code>LOG_BUFFER</code> to value higher than 1Mb. High <i>LOG_BUFFER</i> '||
                   'parameter may cause <i>log file sync</i> wait event. This impacts '||
                   '<code>COMMIT</code> / <code>ROLLBACK</code> response time, and possibly '||
                   'DBWR performance.</LI><LI>Reduce <code>COMMIT</code> / <code>ROLLBACK</code> '||
                   'frequency.</LI><LI>If there are other redolog related wait events, check them. '||
                   'They may indirectly cause <i>log file sync</i> wait event.';
-      write('redo synch time','redo synch writes',pcomment);
+      S1 := translate( dbstat('redo synch time'), '0123456789 ,', '0123456789' );
+      S2 := translate( dbstat('redo synch writes'), '0123456789 ,', '0123456789' );
+      I1 := round( (to_number(S1) / 10) / to_number(S2), 2 );
+      S1 := to_char(I1,'9,990.00');
+      writerow('redo synch time / redo synch writes',S1,pcomment);
       S1 := translate( dbstat('redo size'), '0123456789 ,', '0123456789' );
       I1 := to_number(S1) / ELA;
       S1 := format_fsize(I1)||'/min';
-      L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">redo emergence</TD><TD ALIGN="right">'||
-                S1||'</TD><TD ALIGN="justify">How much redo information is written on average '||
-                'during the snapshot interval given.</TD></TR>';
-      print(L_LINE);
+      writerow('redo emergence',S1,'How much redo information is written on average '||
+               'during the snapshot interval given.');
       S1 := translate( dbstat('redo write time'), '0123456789 ,', '0123456789' );
       I1 := translate(S1, '0123456789 ,', '0123456789' ) /(10*1000*60);
       I2 := round(I1 * 100 / ELA,2);
-      S2 := to_char(I2,'9,990.00');
-      L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">redo time used</TD><TD ALIGN="right">'||
-                S2||'%</TD><TD ALIGN="justify">Rate of time spent for writing redo information '||
-                'during the snapshot interval given. This value should be close to 0%.</TD></TR>';
-      print(L_LINE);
+      S2 := to_char(I2,'9,990.00')||'%';
+      writerow('redo time used',S2,'Rate of time spent for writing redo information '||
+               'during the snapshot interval given. This value should be close to 0%.');
       print(TABLE_CLOSE);
     EXCEPTION
       WHEN OTHERS THEN print(TABLE_CLOSE);
