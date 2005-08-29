@@ -104,13 +104,12 @@
       I1 := round ( (to_number(S1)/10) / to_number(S2), 2);
       S1 := to_char(I1,'9,990.00');
       writerow('redo log space wait time / redo log space requests',S1,pcomment);
-      pcomment := 'Log buffer blocks had been needed to be flushed out to disk before they were '||
-                  'completely full. This does not mean a problem: high values just indicate high '||
-                  'LGWR activity.';
-      swrite('redo wastage',pcomment);
-      pcomment := 'Percentage of redo bytes written "unnecessarily". Naturally, this should be very '||
-                  'low; if it exceeds 20..30% plus you have many log writer wait events, you should '||
-                  'check for unnecessary checkpoints/log switches.';
+      pcomment := 'Percentage of redo bytes written "unnecessarily" (<i>redo wastage</i> '||
+                  'describes the log buffer blocks had been needed to be flushed out to disk before '||
+                  'they were completely full, which does not mean a problem: high values just '||
+                  'indicate high LGWR activity). Naturally, this should be very low; if it '||
+                  'exceeds 20..30% plus you have many log writer wait events, you should check '||
+                  'for unnecessary checkpoints/log switches.';
       S1 := translate( dbstat('redo wastage'), '0123456789 ,', '0123456789' );
       S2 := translate( dbstat('redo size'), '0123456789 ,', '0123456789' );
       I1 := round( to_number(S1) * 100 / to_number(S2),2);
@@ -137,6 +136,15 @@
       I1 := round( (to_number(S1) / 10) / to_number(S2), 2 );
       S1 := to_char(I1,'9,990.00');
       writerow('redo synch time / redo synch writes',S1,pcomment);
+      pcomment := 'Number of retries per hour necessary to allocate space in the redo buffer. '||
+                  'Retries are needed either because the redo writer has fallen behind or because '||
+                  'an event such as a log switch is occurring.';
+      S1 := translate( dbstat('redo buffer allocation retries'), '0123456789 ,', '0123456789' );
+      I1 := to_number(S1) / (ELA/60);
+      S1 := to_char(I1,'9,990.00');
+      writerow('redo buffer allocation retries / hour',S1,pcomment);
+      S1 := dbstats('redo blocks written','redo writes');
+      writerow('redo blocks written / redo writes',S1,'Number of blocks per write');
       S1 := translate( dbstat('redo size'), '0123456789 ,', '0123456789' );
       I1 := to_number(S1) / ELA;
       S1 := format_fsize(I1)||'/min';
@@ -148,6 +156,10 @@
       S2 := to_char(I2,'9,990.00')||'%';
       writerow('redo time used',S2,'Rate of time spent for writing redo information '||
                'during the snapshot interval given. This value should be close to 0%.');
+      S1 := translate( dbstat('redo size'), '0123456789 ,', '0123456789' );
+      I1 := to_number(S1);
+      S1 := format_fsize(I1);
+      writerow('redo size',S1,'Total amount of redo generated');
       print(TABLE_CLOSE);
     EXCEPTION
       WHEN OTHERS THEN print(TABLE_CLOSE);
