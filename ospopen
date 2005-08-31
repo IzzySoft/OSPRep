@@ -314,6 +314,9 @@ $RLIM_CURSOR
 ENDSQL
 
 cat $PLUGINDIR/formatting.pls>>$SQLSET
+if [ -n "$SYSSTATFUNCS" ]; then
+  cat $SYSSTATFUNCS>>$SQLSET
+fi
 
 . $GETWAITS
 . $GETDF
