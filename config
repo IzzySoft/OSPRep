@@ -44,6 +44,8 @@ EXC_PERF_FOR="SYS SYSTEM"
 #--- Arguments on the command line override these settings.
 START_ID=0
 END_ID=0
+# Skip the first snap_id after instance start (DB warmup)? [0|1]
+SKIP_DBSTART_ID=1
 # Max Snapshot Interval in days. Only used if no START_ID specified. Set to
 # 0 to disable.
 MAX_REP_INTERVAL=0

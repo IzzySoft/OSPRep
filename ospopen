@@ -151,7 +151,8 @@ DECLARE
 			      AND snap_id = BID);
 
   CURSOR C_MinSnap IS
-    SELECT MIN(snap_id) minid FROM stats\$snapshot
+    SELECT MIN(snap_id) minid, MIN(startup_time) startup_time, MIN(snap_time) snap_time
+      FROM stats\$snapshot
      WHERE dbid = DB_ID AND instance_number = INST_NUM
        AND startup_time = (SELECT startup_time FROM stats\$snapshot
                             WHERE dbid = DB_ID AND instance_number = INST_NUM
@@ -502,10 +503,19 @@ BEGIN
   THEN
     FOR R_SnapID IN C_MinSnap LOOP
       I1 := R_SnapID.minid;
+      IF $SKIP_DBSTART_ID = 1 THEN
+        I2 := I1;
+        IF R_SnapID.startup_time > ( R_SnapID.snap_time - 1/24 ) THEN
+          FOR R_Snap_ID IN C_MinSnapRel(I2) LOOP
+            I1 := R_Snap_ID.minid;
+          END LOOP;
+        END IF;
+      END IF;
     END LOOP;
     IF NVL($MAX_REP_INTERVAL,0) != 0 THEN
       SELECT (snap_time - $MAX_REP_INTERVAL) INTO TDATE FROM stats\$snapshot WHERE snap_id=EID;
-      SELECT MAX(snap_id) INTO BID FROM stats\$snapshot WHERE snap_time<TDATE;
+      SELECT MAX(snap_id) INTO BID FROM stats\$snapshot WHERE snap_time<TDATE
+         AND dbid = DB_ID AND instance_number = INST_NUM;
       IF BID < I1 THEN
         BID := I1;
       END IF;
