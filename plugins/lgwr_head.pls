@@ -64,18 +64,6 @@
       EXCEPTION
         WHEN OTHERS THEN NULL;
       END;
-    FUNCTION numformat (val IN NUMBER) RETURN VARCHAR2 IS
-      BEGIN
-        RETURN to_char(val,'9,999,999,990');
-      EXCEPTION
-        WHEN OTHERS THEN RETURN NULL;
-      END;
-    FUNCTION decformat (val IN NUMBER) RETURN VARCHAR2 IS
-      BEGIN
-        RETURN to_char(round(val,2),'9,999,999,990.00');
-      EXCEPTION
-        WHEN OTHERS THEN RETURN NULL;
-      END;
     PROCEDURE swrite(first IN VARCHAR2, scomment IN VARCHAR2) IS
       erg VARCHAR2(20);
       BEGIN
