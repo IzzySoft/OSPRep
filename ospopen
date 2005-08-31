@@ -333,6 +333,9 @@ fi
 if [ -n "$TSQLHEAD" ]; then
   cat $TSQLHEAD>>$SQLSET
 fi
+if [ -n "$TABSHEAD" ]; then
+  cat $TABSHEAD>>$SQLSET
+fi
 if [ -n "$IOHEAD" ]; then
   cat $IOHEAD>>$SQLSET
 fi
@@ -620,6 +623,9 @@ BEGIN
   IF LENGTH(L_LINE) > 0 THEN
     print(L_LINE);
     L_LINE := '';
+  END IF;
+  IF $MK_TABS = 1 THEN
+    L_LINE := L_LINE||' [ <A HREF="#tabs">TableStats</A> ]';
   END IF;
   IF MK_DFSTAT = 1 THEN
     S1 := 'istats\$datafiles'; I1 := 1; I2 := 0;
