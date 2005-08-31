@@ -58,8 +58,8 @@
       END;
     PROCEDURE writerow(val1 IN VARCHAR2, val2 IN VARCHAR2, val3 IN VARCHAR2) IS
       BEGIN
-        L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">'||val1||'</TD>'||
-                  '<TD ALIGN="right">'||val2||'</TD><TD ALIGN="justify">'||val3||'</TD></TR>';
+        L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:21em">'||val1||'</TD>'||
+                  '<TD ALIGN="right" NOWRAP>'||val2||'</TD><TD ALIGN="justify">'||val3||'</TD></TR>';
         print(L_LINE);
       EXCEPTION
         WHEN OTHERS THEN NULL;
@@ -147,6 +147,12 @@
       I1 := dbstat('redo buffer allocation retries') / (ELA/3600);
       S1 := to_char(I1,'9,990.00');
       writerow('redo buffer allocation retries / h',S1,pcomment);
+      I1 := dbstats('redo buffer allocation retries','redo blocks written');
+      writerow('redo buffer allocation retries / redo blocks written',decformat(I1),
+               'should be less than 0.01 - larger values indicate that the LGWR is not keeping up. '||
+               'If this happens, tuning the values for <code>LOG_CHECKPOINT_INTERVAL</code> and '||
+               '<code>LOG_CHECKPOINT_TIMEOUT</code> (or, with Oracle 9i, '||
+               '<code>FAST_START_MTTR_TARGET</code>) can help to improve the situation.');
       S1 := decformat(dbstats('redo blocks written','redo writes'));
       writerow('redo blocks written / redo writes',S1,'Number of blocks per write');
       I1 := dbstat('redo size') / (ELA/60);

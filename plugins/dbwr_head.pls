@@ -71,7 +71,7 @@
     PROCEDURE write(first IN VARCHAR2, last IN VARCHAR2, scomment IN VARCHAR2) IS
       erg VARCHAR2(20);
       BEGIN
-        erg := numformat(dbstats(first,last));
+        erg := decformat(dbstats(first,last));
         L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">'||first||' / '||last||'</TD><TD ALIGN="right">'||
                   erg||'</TD><TD ALIGN="justify">'||scomment||'</TD></TR>';
         print(L_LINE);
@@ -116,6 +116,8 @@
                'already marked as being written.)');
       write('DBWR buffers scanned','DBWR lru scans',pcomment);
       write('DBWR summed scan depth','DBWR lru scans','Average scan depth');
+      write('free buffer inspected','free buffer requested',
+            'If this value is to high, you may need to increase your buffer cache.');
       write('DBWR free buffers found','DBWR make free requests','Average number of reusable buffers at the end of each LRU');
       pcomment := 'This ratio should be as low as possible. If this value is high, '||
                   'it indicates DBWR is not writing dirty buffers efficiently. High ratio '||
