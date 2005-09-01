@@ -214,7 +214,7 @@ if [ $MK_LGWR -eq 1 ]; then
   LGWRBODY=$PLUGINDIR/lgwr_body.pls
 fi
 
-if [ "${MK_DBWR}${MK_LGWR}" != "00" ]; then
+if [ "${MK_DBWR}${MK_LGWR}${MK_TABS}" != "000" ]; then
   SYSSTATFUNCS=$PLUGINDIR/sysstats.pls
 fi
 

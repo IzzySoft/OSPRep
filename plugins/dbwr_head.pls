@@ -51,7 +51,6 @@
       write('DBWR summed scan depth','DBWR lru scans','Average scan depth');
       write('free buffer inspected','free buffer requested',
             'If this value is to high, you may need to increase your buffer cache.');
-      write('DBWR free buffers found','DBWR make free requests','Average number of reusable buffers at the end of each LRU');
       pcomment := 'This ratio should be as low as possible. If this value is high, '||
                   'it indicates DBWR is not writing dirty buffers efficiently. High ratio '||
                   'may cause write complete wait wait event.';
