@@ -52,7 +52,8 @@
                   'indicate high LGWR activity). Naturally, this should be very low; if it '||
                   'exceeds 20..30% plus you have many log writer wait events, you should check '||
                   'for unnecessary checkpoints/log switches.';
-      I1 := round( dbstat('redo wastage') * 100 / dbstat('redo size'),2);
+      I2 := dbstat('redo wastage');
+      I1 := round( I2 * 100 / (dbstat('redo size') + I2),2);
       S1 := to_char(I1,'9,990.00');
       S2 := alert_gt_warn(I1,AR_RWP,WR_RWP);
       L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">redo wastage percentage</TD>'||
