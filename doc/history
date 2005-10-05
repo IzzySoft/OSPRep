@@ -3,7 +3,7 @@ $Id$
 History for OSPRep
 ==================
 
-v0.3.6
+v0.3.6 (05.10.2005)
 -------------------
 + added LGWR statistics. Switch them on/off with the MK_LGWR parameter in the
   config file
