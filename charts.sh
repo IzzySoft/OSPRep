@@ -544,6 +544,7 @@ BEGIN
   get_sysevent('log file switch completion','lgsw');
   get_sysevent('log file switch (checkpoint incomplete)','ckpt');
   get_sysstat('redo log space requests','redoreq');
+  get_sysstat('redo buffer allocation retries','redoret');
   get_sysstat_per('enqueue timeouts','enqueue requests','enqper',1);
   get_sysstat_per('free buffer inspected','free buffer requested','fbp',1);
   get_sysstat_per('table fetch continued row','table fetch by rowid','cfr',100);

@@ -41,6 +41,9 @@ function drawStat(stat) {
     case "redoreq" :  parent.dstat = parent.redoreq;
                   parent.dname = "Redo Log Space Requests";
 		  break;
+    case "redoret" :  parent.dstat = parent.redoret;
+                  parent.dname = "Redo Buffer Allocation Retries";
+		  break;
     case "enqper" :  parent.dstat = parent.enqper;
                   parent.dname = "Enqueue Timeouts per Request (OK: &lt;&lt; 0.01)";
 		  break;

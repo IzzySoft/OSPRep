@@ -76,6 +76,7 @@ document.close();
  <OPTION VALUE="lgsw">Log File Switch Completion</OPTION>
  <OPTION VALUE="ckpt">Checkpoint Incomplete</OPTION>
  <OPTION VALUE="redoreq">Redo Log Space Requests</OPTION>
+ <OPTION VALUE="redoret">Redo Buffer Allocation Retries</OPTION>
 </SELECT>
 </TD></TR></TABLE><BR>
 <TABLE ALIGN="center" BORDER="1">
