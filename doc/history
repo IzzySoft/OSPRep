@@ -6,6 +6,7 @@ History for OSPRep
 v0.3.7
 -------------------
 + added redo buffer allocation retries to the charts
++ added basic support for v10.2 (tnx to David)
 
 v0.3.6 (05.10.2005)
 -------------------
