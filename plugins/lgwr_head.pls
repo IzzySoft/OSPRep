@@ -43,7 +43,12 @@
       pcomment := 'ms/request. If this ratio is high, check the followings:<UL><LI>Increase the size of '||
                   'redolog files and/or add new redolog groups</LI><LI>Ensure that log switches '||
                   'occurring not more frequent than around all 20-30 minutes</LI></UL>';
-      I1 := round ( (dbstat('redo log space wait time')/10) / dbstat('redo log space requests'), 2);
+      I2 := dbstat('redo log space requests');
+      IF I2 > 0 THEN
+        I1 := round ( (dbstat('redo log space wait time')/10) / I2, 2);
+      ELSE
+        I1 := 0;
+      END IF;
       S1 := to_char(I1,'9,990.00');
       writerow('redo log space wait time / redo log space requests',S1,pcomment);
       pcomment := 'Percentage of redo bytes written "unnecessarily" (<i>redo wastage</i> '||
