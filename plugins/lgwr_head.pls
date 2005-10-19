@@ -17,6 +17,49 @@
       EXCEPTION
         WHEN OTHERS THEN NULL;
       END;
+    PROCEDURE related IS
+      ttime1 DATE;
+      ttime2 DATE;
+      CURSOR lgi IS
+       SELECT group#,bytes,members FROM v$log;
+      BEGIN
+        L_LINE := ' <TR><TD COLSPAN="3"><BR>'||TABLE_OPEN||
+                  '  <TR><TH CLASS="th_sub" COLSPAN="2">Related Information</TH></TR>'||
+                  CHR(10)||'  <TR><TD>'||TABLE_OPEN||CHR(10)||
+                  '  <TR><TH CLASS="th_sub2">Parameter</TH><TH CLASS="th_sub2">Value</TH></TR>';
+        print(L_LINE);
+        I1 := to_number( parameter('log_checkpoint_interval'),'999999999');
+        print(' <TR><TD>log_checkpoint_interval</TD><TD ALIGN="right">'||numformat(I1)||'</TD></TR>');
+        I1 := to_number( parameter('log_checkpoint_timeout'),'999999999');
+        print(' <TR><TD>log_checkpoint_timeout</TD><TD ALIGN="right">'||numformat(I1)||'</TD></TR>');
+        I1 := to_number( parameter('log_checkpoint_mttr_target'),'999999999');
+        S1 := NVL(numformat(I1),'&nbsp;');
+        print(' <TR><TD>log_checkpoint_mttr_target</TD><TD ALIGN="right">'||S1||'</TD></TR>');
+        I1 := to_number( parameter('log_buffer'),'999999999');
+        print(' <TR><TD>log_buffer</TD><TD ALIGN="right">'||format_fsize(I1)||'</TD></TR>');
+        SELECT startup_time INTO ttime2 FROM v$instance;
+        SELECT MIN(completion_time) INTO ttime1 FROM v$archived_log
+         WHERE completion_time > ttime2;
+        IF ttime1 IS NOT NULL THEN
+          SELECT MAX(completion_time) INTO ttime2 FROM v$archived_log;
+          SELECT COUNT(sequence#) INTO I1 FROM v$archived_log
+           WHERE completion_time BETWEEN ttime1 AND ttime2;
+          I2 := (ttime2 - ttime1)*24;
+          print(' <TR><TD>avg. log switches / h</TD><TD ALIGN="right">'||decformat(I1/I2)||'</TD></TR>');
+        END IF;
+        L_LINE := ' </TABLE></TD><TD>'||TABLE_OPEN||'  <TR><TH CLASS="th_sub2">LogGroup</TH>'||
+                  '<TH CLASS="th_sub2">Members</TH><TH CLASS="th_sub2">Size</TH></TR>';
+        print(L_LINE);
+        FOR lg IN lgi LOOP
+          L_LINE := '  <TR><TD ALIGN="right">'||lg.group#||'</TD><TD ALIGN="right">'||
+                    lg.members||'</TD><TD ALIGN="right">'||format_fsize(lg.bytes)||'</TD></TR>';
+          print(L_LINE);
+        END LOOP;
+        print('</TABLE></TD></TR>');
+        print('</TABLE></TD></TR>');
+      EXCEPTION
+        WHEN OTHERS THEN print('</TD></TR></TABLE>');
+      END;
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="lgwr"></A>Log Writer Statistics</TH></TR>'||
                 ' <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Value</TH>'||
@@ -106,8 +149,9 @@
       I1 := dbstat('redo size');
       S1 := format_fsize(I1);
       writerow('redo size',S1,'Total amount of redo generated');
+      related();
       print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN print(TABLE_CLOSE||SQLERRM||'<br>'||I3||' ('||S3||')');
+      WHEN OTHERS THEN print(TABLE_CLOSE);
     END;
 

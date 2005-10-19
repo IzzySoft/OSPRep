@@ -54,3 +54,16 @@
     EXCEPTION
       WHEN OTHERS THEN RETURN 0;
     END;
+
+  FUNCTION parameter(name IN VARCHAR2) RETURN VARCHAR2 IS
+    wert VARCHAR2(200);
+    statement VARCHAR2(500);
+    BEGIN
+      statement := 'SELECT value FROM stats$parameter WHERE name='''||name||''''||
+                   ' AND snap_id='||EID||' AND dbid='||DB_ID||
+                   ' AND instance_number='||INST_NUM;
+      EXECUTE IMMEDIATE statement INTO wert;
+      RETURN wert;
+    EXCEPTION
+      WHEN OTHERS THEN wert := ''; RETURN wert;
+    END;
