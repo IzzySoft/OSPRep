@@ -1,5 +1,39 @@
   PROCEDURE tabs IS
     pcomment VARCHAR2(2000);
+
+    Procedure writestat (statname IN VARCHAR2, comment IN VARCHAR2) IS
+      BEGIN
+        IF comment IS NULL THEN S2 := '&nbsp;';
+          ELSE S2 := comment;
+        END IF;
+        S1 := numformat( dbstat(statname) );
+        print(' <TR><TD>'||statname||'</TD><TD ALIGN="right">'||S1||'</TD><TD>'||S2||'</TD></TR>');
+      EXCEPTION
+        WHEN OTHERS THEN NULL;
+      END;
+
+    PROCEDURE tabscan IS
+      BEGIN
+        L_LINE := ' <TR><TD COLSPAN="3" CLASS="td_name">If we have many full table '||
+                  'scans, we may have to optimize <CODE>DB_FILE_MULTI_BLOCK_READ_COUNT</CODE>. '||
+                  'Beneath the statistic below, we need the block count of the largest ';
+        print(L_LINE);
+        L_LINE := 'table to find the best value. A common recommendation is to set '||
+                  '<CODE>DB_FILE_MULTI_BLOCK_READ_COUNT</CODE> to the highest '||
+                  'possible value for maximum performance, which is 32 (256k) in ';
+        print(L_LINE);
+        L_LINE := 'most environments. The absolute maximum of 128 (1M) is '||
+      	        'mostly only available on raw devices.</TD></TR>';
+        print(L_LINE);
+        writestat('table scans (short tables)','FTS on short tables are no problem, since they are in most times faster than index access.');
+        writestat('table scans (long tables)','High values here may indicate missing indices or bad execution plans.');
+        writestat('table scans (rowid ranges)','');
+        writestat('table scans (cache partitions)','');
+        writestat('table scans (direct read)','');
+      EXCEPTION
+        WHEN OTHERS THEN NULL;
+      END;
+
     PROCEDURE writerow(val1 IN VARCHAR2, val2 IN VARCHAR2, val3 IN VARCHAR2) IS
       BEGIN
         L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:21em">'||val1||'</TD>'||
@@ -43,8 +77,11 @@
                   '<LI>reorganize these tables (e.g. <code>ALTER TABLE..MOVE</code>, or '||
                   '<code>EXP</code> / <code>IMP</code>)</LI></UL>';
       write('table fetch continued row','table fetch by rowid',pcomment);
+      IF MK_TABSCAN THEN
+        tabscan;
+      END IF;
       print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN print(TABLE_CLOSE||SQLERRM||'<br>'||I3||' ('||S3||')');
+      WHEN OTHERS THEN print(TABLE_CLOSE);
     END;
 

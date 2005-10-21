@@ -68,6 +68,8 @@ MK_TOPSQL=1
 MK_EP=1
 # Include table statistics? [0|1]
 MK_TABS=1
+# Include the TableScan stats? [0|1]
+MK_TSCAN=1
 # Include the common DataFile Stats? [0|1]
 MK_DFSTAT=1
 # Include the TS and File I/O Stats? [0|1]

@@ -67,3 +67,45 @@
     EXCEPTION
       WHEN OTHERS THEN wert := ''; RETURN wert;
     END;
+
+  PROCEDURE eventstat(eventname IN VARCHAR2, average OUT NUMBER, totals OUT NUMBER,
+                     waittime OUT NUMBER, timeouts OUT NUMBER) IS
+    BEGIN
+      SELECT a.totwaits,a.twait/1000,
+             DECODE(NVL(a.twait,0),0,0,a.twait/a.totwaits),
+             a.time_outs
+       INTO totals,waittime,average,timeouts
+       FROM (
+        SELECT e.total_waits - b.total_waits totwaits,
+               e.time_waited_micro - b.time_waited_micro twait,
+	       e.total_timeouts - b.total_timeouts time_outs
+          FROM stats$system_event b, stats$system_event e
+         WHERE b.snap_id = BID
+           AND e.snap_id = EID
+           AND b.dbid    = DB_ID
+           AND e.dbid    = DB_ID
+           AND b.dbid    = e.dbid
+           AND b.instance_number = INST_NUM
+           AND e.instance_number = INST_NUM
+           AND b.instance_number = e.instance_number
+           AND b.event=eventname
+           AND e.event=eventname
+           AND b.event=e.event) a;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+       average := 0; totals := 0; waittime := 0; timeouts := 0;
+    END;
+
+  PROCEDURE get_wait(eventname IN VARCHAR2, avgwait OUT VARCHAR2, total_waits OUT VARCHAR2,
+                     time_waited OUT VARCHAR2, total_timeouts OUT VARCHAR2) IS
+    average NUMBER; totals NUMBER; waittime NUMBER; timeouts NUMBER;
+    BEGIN
+      eventstat(eventname,average,totals,waittime,timeouts);
+      total_waits    := numformat(totals);
+      time_waited    := format_stime(waittime,1);
+      total_timeouts := numformat(timeouts);
+      avgwait        := format_stime(average,1000);
+    EXCEPTION
+      WHEN OTHERS THEN NULL;
+    END;
+

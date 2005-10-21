@@ -18,13 +18,21 @@
         WHEN OTHERS THEN NULL;
       END;
     PROCEDURE related IS
-      ttime1 DATE;
-      ttime2 DATE;
+      ttime1 DATE; ttime2 DATE;
       CURSOR lgi IS
        SELECT group#,bytes,members FROM v$log;
+      PROCEDURE printwait(event IN VARCHAR2) IS
+       BEGIN
+         get_wait(event,S1,S2,S3,S4);
+         L_LINE := '  <TR><TD>'||event||'</TD><TD ALIGN="right">'||S2||'</TD><TD ALIGN="right">'||
+                   S3||'</TD><TD ALIGN="right">'||S1||'</TD><TD ALIGN="right">'||S4||'</TD></TR>';
+         print(L_LINE);
+       EXCEPTION
+        WHEN OTHERS THEN NULL;
+       END;
       BEGIN
         L_LINE := ' <TR><TD COLSPAN="3"><BR>'||TABLE_OPEN||
-                  '  <TR><TH CLASS="th_sub" COLSPAN="2">Related Information</TH></TR>'||
+                  '  <TR><TH CLASS="th_sub" COLSPAN="3">Related Information</TH></TR>'||
                   CHR(10)||'  <TR><TD>'||TABLE_OPEN||CHR(10)||
                   '  <TR><TH CLASS="th_sub2">Parameter</TH><TH CLASS="th_sub2">Value</TH></TR>';
         print(L_LINE);
@@ -55,6 +63,18 @@
                     lg.members||'</TD><TD ALIGN="right">'||format_fsize(lg.bytes)||'</TD></TR>';
           print(L_LINE);
         END LOOP;
+        L_LINE := '</TABLE></TD><TD>'||TABLE_OPEN||'  <TR><TH CLASS="th_sub2">WaitEvent</TH>'||
+                  '<TH CLASS="th_sub2">Waits</TH><TH CLASS="th_sub2">WaitTime</TH>'||
+                  '<TH CLASS="th_sub2">AvgWaitTime</TH><TH CLASS="th_sub2">Timeouts</TH></TR>';
+        print(L_LINE);
+        printwait('LGWR wait for redo copy');
+        printwait('log file switch (checkpoint incomplete)');
+        printwait('log file switch (archiving needed)');
+        printwait('log file switch completion');
+        printwait('log file parallel write');
+        printwait('log file single write');
+        printwait('log buffer wait');
+        printwait('log buffer space');
         print('</TABLE></TD></TR>');
         print('</TABLE></TD></TR>');
       EXCEPTION
