@@ -10,6 +10,8 @@ v0.3.7
 ! fixed a possible "division by zero" bug in LGWR stats
 + added "related information" to LGWR stats
 + added tabscan block (adapted from orarep) to table stats
++ added online help for table stats and moved most of the comments
+  there (so the report gets a bit more compact)
 
 v0.3.6 (05.10.2005)
 -------------------
