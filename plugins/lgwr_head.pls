@@ -3,7 +3,7 @@
     pcomment VARCHAR2(2000);
     PROCEDURE writerow(val1 IN VARCHAR2, val2 IN VARCHAR2, val3 IN VARCHAR2) IS
       BEGIN
-        L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:21em">'||val1||'</TD>'||
+        L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:23em">'||val1||'</TD>'||
                   '<TD ALIGN="right" NOWRAP>'||val2||'</TD><TD ALIGN="justify">'||val3||'</TD></TR>';
         print(L_LINE);
       EXCEPTION
@@ -55,7 +55,8 @@
           I2 := (ttime2 - ttime1)*24;
           print(' <TR><TD>avg. log switches / h</TD><TD ALIGN="right">'||decformat(I1/I2)||'</TD></TR>');
         END IF;
-        L_LINE := ' </TABLE></TD><TD>'||TABLE_OPEN||'  <TR><TH CLASS="th_sub2">LogGroup</TH>'||
+        L_LINE := ' </TABLE></TD><TD>'||TABLE_OPEN||'  <TR><TH CLASS="th_sub2" COLSPAN="3">'||
+                  'Redo Log Groups</TH></TR>'||CHR(10)||'  <TR><TH CLASS="th_sub2">#</TH>'||
                   '<TH CLASS="th_sub2">Members</TH><TH CLASS="th_sub2">Size</TH></TR>';
         print(L_LINE);
         FOR lg IN lgi LOOP
@@ -81,8 +82,11 @@
         WHEN OTHERS THEN print('</TD></TR></TABLE>');
       END;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="lgwr"></A>Log Writer Statistics</TH></TR>'||
-                ' <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Value</TH>'||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="lgwr"></A>Log Writer Statistics&nbsp;<A '||
+                'HREF="JavaScript:popup('||CHR(39)||'lgwr'||CHR(39)||')"><IMG SRC="help/help.gif" '||
+                'BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Value</TH>'||
                 '<TH CLASS="th_sub">Comment</TH></TR>';
       print(L_LINE);
       pcomment := 'The active logfile had been full, and Oracle had waited for disk space to '||
@@ -91,21 +95,9 @@
       swrite('redo log space requests',pcomment);
       I1 := round ( dbstat('redo log space requests') / (ELA/3600),2 );
       S1 := to_char(I1,'9,990.00');
-      writerow('redo log space requests / h',S1,'This number should be as low as possible. '||
-               'When encountering high values here, the reason could be e.g. one of these:<UL>'||
-               '<LI>too small log files</LI><LI>not enough redo log groups</LI><LI>too many '||
-               'checkpoints / log file switches (also indicated by high redo wastage, see below)'||
-               '</LI></UL>');
-      pcomment := 'Total wait time waiting for completion of redo log space requests in 1/10 ms. '||
-                  'High values cause <i>log file switch...</i> related wait events. If there are '||
-                  'many processes waiting for log switch completion, it is possible to see '||
-                  '<i>log buffer space wait</i> event after log switch is completed. Since redo '||
-                  'generation is disabled during log switch, there can be high volume of redo '||
-                  'generation after log switch. This may cause <i>log buffer space</i> wait event.';
+      writerow('redo log space requests / h',S1,'This number should be as low as possible.</LI></UL>');
+      pcomment := 'Total wait time waiting for completion of redo log space requests in 1/10 ms.';
       swrite('redo log space wait time',pcomment);
-      pcomment := 'ms/request. If this ratio is high, check the followings:<UL><LI>Increase the size of '||
-                  'redolog files and/or add new redolog groups</LI><LI>Ensure that log switches '||
-                  'occurring not more frequent than around all 20-30 minutes</LI></UL>';
       I2 := dbstat('redo log space requests');
       IF I2 > 0 THEN
         I1 := round ( (dbstat('redo log space wait time')/10) / I2, 2);
@@ -113,13 +105,8 @@
         I1 := 0;
       END IF;
       S1 := to_char(I1,'9,990.00');
-      writerow('redo log space wait time / redo log space requests',S1,pcomment);
-      pcomment := 'Percentage of redo bytes written "unnecessarily" (<i>redo wastage</i> '||
-                  'describes the log buffer blocks had been needed to be flushed out to disk before '||
-                  'they were completely full, which does not mean a problem: high values just '||
-                  'indicate high LGWR activity). Naturally, this should be very low; if it '||
-                  'exceeds 20..30% plus you have many log writer wait events, you should check '||
-                  'for unnecessary checkpoints/log switches.';
+      writerow('redo log space wait time / redo log space requests',S1,'ms/request. Should be as low as possible.');
+      pcomment := 'Percentage of redo bytes written "unnecessarily". Naturally, this should be very low.';
       I2 := dbstat('redo wastage');
       I1 := round( I2 * 100 / (dbstat('redo size') + I2),2);
       S1 := to_char(I1,'9,990.00');
@@ -133,19 +120,12 @@
       pcomment := 'Elapsed time of all redo synch writes in 1/10 ms. High values cause '||
                   '<i>log file sync</i> wait event.';
       swrite('redo synch time',pcomment);
-      pcomment := 'Milliseconds per write. If this ratio is high, check the followings:<UL>'||
-                  '<LI>Do not set <code>LOG_BUFFER</code> to value higher than 1Mb. High '||
-                  '<i>LOG_BUFFER</i> parameter may cause <i>log file sync</i> wait event. This '||
-                  'impacts <code>COMMIT</code> / <code>ROLLBACK</code> response time, and possibly '||
-                  'DBWR performance.</LI><LI>Reduce <code>COMMIT</code> / <code>ROLLBACK</code> '||
-                  'frequency.</LI><LI>If there are other redolog related wait events, check them. '||
-                  'They may indirectly cause <i>log file sync</i> wait event.';
+      pcomment := 'Milliseconds per write. This value should be low.';
       I1 := round( (dbstat('redo synch time') / 10) * 1000 / dbstat('redo synch writes'), 2 );
       S1 := to_char(I1,'9,990.00');
       writerow('redo synch time / redo synch writes',S1,pcomment);
       pcomment := 'Number of retries per hour necessary to allocate space in the redo buffer. '||
-                  'Retries are needed either because the redo writer has fallen behind or because '||
-                  'an event such as a log switch is occurring.';
+                  'Should be very low.';
       I1 := dbstat('redo buffer allocation retries') / (ELA/3600);
       S1 := to_char(I1,'9,990.00');
       writerow('redo buffer allocation retries / h',S1,pcomment);

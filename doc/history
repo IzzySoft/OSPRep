@@ -12,6 +12,9 @@ v0.3.7
 + added tabscan block (adapted from orarep) to table stats
 + added online help for table stats and moved most of the comments
   there (so the report gets a bit more compact)
+* made the LGWR stats more compact (to fit on one page). Additional
+  comments/hints have been moved to online help
+
 
 v0.3.6 (05.10.2005)
 -------------------
