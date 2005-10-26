@@ -29,6 +29,44 @@
       storage clause. This way you can keep frequently used objects in the keep pool,
       while less frequently used ones aging out the default or recycle pool only.</LI>
  </UL>
+</TD></TR><TR><TD CLASS="text">
+ <P>The following table gives you more details on the DBWR statistics displayed in the
+    report:</P>
+  <TABLE ALIGN="center" BORDER="1" WIDTH="99%" STYLE="margin:5px">
+   <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Details</TH></TR>
+   <TR><TD CLASS="td_name">DBWR transaction table writes / hour</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">Number of rollback segment headers
+           written per hour by DBWR. This statistic indicates how many "hot" buffers
+           were written, causing a user process to wait while the write completed.</TD></TR>
+   <TR><TD CLASS="td_name">DBWR revisited being-written buffer / hour</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">Number of times per hour that DBWR
+           tried to save a buffer for writing and found that it was already in the write
+           batch. This statistic measures the amount of "useless" work that DBWR had to
+           do in trying to fill the batch. (If the same buffer from different sources is
+           considered for adding to the write batch, then all but the first attempt will
+           be "useless" because the buffer is already marked as being written.)</TD></TR>
+   <TR><TD CLASS="td_name">pinned buffers inspected / DBWR buffers scanned</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">This ratio should be as low as possible.
+           If this value is high, it indicates high amount of pinned (busy) buffers
+           encountered during free buffer search. This may cause <i>free buffer waits</i>
+           event by reducing the possibility of finding free buffer in the LRU list, and
+           then may cause DBWR to perform large batch write to make clean buffers available
+           at the tail of LRU list. This may also increase physical IO if aged out blocks
+           are needed to be re-accessed.<BR>
+           A possible solution is to increase the <CODE>DB_BLOCK_BUFFERS</CODE> (Oracle 8)
+           / <CODE>DB_CACHE_SIZE</CODE> (Oracle 9+).</TD></TR>
+   <TR><TD CLASS="td_name">DBWR free buffers found / DBWR make free requests</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">This ratio shows the average reusable
+           buffers, and should be as high as possible. If it is low, it indicates lack of
+           free space to use. In this case, check the followings:<UL>
+             <LI>If <I>dirty buffers inspected</I> is high, it indicates DBWR is not writing
+                 dirty buffers efficiently.</LI>
+             <LI>If <I>pinned buffers inspected</I> is high, increase <CODE>DB_BLOCK_BUFFERS</CODE>
+                 / <CODE>DB_CACHE_SIZE</CODE>.
+           </UL></TD></TR>
+   <TR><TD CLASS="td_name"></TD>
+       <TD CLASS="inner" STYLE="text-align:justify"></TD></TR>
+  </TABLE>
 </TD></TR></TABLE>
 
 <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--

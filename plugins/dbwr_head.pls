@@ -5,7 +5,7 @@
       erg VARCHAR2(20);
       BEGIN
         erg := decformat(dbstats(first,last));
-        L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:22em">'||first||' / '||last||'</TD><TD ALIGN="right">'||
+        L_LINE := ' <TR><TD CLASS="td_name" STYLE="width:23em">'||first||' / '||last||'</TD><TD ALIGN="right">'||
                   erg||'</TD><TD ALIGN="justify">'||scomment||'</TD></TR>';
         print(L_LINE);
       EXCEPTION
@@ -32,21 +32,14 @@
                'Number of buffers written per hour for checkpoints');
       I1 := dbstat('DBWR transaction table writes') / (ELA/60);
       writerow('DBWR transaction table writes / hour',decformat(I1),
-               'Number of rollback segment headers written per hour by DBWR. This statistic '||
-               'indicates how many "hot" buffers were written, causing a user process to wait '||
-               'while the write completed.');
+               'Number of rollback segment headers written per hour by DBWR.');
       pcomment := 'Average number of buffers scanned per scan';
       I1 := dbstat('DBWR undo block writes') / (ELA/60);
       writerow('DBWR undo block writes / hour',decformat(I1),
                'Number of rollback segment blocks written per hour by DBWR');
       I1 := dbstat('DBWR revisited being-written buffer') / (ELA/60);
       writerow('DBWR revisited being-written buffer / hour',decformat(I1),
-               'Number of times per hour that DBWR tried to save a buffer for writing '||
-               'and found that it was already in the write batch. This statistic measures '||
-               'the amount of "useless" work that DBWR had to do in trying to fill the batch. '||
-               '(If the same buffer from different sources is considered for adding to the write '||
-               'batch, then all but the first attempt will be "useless" because the buffer is '||
-               'already marked as being written.)');
+               'How often DBWR tried to save a buffer and found it already in the write batch.');
       write('DBWR buffers scanned','DBWR lru scans',pcomment);
       write('DBWR summed scan depth','DBWR lru scans','Average scan depth');
       write('free buffer inspected','free buffer requested',
@@ -55,22 +48,9 @@
                   'it indicates DBWR is not writing dirty buffers efficiently. High ratio '||
                   'may cause write complete wait wait event.';
       write('dirty buffers inspected','DBWR buffers scanned',pcomment);
-      pcomment := 'This ratio should be as low as possible. If this value is high, '||
-                  'it indicates high amount of pinned(busy) buffers encountered during '||
-                  'free buffer search. This may cause free buffer waits wait event by '||
-                  'reducing the possibility of finding free buffer in the LRU list, '||
-                  'and then may cause DBWR to perform large batch write to make clean buffers '||
-                  'available at the tail of LRU list. This may also increase physical IO if '||
-                  'aged out blocks are needed to be re-accessed.<BR>A possible solution is to '||
-                  'increase the <CODE>DB_BLOCK_BUFFERS</CODE> (Oracle 8) / '||
-                  '<CODE>DB_CACHE_SIZE</CODE> (Oracle 9+).';
+      pcomment := 'This ratio should be as low as possible.';
       write('pinned buffers inspected','DBWR buffers scanned',pcomment);
-      pcomment := 'This ratio shows the average reusable buffers, and should be as high as '||
-                  'possible. If it is low, it indicates lack of free space to use. In this '||
-                  'case, check the followings:<UL><LI>If dirty buffers inspected is high, '||
-                  'it indicates DBWR is not writing dirty buffers efficiently.</LI><LI>'||
-                  'If pinned buffers inspected is high, increase <CODE>DB_BLOCK_BUFFERS</CODE> '||
-                  '/ <CODE>DB_CACHE_SIZE</CODE>.</LI></UL>';
+      pcomment := 'This ratio shows the average reusable buffers, and should be as high as possible.';
       write('DBWR free buffers found','DBWR make free requests',pcomment);
       L_LINE := TABLE_CLOSE;
       print(L_LINE);
