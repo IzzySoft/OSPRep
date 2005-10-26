@@ -1,4 +1,3 @@
-
   PROCEDURE lgwr IS
     pcomment VARCHAR2(2000);
     PROCEDURE writerow(val1 IN VARCHAR2, val2 IN VARCHAR2, val3 IN VARCHAR2) IS
@@ -24,9 +23,13 @@
       PROCEDURE printwait(event IN VARCHAR2) IS
        BEGIN
          get_wait(event,S1,S2,S3,S4);
-         L_LINE := '  <TR><TD>'||event||'</TD><TD ALIGN="right">'||S2||'</TD><TD ALIGN="right">'||
-                   S3||'</TD><TD ALIGN="right">'||S1||'</TD><TD ALIGN="right">'||S4||'</TD></TR>';
-         print(L_LINE);
+         IF TRIM(S2) IS NULL THEN NULL;
+         ELSIF TRIM(S2) = '0' THEN NULL;
+         ELSE
+           L_LINE := '  <TR><TD>'||event||'</TD><TD ALIGN="right">'||S2||'</TD><TD ALIGN="right">'||
+                     S3||'</TD><TD ALIGN="right">'||S1||'</TD><TD ALIGN="right">'||S4||'</TD></TR>';
+           print(L_LINE);
+         END IF;
        EXCEPTION
         WHEN OTHERS THEN NULL;
        END;
@@ -81,6 +84,7 @@
       EXCEPTION
         WHEN OTHERS THEN print('</TD></TR></TABLE>');
       END;
+
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="lgwr"></A>Log Writer Statistics&nbsp;<A '||
                 'HREF="JavaScript:popup('||CHR(39)||'lgwr'||CHR(39)||')"><IMG SRC="help/help.gif" '||
