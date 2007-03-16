@@ -220,7 +220,7 @@
 				 (e.disk_reads - nvl(b.disk_reads,0)) /
 				 (e.executions - nvl(b.executions,0))),
 				 '999,999,990.0') readsperexec,
-	      to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/phyr,
+	      to_char(100*(e.disk_reads - nvl(b.disk_reads,0))/phyr,
 			  '999,999,990.0') pcttotal,
 	      (e.cpu_time - nvl(b.cpu_time,0))/1000 cputime,
 	      (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
