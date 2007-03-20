@@ -3,10 +3,10 @@ $Id$
 History for OSPRep
 ==================
 
-v0.3.7
+v0.3.7 (20.03.2007)
 -------------------
 + added redo buffer allocation retries to the charts
-+ added basic support for v10.2 (tnx to David)
++ added basic support for v10.2 (tnx to David) - UNTESTED, please report!
 ! fixed a possible "division by zero" bug in LGWR stats
 + added "related information" to LGWR stats
 + added tabscan block (adapted from orarep) to table stats
@@ -15,6 +15,7 @@ v0.3.7
 * made the DBWR+LGWR stats more compact (to fit on one page). Additional
   comments/hints have been moved to online help
 * added "related information" to DBWR stats
+! fixed a copy-paste error in SQL by Reads (Tnx to Fabrice reporting this)
 
 
 v0.3.6 (05.10.2005)
