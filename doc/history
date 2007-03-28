@@ -3,6 +3,24 @@ $Id$
 History for OSPRep
 ==================
 
+v0.4.1
+-------------------
+* Starting with the v0.4.x branch, the PL/SQL code moves to the database.
+  Instead of constructing an anonymous block using Shell logic on each call,
+  the Shell scripts will only create simple SQL code that calls the procedures
+  of the package. This is for multiple reasons: First, all the separate scripts
+  (the main report, chart generation and FTS module) can share specific code
+  much better, and second - hopefully and the final target for the main
+  report - we break the 1 MByte limit for the dbms_output by calling the
+  separated sections separately from "normal" SQL. But until then, it will
+  take some time...
+* chart generation and fts_plan code now moved into a package to be installed
+  into the DB
+! chart generation was broken in previous versions: An Oracle error was thrown
+  when no snapshot was taken for (last_snapshot - max_chart_interval). Fixed.
++ fts_plans.sh now gives much more info on the statements (such as executions,
+  disk reads and the module (=program) that ran the query last
+
 v0.3.7 (20.03.2007)
 -------------------
 + added redo buffer allocation retries to the charts
