@@ -101,11 +101,26 @@ Set TERMOUT OFF
 Set SCAN OFF
 Set SERVEROUTPUT On Size 1000000
 Set LINESIZE 300
-Set TRIMSPOOL On 
+Set TRIMSPOOL ON
 Set FEEDBACK OFF
 Set Echo Off
 SPOOL $REPDIR/${FILENAME}
-exec osprep.set_stylesheet('$CSS');
+-- HTML HEAD
+PROMPT <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+PROMPT <HTML><HEAD>
+PROMPT  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">
+PROMPT  <TITLE>StatsPack Report for $ORACLE_SID: FTS Analysis</TITLE>
+PROMPT  <LINK REL="stylesheet" TYPE="text/css" HREF="$CSS">
+PROMPT  <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript">
+PROMPT   function popup(page) {
+PROMPT    url = "help/" + page + ".html";
+PROMPT    pos = (screen.width/2)-400;
+PROMPT    helpwin = eval("window.open(url,'help','toolbar=no,location=no,titlebar=no,directories=no,status=yes,copyhistory=no,scrollbars=yes,width=600,height=400,top=0,left="+pos+"')");
+PROMPT    version = "$version";
+PROMPT   }
+PROMPT  </SCRIPT>
+PROMPT </HEAD><BODY>
+PROMPT <H2>StatsPack Report for $ORACLE_SID: FTS Analysis&nbsp;<A HREF="JavaScript:popup('fts')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></H2>
 exec osprep.set_exclude_owners('$EXCLUDE_OWNERS');
 exec osprep.fts_plan($START_ID,$END_ID,$MAX_REP_INTERVAL);
 SPOOL OFF
