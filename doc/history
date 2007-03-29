@@ -20,6 +20,7 @@ v0.4.1
   when no snapshot was taken for (last_snapshot - max_chart_interval). Fixed.
 + fts_plans.sh now gives much more info on the statements (such as executions,
   disk reads and the module (=program) that ran the query last
++ added online help (hints for evaluation) to fts_plans
 
 v0.3.7 (20.03.2007)
 -------------------
