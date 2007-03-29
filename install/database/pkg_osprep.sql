@@ -13,7 +13,6 @@ CREATE OR REPLACE PACKAGE osprep AS
   PROCEDURE chart_data(start_id IN NUMBER := 0, end_id IN NUMBER := 0, max_chart_interval IN NUMBER := 14); -- Create the chart data
   PROCEDURE fts_plan(start_id IN NUMBER := 0, end_id IN NUMBER := 0, max_plan_interval IN NUMBER := 0); -- Create the FTS Execution Plan Report
   PROCEDURE set_exclude_owners(ex_own IN VARCHAR2); -- declare object owners to exclude for FTS
-  PROCEDURE set_stylesheet(uri IN VARCHAR2); -- declare the StyleSheet to use for HTML output
 END osprep;
 /
 
@@ -26,7 +25,6 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
   exclude_owners VARCHAR2(4000);
   TABLE_OPEN VARCHAR2(100)  := '<TABLE ALIGN="center" BORDER="1">';
   TABLE_CLOSE VARCHAR2(100) := '</TABLE>'||CHR(10)||'<BR CLEAR="all">'||CHR(10);
-  CSS_URI VARCHAR2(255);
   -- Go4Colors
   AR_EP_FTS NUMBER := 1000;
 
@@ -651,11 +649,6 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
        exclude_owners := ex_own;
      END;
 
-   PROCEDURE set_stylesheet(uri IN VARCHAR2) IS
-     BEGIN
-       CSS_URI := uri;
-     END;
-
 /* -----------------------------------------------[ Chart Data retrieval ]--- */
   PROCEDURE chart_data(start_id IN NUMBER := 0, end_id IN NUMBER := 0, max_chart_interval IN NUMBER := 14) IS
     BEGIN
@@ -700,34 +693,12 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
 
 /* ------------------------------------------------[ Plan Data retrieval ]--- */
   PROCEDURE fts_plan(start_id IN NUMBER := 0, end_id IN NUMBER := 0, max_plan_interval IN NUMBER := 0) IS
-    R_TITLE VARCHAR2(200);
     BEGIN
       init;
       eval_EID(end_id);
       eval_DBUP_ID;
       eval_BID(start_id,max_plan_interval);
       eval_common;
-      R_TITLE := 'StatsPack Report for '||INST_NAME||': FTS Analysis';
-      -- HTML Head
-      L_LINE := '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">'||CHR(10)||
-                '<HTML><HEAD>'||CHR(10)||
-                ' <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">'||
-                CHR(10)||' <TITLE>'||R_TITLE||'</TITLE>';
-      print(L_LINE);
-      L_LINE := ' <LINK REL="stylesheet" TYPE="text/css" HREF="'||CSS_URI||'">'||CHR(10)||
-                ' <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript">'||CHR(10)||
-	            '   function popup(page) {'||CHR(10)||
-                '     url = "help/" + page + ".html";';
-      print(L_LINE);
-      L_LINE := '     pos = (screen.width/2)-400;'||CHR(10)||
-                '     helpwin = eval("window.open(url,'||CHR(39)||'help'||CHR(39)||
-	            ','||CHR(39)||'toolbar=no,location=no,titlebar=no,directories=no,'||
-                'status=yes,copyhistory=no,scrollbars=yes,width=600,height=400,top=0,left="+pos+"'||
-                CHR(39)||')");';
-      print(L_LINE);
-      L_LINE := '   }'||CHR(10)||' </SCRIPT>'||CHR(10)||
-                '</HEAD><BODY>'||CHR(10)||'<H2>'||R_TITLE||'</H2>'||CHR(10);
-      print(L_LINE);
       plan_table;
     END;
 
