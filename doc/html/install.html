@@ -13,8 +13,58 @@
  <tr><td class="text">
   The following instructions assume that all requirements mentioned in the
   <a href="tech.html#require">Requirements</a> section of this documentation are
-  met. Especially: an Oracle Database Server up and running, having Oracle
-  Statspack installed.
+  met. Especially: an Oracle Database Server up and running.
+ </td></tr>
+ <tr><td class="text">
+  If you have not yet installed the StatsPack (as delivered by Oracle) into
+  your database - no problem: We make this easy for you providing a script
+  doing all the needed work, including the installation of the OSPRep extensions
+  you wish to use. To do so, the following steps are required:
+ </td></tr>
+ <tr><td class="text">
+  <ol>
+   <li>Change to the install/ directory (below the place where you unpacked
+       OSPRep into)</li>
+   <li>Open the file <code>spcreate.sh</code> with your favorite editor</li>
+   <li>In the configuration section, adjust the settings to reflect your needs</li>
+   <li>Save and execute the script</li>
+  </ol>
+ </td></tr>
+ <tr><td class="text">
+  To verify the successfully execution, a few logfiles will be created: One
+  explicitely by <code>spcreate.sh</code>, and a few more implicitely by the
+  Oracle scripts called.
+ </td></tr>
+ <tr><td class="text">
+  If you already had the StatsPack installed, you may want to add some of the
+  extensions manually. Please obey the order of execution in those places, where
+  multiple scripts are to be run for one extension:
+ </td></tr>
+ <tr><td class="text">
+  <ol>
+   <li>File Statistics: <code>install/fileobj.sql</code> and
+       <code>install/getfilestat.sql</code></li>
+   <li>Session Statistics: <code>install/get_sesstat.sql</code></li>
+   <li>Wait Statistics: <code>install/waitobj.sql</code> and
+       <code>install/getwaits.sql</code></li>
+  </ol>
+ </td></tr>
+ <tr><td class="text">
+  Furthermore, make sure the needed data are collected <b><i>after</i></b>
+  each snapshot is taken (again, the <code>spcreate.sh</code> will set this
+  up for you if you used it). In the database job creating your snapshot, you
+  need to add the appropriate lines <b><i>after</i></b> the call to
+  <code>statspack.snap</code>:
+ </td></tr>
+ <tr><td class="text">
+  <ol>
+   <li>File Statistics: <code>get_fileinfo</code></li>
+   <li>Session Statistics: <code>get_sesstat</code></li>
+   <li>Wait Statistics: <code>get_waitevents</code></li>
+  </ol>
+ </td></tr>
+ <tr><td class="text">
+  Now we can go to setup OSPRep itself:
  </td></tr>
  <tr><td class="text">
   <ol>
@@ -62,6 +112,6 @@
  </td></tr>
 </table>
 
-<DIV ALIGN="center" STYLE="margin-top:5px;color:#fff"><IMG SRC="w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" STYLE="vertical-align:middle">OSPRep &copy; 2003-2005 by <A STYLE="text-decoration:none;color:#ff0;" HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> &amp; <A STYLE="text-decoration:none;color:#ff0;" HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></SPAN><IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"></DIV>
+<DIV ALIGN="center" STYLE="margin-top:5px;color:#fff"><IMG SRC="w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" STYLE="vertical-align:middle">OSPRep &copy; 2003-2007 by <A STYLE="text-decoration:none;color:#ff0;" HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> &amp; <A STYLE="text-decoration:none;color:#ff0;" HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></SPAN><IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"></DIV>
 </body>
 </html>
