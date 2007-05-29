@@ -13,8 +13,9 @@ Contents
 2) Requirements
 3) Limitations
 4) Installation
-5) Plugins
-6) Additional information
+5) Extensions
+6) AddOns
+7) Additional information
 
 ===============================================================================
 
@@ -69,6 +70,34 @@ case :-)
 4) Installation
 ---------------
 
+4a) StatsPack & Extensions
+°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+If you did not yet install StatsPack into your database, this is logically
+the first step. Usually, it simply requires you to connect as sysdba and call
+@?/rdbms/admin/spcreate.sql - which asks you a few questions and does all the
+work. To make it easier for you to install the OSPRep extensions along plus,
+as a side-effect, have a script ready for unattended installation on multiple
+(similiar configured) instances, spcreate.sh was added to the distribution.
+
+You will find this script within the install/ directory (below the directory
+where you unpacked the archive). It will install Oracle StatsPack, the OSPRep
+extensions, and create a job to run every hour at the hour (like it is done
+by ?/rdbms/admin/spauto.sql - but also catering the extensions).
+
+1. Open it with your favorite editor, and adjust the settings in the
+   configuration section to reflect your systems configuration.
+2. Save your changes
+3. Run the script
+4. Have a cup of coffee or a glas of tea - but the script will be finished
+   earlier than your drink :-)
+
+To verify whether it ran successfully, you may check the logfiles it created
+(one is created by spcreate.sh, and some more by the called Oracle scripts).
+
+4b) OSPRep itself
+°°°°°°°°°°°°°°°°°
+
 1. Create the directory where the report files (*.html) should be placed in.
    As example, we assume the /var/www/html/oracle/reports directory here.
 2. Below this directory, create two other directories named "help" and "inc".
@@ -90,8 +119,8 @@ case :-)
    location and the chart includes to the /var/www/html/oracle/reports/inc
    directory plus sets the file permissions so everybody can read them.
 7. In six days G*d created the heavens and the earth - the seventh is Shabbat,
-   and He rested. Get yourself a cup of coffee, tea or whatever you like, and
-   relax for a moment.
+   and He rested. Get yourself a cup of coffee, tea or whatever you like
+   (oh yeah - not yet finished the first one?), and relax for a moment.
 
 To run the script, start spreport.sh - calling it with no parameters tells
 you its syntax. It will run with just giving it the ORACLE_SID of the database
@@ -101,21 +130,34 @@ see the config file on START_ID and END_ID.
 
 ===============================================================================
 
-5) Plugins
-----------
+5) Extensions
+-------------
 
-With v0.1.2 I started to include 1 plugin (if there are more of them and NOT
-mentioned in this block, this readme.txt has not been updated since ;) Read
-more on them in the files contained in the plugins/ directory.
+There are some extensions shipped with OSPRep, which may be installed
+automatically with the spcreate.sh as described in the Installation section
+of this document. These are, at the time of writing these lines:
 
-For the gathering of the wait objects statistics, you need to create the
-table in the perfstat users schema (you may use the waitobj.sql file to do
-this), plus the procedure (getwaits.sql) to gather the information. When doing
-your snapshots for the statspack, do not forget to run this procedure with it.
+- File Statistics       : Watch datafile growth
+- Session Statistics    : Work around some session stats bug in Oracle
+- Wait Statistics       : Wait Object statistics
 
-The very same applies to the datafiles growth statistics - a new plugin
-introduced with v0.1.5: use the fileobj.sql file to create the data structs,
-plus getfilestat.sql for the collector procedure.
+If you did not use the spcreate.sh for the automatic installation (e.g. since
+you had already setup Oracle StatsPack before), you may need to install the
+required objects manually - of course only for the extensions you want to use.
+For the extensions where there are multiple files required to install, the
+order of installation *IS* important:
+
+- File Statistics       : install/fileobj.sql and install/getfilestat.sql
+- Session Statistics    : install/get_sesstat.sql
+- Wait Statistics       : install/waitobj.sql and install/getwaits.sql
+
+When doing your snapshots for the statspack, do not forget to run the
+appropriate procedures immediately after that (again, the spcreate.sh will set
+this up for you accordingly). These are:
+
+- File Statistics       : get_fileinfo
+- Session Statistics    : get_sesstat
+- Wait Statistics       : get_waitevents
 
 The session statistics plugin introduced with v0.3.5 gathers the (summarized)
 session stats into the stats$sesstat table (normally used by StatsPack itself
@@ -126,13 +168,21 @@ from these (summarized) session stats. Currently, it is only used for the open
 cursor statistics, so you will need this only if you are affected by the
 mentioned bug but need accurat open cursor stats.
 
-A different "PlugIn" is the script fts_plans.sh in the root directory of this
-bundle. It obeys the same syntax as the main (sreport.sh) script, but does a
-different job: it collects the statements and execution plans for all queries
-that caused full table scans (FTS). These are most likely to require some
-optimization - usually creation of new indices or rewrite of the queries (e.g.
-placing index hints). The output is written into the file <ORACLE_SID>_fts.html
-in the report directory.
+===============================================================================
+
+6) AddOns
+---------
+
+There are some more scripts included in this distribution - let's call them
+AddOns. What they have in common is that they create some HTML as well:
+
+One script is fts_plans.sh in the root directory of this bundle. It obeys the
+same syntax as the main (sreport.sh) script, but does a different job: it
+collects the statements and execution plans for all queries that caused full
+table scans (FTS). These are most likely to require some optimization -
+usually creation of new indices or rewrite of the queries (e.g. placing index
+hints). The output is written into the file <ORACLE_SID>_fts.html in the
+report directory.
 
 To visualize the gathered report data, you may want to use the charts.sh script
 (same syntax again). It just generates data files for the JavaScript chart
@@ -141,7 +191,7 @@ REPDIR directory.
 
 ===============================================================================
 
-6) Additional information
+7) Additional information
 -------------------------
 
 Additonal and more verbose information is available in HTML format. You will

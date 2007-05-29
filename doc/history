@@ -24,6 +24,7 @@ v0.4.1
 + added more enqueue types to the online help page
 + added "fast-install" script to setup statspack plus extensions
   (see install/spcreate.sh)
++ updated doc/readme.txt
 
 v0.3.7 (20.03.2007)
 -------------------
