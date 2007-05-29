@@ -21,6 +21,9 @@ v0.4.1
 + fts_plans.sh now gives much more info on the statements (such as executions,
   disk reads and the module (=program) that ran the query last
 + added online help (hints for evaluation) to fts_plans
++ added more enqueue types to the online help page
++ added "fast-install" script to setup statspack plus extensions
+  (see install/spcreate.sh)
 
 v0.3.7 (20.03.2007)
 -------------------
