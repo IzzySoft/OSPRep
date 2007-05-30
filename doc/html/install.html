@@ -103,6 +103,19 @@
   </ol>
  </td></tr>
  <tr><td class="text">
+  And finally: The AddOns. Starting with v0.4.x, the AddOns are already
+  converted from "anonymous blocks" to "stored procedures" - which means, in
+  order to use them, you need to install the osprep package into the database.
+  This can be done as follows:
+ </td></tr>
+ <tr><td class="text">
+  <ol>
+   <li>Change to the install/database/ subdirectory of your OSPRep installation</li>
+   <li>Invoke Sql*Plus and connect as the statspack user (perfstat)</li>
+   <li>Run the following command:<br><code>@pkg_osprep.sql</code></li>
+  </ol>
+ </td></tr>
+ <tr><td class="text">
   Now that you succeeded up to this point, continue with the
   <a href="usage.html">usage</a> page to read important things about how to
   call the <code>~/scripts/sreport.sh</code>, <code>~scripts/charts.sh</code> and

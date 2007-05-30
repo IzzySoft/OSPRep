@@ -128,6 +128,21 @@ to report on as only parameter - provided, your Oracle environment is set up
 correctly. For the optional parameters -b (BEGIN_SNAP_ID) and -e (END_SNAP_ID),
 see the config file on START_ID and END_ID.
 
+4c) AddOns
+°°°°°°°°°°
+
+Starting with v0.4.x, the AddOns are already converted from "anonymous blocks"
+to "stored procedures" - which means, in order to use them, you need to install
+the osprep package into the database. This can be done as follows:
+
+1. Change to the install/database/ subdirectory of your OSPRep installation
+2. Invoke Sql*Plus and connect as the statspack user (perfstat)
+3. Run the following command:
+   @pkg_osprep.sql
+
+That's all - you are done. Read more about the AddOns in the corresponding
+section of this document (or the HTML documentation).
+
 ===============================================================================
 
 5) Extensions
