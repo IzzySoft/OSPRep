@@ -84,7 +84,7 @@
             ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TD>';
   print(L_LINE);
   L_LINE := '<TD ALIGN="right">'||to_char(round(100*(1-PRSE/EXE),2),'990.00')||
-	    '</TD><TD CLASS="text">A low value here indicates that there is no '||
+	    '</TD><TD CLASS="text">A low value here (&lt; 50%) indicates that there is no '||
             'much re-usable SQL (see <I>Soft Parse</I> for possible actions). ';
   print(L_LINE);
   L_LINE := 'It may also point to a too small shared pool, or frequent logons/logoffs. ';
