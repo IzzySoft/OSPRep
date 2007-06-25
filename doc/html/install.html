@@ -42,11 +42,11 @@
  </td></tr>
  <tr><td class="text">
   <ol>
-   <li>File Statistics: <code>install/fileobj.sql</code> and
-       <code>install/getfilestat.sql</code></li>
-   <li>Session Statistics: <code>install/get_sesstat.sql</code></li>
-   <li>Wait Statistics: <code>install/waitobj.sql</code> and
-       <code>install/getwaits.sql</code></li>
+   <li>File Statistics: <code>install/database/fileobj.sql</code> and
+       <code>install/database/getfilestat.sql</code></li>
+   <li>Session Statistics: <code>install/database/get_sesstat.sql</code></li>
+   <li>Wait Statistics: <code>install/database/waitobj.sql</code> and
+       <code>install/database/getwaits.sql</code></li>
   </ol>
  </td></tr>
  <tr><td class="text">
@@ -106,7 +106,8 @@
   And finally: The AddOns. Starting with v0.4.x, the AddOns are already
   converted from "anonymous blocks" to "stored procedures" - which means, in
   order to use them, you need to install the osprep package into the database.
-  This can be done as follows:
+  If you did not install them with the <code>spcreate.sh</code> script
+  described above, this can be done as follows:
  </td></tr>
  <tr><td class="text">
   <ol>

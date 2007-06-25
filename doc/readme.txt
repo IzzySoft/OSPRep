@@ -133,7 +133,8 @@ see the config file on START_ID and END_ID.
 
 Starting with v0.4.x, the AddOns are already converted from "anonymous blocks"
 to "stored procedures" - which means, in order to use them, you need to install
-the osprep package into the database. This can be done as follows:
+the osprep package into the database. If you did not install them with the
+spcreate.sh described above, this can be done manually as follows:
 
 1. Change to the install/database/ subdirectory of your OSPRep installation
 2. Invoke Sql*Plus and connect as the statspack user (perfstat)
@@ -162,9 +163,9 @@ required objects manually - of course only for the extensions you want to use.
 For the extensions where there are multiple files required to install, the
 order of installation *IS* important:
 
-- File Statistics       : install/fileobj.sql and install/getfilestat.sql
-- Session Statistics    : install/get_sesstat.sql
-- Wait Statistics       : install/waitobj.sql and install/getwaits.sql
+- File Statistics       : install/database/fileobj.sql and install/getfilestat.sql
+- Session Statistics    : install/database/get_sesstat.sql
+- Wait Statistics       : install/database/waitobj.sql and install/getwaits.sql
 
 When doing your snapshots for the statspack, do not forget to run the
 appropriate procedures immediately after that (again, the spcreate.sh will set

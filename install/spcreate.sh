@@ -17,6 +17,7 @@ IZ_INSTALL_DIR=/home/oracle/osprep/install/database
 I_FILE_STATS=1
 I_SES_STAT=1
 I_WAIT_STAT=1
+I_ADDONS=1
 
 # Perfstat Password
 PERFPWD=perfstat
@@ -25,8 +26,9 @@ PERFPWD=perfstat
 DEFAULT_TS=tools
 TEMP_TS=TEMP
 
-# Name of the spool file (Installation log)
-SPOOL="OSPInst.log"
+# Name of the spool file (Installation log - the extension .log will be added
+# automatically by the script)
+SPOOL="OSPInst"
 
 #------------------------------[ Internal Setup - no need to config here! ]---
 # Script Definitions
@@ -36,6 +38,7 @@ IZ_FILESTAT=${IZ_INSTALL_DIR}/getfilestat.sql
 IZ_SESSTAT=${IZ_INSTALL_DIR}/get_sesstat.sql
 IZ_WAITOBJ=${IZ_INSTALL_DIR}/waitobj.sql
 IZ_WAITSTAT=${IZ_INSTALL_DIR}/getwaits.sql
+IZ_ADDONS=${IZ_INSTALL_DIR}/pkg_osprep.sql
 IZ_JOB="statspack.snap;"
 
 TMPFILE=/tmp/iz_stats.$$
@@ -55,6 +58,7 @@ TMPFILE=/tmp/iz_stats.$$
   echo "@${IZ_WAITSTAT}" >>$TMPFILE
   IZ_JOB="${IZ_JOB} get_waitevents;"
 }
+[ $I_ADDONS -eq 1 ] && echo "@${IZ_ADDONS}" >>$TMPFILE
 
 #-----------------------------------------------------------[ Do the job! ]---
 # Install Oracle StatsPack packages
