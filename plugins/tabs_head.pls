@@ -9,7 +9,12 @@
         S1 := numformat( dbstat(statname) );
         print(' <TR><TD>'||statname||'</TD><TD ALIGN="right">'||S1||'</TD><TD>'||S2||'</TD></TR>');
       EXCEPTION
-        WHEN OTHERS THEN NULL;
+        WHEN OTHERS THEN
+	  BEGIN
+	    print(' <TR><TD>'||statname||'</TD><TD ALIGN="right">'||S1||'</TD><TD>&nbsp;</TD></TR>');
+	  EXCEPTION
+	    WHEN OTHERS THEN NULL;
+	  END;
       END;
 
     PROCEDURE tabscan IS
@@ -20,9 +25,9 @@
         print(L_LINE);
         writestat('table scans (short tables)','FTS on short tables are no problem, since they are in most times faster than index access.');
         writestat('table scans (long tables)','High values here may indicate missing indices or bad execution plans.');
-        writestat('table scans (rowid ranges)','');
-        writestat('table scans (cache partitions)','');
-        writestat('table scans (direct read)','');
+        writestat('table scans (rowid ranges)','Table scans with specified ROWID endpoints. Used with the Parallel Query Option: The number of RowID ranges corresponds to the number of simultaneous query server processes that scan the table.');
+        writestat('table scans (cache partitions)','Count of range scans on tables that have the CACHE option enabled.');
+        writestat('table scans (direct read)','Count of table scans performed with direct read (bypassing the buffer cache).');
       EXCEPTION
         WHEN OTHERS THEN NULL;
       END;
