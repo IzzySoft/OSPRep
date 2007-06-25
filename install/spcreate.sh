@@ -12,7 +12,7 @@
 
 #----------------------------------------------------[ User Configuration ]---
 # Directory to the IzzySoft extensions
-IZ_INSTALL_DIR=/home/oracle/osprep/install
+IZ_INSTALL_DIR=/home/oracle/osprep/install/database
 # Scripts to install
 I_FILE_STATS=1
 I_SES_STAT=1
