@@ -3,7 +3,7 @@ $Id$
 History for OSPRep
 ==================
 
-v0.4.1
+v0.4.1 (05.07.2007)
 -------------------
 * Starting with the v0.4.x branch, the PL/SQL code moves to the database.
   Instead of constructing an anonymous block using Shell logic on each call,
