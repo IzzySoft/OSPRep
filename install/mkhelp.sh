@@ -2,7 +2,7 @@
 # $Id$
 #
 # =============================================================================
-# Simple Database Analysis Report (c) 2003-2005 by IzzySoft (devel@izzysoft.de)
+# Oracle StatsPack Report         (c) 2003-2007 by IzzySoft (devel@izzysoft.de)
 # -----------------------------------------------------------------------------
 # This script creates the help files based on your configuration file. You need
 # to run it for the first time installation and whenever certain variables in
@@ -13,11 +13,13 @@
 
 . ../config
 
+CYEAR="2003-2007"
 HCSS=`echo $CSS|sed 's/\.\./\\\.\\\./g'|sed 's/\//\\\\\//g'`
 SEDC="s/{css}/$HCSS/g"
+SED2="s/{copy}/$CYEAR/g"
 for i in *.tpl; do
   TARGET=$REPDIR/help/${i%%.*}.html
-  sed $SEDC $i >$TARGET
+  sed $SEDC $i | sed $SED2 >$TARGET
   chmod o+r $TARGET
 done
 cp help.gif $REPDIR/help/
