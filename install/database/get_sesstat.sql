@@ -7,6 +7,7 @@
 -- with level 10 snapshots -- otherwise you'll get strange stats :)
 -- run this script in e.g. SQL*Plus as PERFSTAT. Then you may add it in your
 -- statspack.snap() job *AFTER* the statspack.snap() call.
+-- !!! DON'T USE THIS WITH ORACLE 10.2 OR LEVEL 10 SNAPSHOTS !!!
 -- ---------------------------------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE get_sesstat AUTHID DEFINER IS
