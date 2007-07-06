@@ -1,5 +1,5 @@
 -- ===========================================================================
--- Oracle StatsPack Report 2 Html    (c) 2003 by IzzySoft  (devel@izzysoft.de)
+-- Oracle StatsPack Report      (c) 2003-2007 by IzzySoft  (devel@izzysoft.de)
 -- ---------------------------------------------------------------------------
 -- Table for the additional Procedure to collect information growth of
 -- datafiles. Adjust the settings e.g. for the table space, to reflect the
@@ -22,6 +22,9 @@ CREATE TABLE ISTATS$DATAFILES (
   BYTES_FREE   NUMBER)
    TABLESPACE TOOLS
    NOCACHE; 
+
+ALTER TABLE ISTATS$DATAFILES ADD CONSTRAINT datafiles_pk
+ PRIMARY KEY (snap_id,dbid,instance_number,tablespace,datafile);
 
 ALTER TABLE ISTATS$DATAFILES ADD  CONSTRAINT DATAFILES_FK
  FOREIGN KEY (SNAP_ID, DBID, INSTANCE_NUMBER) 
