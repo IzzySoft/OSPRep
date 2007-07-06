@@ -5,10 +5,10 @@ History for OSPRep
 v0.4.2
 -------------------
 * spcreate.sh now automatically determines source directory
-+ now OSPRep basically works with Oracle 10g R2 - if you disable some features
-  which are broken with 10g due to changes in the DB structure. These are
-  (as in the config file) MK_TOPSQL and MK_ENQ. Furthermore, in the datafile
++ now OSPRep basically works with Oracle 10g R2 - but here, in the datafile
   statistics each datafile is listed twice
+  Please report if you find anything else strange with the 10g reports!!!
++ Made TOPSQL and ENQ working for 10g R2
 
 v0.4.1 (05.07.2007)
 -------------------

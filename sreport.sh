@@ -179,7 +179,11 @@ if [ "${MK_PGAA}${MK_PGAM}" != "00" ]; then
   PGABODY=$PLUGINDIR/pga_body.pls
 fi
 if [ $MK_ENQ -eq 1 ]; then
-  ENQHEAD=$PLUGINDIR/enq_head.pls
+  if [ $DBVER -gt 92 ]; then
+    ENQHEAD=$PLUGINDIR/enq_head_102.pls
+  else
+    ENQHEAD=$PLUGINDIR/enq_head.pls
+  fi
   ENQBODY=$PLUGINDIR/enq_body.pls
 fi
 if [ "${MK_RSSTAT}${MK_RSSTOR}" != "00" ]; then
