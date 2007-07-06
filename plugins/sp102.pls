@@ -1,8 +1,8 @@
   -- Collect Changes from statspack - Interface for Oracle 10.2
  statspack.STAT_CHANGES
  ( BID , EID
- , DB_IDENT , INST_NUM
- , PARALLEL
+ , DB_ID , INST_NUM
+ , PARA
  , LHTR , BFWT
  , TRAN , CHNG
  , UCAL , UROL
@@ -10,7 +10,7 @@
  , PHYR , PHYRD
  , PHYRDL , PHYRC
  , PHYW , UCOM
- , PRSE , HPRSE
+ , PRSE , HPRS
  , RECR , GETS
  , SLR
  , RLSR , RENT
@@ -19,7 +19,7 @@
  , LHR
  , BBC , EBC 
  , BSP , ESP 
- , BLB 
+ , LB 
  , BS , TWT
  , LOGC , PRSCPU
  , TCPU , EXE
