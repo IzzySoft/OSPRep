@@ -6,12 +6,15 @@ History for OSPRep
 v0.4.2
 -------------------
 * spcreate.sh now automatically determines source directory
-+ now OSPRep basically works with Oracle 10g R2 - but here, in the datafile
-  statistics each datafile is listed twice
-  Please report if you find anything else strange with the 10g reports!!!
++ now OSPRep basically works with Oracle 10g R2
+  Please report if you find anything strange with the 10g reports!!! They are
+  not yet tested in depth ;)
 + Made TOPSQL and ENQ working for 10g R2
 + added missing primary key to istats$datafiles (under certain circumstances,
-  this lead to multiple instances of each datafile reported)
+  this lead to multiple instances of each datafile reported). Similar to that,
+  added PK to istats$waitobjects. When updating from a previous version, you
+  should check the corresponding files and add the constraints manually to
+  your database.
 
 v0.4.1 (05.07.2007)
 -------------------
