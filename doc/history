@@ -2,6 +2,7 @@ $Id$
 
 History for OSPRep
 ==================
+
 v0.4.2
 -------------------
 * spcreate.sh now automatically determines source directory
@@ -9,6 +10,8 @@ v0.4.2
   statistics each datafile is listed twice
   Please report if you find anything else strange with the 10g reports!!!
 + Made TOPSQL and ENQ working for 10g R2
++ added missing primary key to istats$datafiles (under certain circumstances,
+  this lead to multiple instances of each datafile reported)
 
 v0.4.1 (05.07.2007)
 -------------------
