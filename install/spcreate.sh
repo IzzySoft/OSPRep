@@ -12,7 +12,7 @@
 
 #----------------------------------------------------[ User Configuration ]---
 # Directory to the IzzySoft extensions
-IZ_INSTALL_DIR=/home/oracle/osprep/install/database
+IZ_INSTALL_DIR=${0%/*}/database
 # Scripts to install
 I_FILE_STATS=1
 I_SES_STAT=1
@@ -42,6 +42,31 @@ IZ_ADDONS=${IZ_INSTALL_DIR}/pkg_osprep.sql
 IZ_JOB="statspack.snap;"
 
 TMPFILE=/tmp/iz_stats.$$
+SQLSET=/tmp/iz_sql.$$
+
+# Get the DB version
+cat >$SQLSET<<ENDSQL
+CONNECT / as sysdba
+ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,';
+Set TERMOUT OFF
+Set SCAN OFF
+Set SERVEROUTPUT On Size 1000000
+Set LINESIZE 300
+Set TRIMSPOOL On 
+Set FEEDBACK OFF
+Set Echo Off
+Set PAGESIZE 0
+SPOOL $TMPFILE
+SELECT SUBSTR(version,1,INSTR(version,'.')-1)||
+       SUBSTR(version,INSTR(version,'.')+1,INSTR(version,'.',1,2)-1
+       - INSTR(version,'.')) ver
+  FROM v\$instance;
+ENDSQL
+
+cat $SQLSET | $ORACLE_HOME/bin/sqlplus -s /NOLOG
+DBVER=`cat $TMPFILE`
+rm -f $SQLSET
+rm -f $TMPFILE
 
 # Setup the desired scripts
 [ $I_FILE_STATS -eq 1 ] && {
@@ -49,7 +74,7 @@ TMPFILE=/tmp/iz_stats.$$
   echo "@${IZ_FILESTAT}" >>$TMPFILE
   IZ_JOB="${IZ_JOB} get_fileinfo;"
 }
-[ $I_SES_STAT -eq 1 ] && {
+[ $I_SES_STAT -eq 1 -a $DBVER -lt 100 ] && {
   echo "@${IZ_SESSTAT}" >>$TMPFILE
   IZ_JOB="${IZ_JOB} get_sesstat;"
 }
