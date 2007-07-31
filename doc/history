@@ -3,6 +3,13 @@ $Id$
 History for OSPRep
 ==================
 
+v0.4.3
+-------------------
+* connecting a 10g DB using a 9i client leads to dbms_output.put_line
+  truncating its output after the 254th character (10g doesn't issue
+  an error message any longer until you reach the limit of 32k chars).
+  Applied a work-around to fix this.
+
 v0.4.2 (09.07.2007)
 -------------------
 * spcreate.sh now automatically determines source directory
