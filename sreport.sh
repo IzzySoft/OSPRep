@@ -12,9 +12,9 @@
 # well as recommendations for additions are always welcome.
 #                                                              Itzchak Rehberg
 # =============================================================================
-. ./version
+
 # =======================================================[ Header / Syntax ]===
-if [ -z "$1" ]; then
+function syntax {
   SCRIPT=${0##*/}
   echo
   echo ============================================================================
@@ -39,7 +39,7 @@ if [ -z "$1" ]; then
   echo ============================================================================
   echo
   exit 1
-fi
+}
 
 # =================================================[ Configuration Section ]===
 BINDIR=${0%/*}
@@ -48,6 +48,11 @@ CONFIG=$BINDIR/config
 ARGS=$*
 PLUGINDIR=$BINDIR/plugins
 FOOTER=$PLUGINDIR/footer.pls
+
+. ${BINDIR}/version
+
+# ----------------------------------------------------------[ syntax check ]---
+[ -z "$1" ] && syntax
 
 # ------------------------------------------[ process command line options ]---
 while [ "$1" != "" ] ; do
