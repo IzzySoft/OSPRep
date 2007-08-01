@@ -9,6 +9,7 @@ v0.4.3
   truncating its output after the 254th character (10g doesn't issue
   an error message any longer until you reach the limit of 32k chars).
   Applied a work-around to fix this.
+! Datafile Statistics have been broken with 10g - fixed.
 
 v0.4.2 (09.07.2007)
 -------------------

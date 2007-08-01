@@ -94,8 +94,15 @@ TMPOUT=$TMPDIR/osprep_tmpout_$ORACLE_SID.$$
 GWDUMMY=$TMPDIR/osprep_gwdummy_$ORACLE_SID.$$
 DFDUMMY=$TMPDIR/osprep_dfdummy_$ORACLE_SID.$$
 
-SERVOUT="Size 1000000"
-function sqlset {
+SQLPLUSRELEASE=`echo "prompt &_SQLPLUS_RELEASE" | $ORACLE_HOME/bin/sqlplus -s $user/$password@$ORACLE_CONNECT`
+
+# Serveroutput: 10g+ supports unlimited
+if [ ${SQLPLUSRELEASE:0:2} -lt 20 ]; then
+  SERVOUT="Size Unlimited"
+else
+  SERVOUT="Size 1000000"
+fi
+
 cat >$SQLSET<<ENDSQL
 CONNECT $user/$password@$ORACLE_CONNECT
 ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,';
@@ -109,21 +116,10 @@ Set Echo Off
 Set PAGESIZE 0
 SPOOL $TMPOUT
 ENDSQL
-}
-sqlset
 
 cat $SQLSET $PLUGINDIR/getver.sql | $ORACLE_HOME/bin/sqlplus -s /NOLOG >/dev/null
 DBVER=`cat $TMPOUT`
 SPFILE=$PLUGINDIR/sp$DBVER.pls
-
-SQLPLUSRELEASE=`echo "prompt &_SQLPLUS_RELEASE" | $ORACLE_HOME/bin/sqlplus -s $user/$password@$ORACLE_CONNECT`
-
-if [ $DBVER -gt 92 ]; then
-  SERVOUT="Size Unlimited Format WordWrapped"
-else
-  SERVOUT="Size 1000000"
-fi
-sqlset
 
 # ---------------------------------------------------[ Prepare the PlugIns ]---
 if [ $MK_INSTEFF -eq 1 ]; then
