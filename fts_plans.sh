@@ -133,8 +133,7 @@ cat >>$REPDIR/${FILENAME}<<ENDPAGE
 <TABLE ALIGN="center" BORDER="1">
   <TR><TD><IMG SRC="w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small">
     Created by OSPRep v$version (FTS module) &copy; 2003-2007 by
-    <A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A>
-    &amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></SPAN>
+    Itzchak Rehberg &amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></SPAN>
     <IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"></TD></TR>
 </TABLE>
 <BR CLEAR="all">
