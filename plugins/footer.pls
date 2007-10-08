@@ -5,7 +5,7 @@
             ' ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small">';
   print(L_LINE);
   L_LINE := 'Created by OSPRep v'||OSPVER||' &copy; 2003-2007 by '||
-	    '<A HREF="http://www.qumran.org/homes/izzy/" TARGET="_blank">Itzchak Rehberg</A> '||
+	    'Itzchak Rehberg '||
             '&amp; <A HREF="http://www.izzysoft.de" TARGET="_blank">IzzySoft</A></SPAN>';
   print(L_LINE);
   L_LINE := '<IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14"'||
