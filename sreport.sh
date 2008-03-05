@@ -134,6 +134,7 @@ if [ $MK_TOPWAITS -eq 1 ]; then
   if [ $DBVER -lt 90 ]; then
     TWAITHEAD=$PLUGINDIR/twait_head8.pls
   else
+    TWAITHEAD=$PLUGINDIR/twait_head.pls
   fi
   TWAITBODY=$PLUGINDIR/twait_body.pls
 fi
