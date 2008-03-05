@@ -4,9 +4,9 @@
       SELECT event, waits, time, pctwtt
         FROM ( SELECT e.event event,
                     to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
-		    (e.time_waited_micro - nvl(b.time_waited_micro,0))/1000 time,
+		    (e.time_waited - nvl(b.time_waited,0)) time,
 		    decode(twt,0,'0.00',
-		      to_char(100*((e.time_waited_micro - NVL(b.time_waited_micro,0))/TWT),'9,990.00')) pctwtt
+		      to_char(100*((e.time_waited - NVL(b.time_waited,0))/TWT),'9,990.00')) pctwtt
                  FROM stats$system_event b, stats$system_event e
 	        WHERE b.snap_id(+) = BID
 	          AND e.snap_id    = EID
@@ -44,7 +44,7 @@
       L_LINE := 'with the next block, <A HREF="#waitevents">All Wait Events</A></DIV></TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
-                '<TH CLASS="th_sub">Wait Time (ms)</TH><TH CLASS="th_sub">Total Wt Time</TH></TR>';
+                '<TH CLASS="th_sub">Wait Time (s)</TH><TH CLASS="th_sub">Total Wt Time</TH></TR>';
       print(L_LINE);
       FOR R_Top5 IN C_Top5 LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_Top5.event||'</TD><TD ALIGN="right">'||R_Top5.waits||

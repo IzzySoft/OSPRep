@@ -10,6 +10,10 @@ v0.4.3
   an error message any longer until you reach the limit of 32k chars).
   Applied a work-around to fix this.
 ! Datafile Statistics have been broken with 10g - fixed.
+! There are no PGA stats available with 8i. If enabled, this broke the
+  script. They are no longer included now with 8i
+! table stats$system_event changed structures with 9i - so top_n_waits
+  have been broken with 8i
 
 v0.4.2 (09.07.2007)
 -------------------

@@ -131,7 +131,10 @@ if [ $MK_INSTEFF -eq 1 ]; then
   INSTEFF=$PLUGINDIR/insteff.pls
 fi
 if [ $MK_TOPWAITS -eq 1 ]; then
-  TWAITHEAD=$PLUGINDIR/twait_head.pls
+  if [ $DBVER -lt 90 ]; then
+    TWAITHEAD=$PLUGINDIR/twait_head8.pls
+  else
+  fi
   TWAITBODY=$PLUGINDIR/twait_body.pls
 fi
 if [ $MK_BGWAITS -eq 1 ]; then
@@ -189,8 +192,10 @@ if [ "${MK_SPSTAT}${MK_BUFFP}${MK_BUFFW}" != "000" ]; then
   BUFFBODY=$PLUGINDIR/buff_body.pls
 fi
 if [ "${MK_PGAA}${MK_PGAM}" != "00" ]; then
-  PGAHEAD=$PLUGINDIR/pga_head.pls
-  PGABODY=$PLUGINDIR/pga_body.pls
+  [ $DBVER -gt 81 ] && {
+    PGAHEAD=$PLUGINDIR/pga_head.pls
+    PGABODY=$PLUGINDIR/pga_body.pls
+  }
 fi
 if [ $MK_ENQ -eq 1 ]; then
   if [ $DBVER -gt 92 ]; then
