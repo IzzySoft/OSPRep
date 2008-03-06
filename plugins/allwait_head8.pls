@@ -4,10 +4,10 @@
       SELECT e.event event,
              to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
 	     to_char(e.total_timeouts - NVL(b.total_timeouts,0),'9,999,999,999') timeouts,
-	     (e.time_waited_micro - NVL(b.time_waited_micro,0))/1000 time,
+	     (e.time_waited - NVL(b.time_waited,0)) time,
 	     decode ((e.total_waits - NVL(b.total_waits,0)),
 	            0,0,
-	 	      ((e.time_waited_micro - NVL(b.time_waited_micro,0))/1000)
+	 	      ((e.time_waited - NVL(b.time_waited,0)))
 		      / (e.total_waits - NVL(b.total_waits,0)) ) wt,
 	     to_char((e.total_waits - NVL(b.total_waits,0))/TRAN,'99,990.00') txwaits,
 	     decode(i.event,NULL,0,99) idle,
@@ -35,9 +35,9 @@
 	        'contribute to performance problems.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waits</TH>'||
-	        '<TH CLASS="th_sub">Timeouts</TH><TH CLASS="th_sub">Total Wt Time (ms)</TH>';
+	        '<TH CLASS="th_sub">Timeouts</TH><TH CLASS="th_sub">Total Wt Time (s)</TH>';
       print(L_LINE);
-      L_LINE := '<TH CLASS="th_sub">Avg Wait Time (ms)</TH><TH CLASS="th_sub">'||
+      L_LINE := '<TH CLASS="th_sub">Avg Wait Time (s)</TH><TH CLASS="th_sub">'||
                 'Waits/TXN</TH></TR>';
       print(L_LINE);
       FOR R_AllWait IN C_AllWait LOOP

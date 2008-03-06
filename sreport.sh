@@ -139,11 +139,19 @@ if [ $MK_TOPWAITS -eq 1 ]; then
   TWAITBODY=$PLUGINDIR/twait_body.pls
 fi
 if [ $MK_BGWAITS -eq 1 ]; then
-  BGWAITHEAD=$PLUGINDIR/bgwait_head.pls
+  if [ $DBVER -lt 90 ]; then
+    BGWAITHEAD=$PLUGINDIR/bgwait_head8.pls
+  else
+    BGWAITHEAD=$PLUGINDIR/bgwait_head.pls
+  fi
   BGWAITBODY=$PLUGINDIR/bgwait_body.pls
 fi
 if [ $MK_ALLWAITS -eq 1 ]; then
-  ALLWAITHEAD=$PLUGINDIR/allwait_head.pls
+  if [ $DBVER -lt 90 ]; then
+    ALLWAITHEAD=$PLUGINDIR/allwait_head8.pls
+  else
+    ALLWAITHEAD=$PLUGINDIR/allwait_head.pls
+  fi
   ALLWAITBODY=$PLUGINDIR/allwait_body.pls
 fi
 if [ $MK_WAITOBJ -eq 1 ]; then
@@ -243,7 +251,11 @@ if [ $MK_LGWR -eq 1 ]; then
 fi
 
 if [ "${MK_DBWR}${MK_LGWR}${MK_TABS}" != "000" ]; then
-  SYSSTATFUNCS=$PLUGINDIR/sysstats.pls
+  if [ $DBVER -lt 90 ]; then
+    SYSSTATFUNCS=$PLUGINDIR/sysstats8.pls
+  else
+    SYSSTATFUNCS=$PLUGINDIR/sysstats.pls
+  fi
 fi
 
 # ==========================================[ Start the Run of the Scripts ]===
