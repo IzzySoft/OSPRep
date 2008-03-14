@@ -127,6 +127,10 @@ DBVER=`cat $TMPOUT`
 SPFILE=$PLUGINDIR/sp$DBVER.pls
 
 # ---------------------------------------------------[ Prepare the PlugIns ]---
+if [ $DBVER -lt 90 ]; then
+  MK_RECO=0
+fi
+
 if [ $MK_INSTEFF -eq 1 ]; then
   INSTEFF=$PLUGINDIR/insteff.pls
 fi

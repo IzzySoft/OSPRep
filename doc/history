@@ -11,7 +11,8 @@ v0.4.3
   Applied a work-around to fix this.
 ! Datafile Statistics have been broken with 10g - fixed.
 ! There are no PGA stats available with 8i. If enabled, this broke the
-  script. They are no longer included now with 8i
+  script. They are no longer included now with 8i. Same for Instance
+  Recovery (no STATS$INSTANCE_RECOVERY in 8i)
 ! table stats$system_event changed structures with 9i - so top_n_waits
   (and other waitevent related stats) have been broken with 8i
 
