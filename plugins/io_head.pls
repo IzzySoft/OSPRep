@@ -133,8 +133,8 @@
   PROCEDURE fio IS
     RDSIZ VARCHAR2(100); WRTSIZ VARCHAR2(100);
     CURSOR C_FileIO IS
-      SELECT e.tsname tsname,
-             e.filename filename,
+      SELECT e.tsname ts_name,
+             e.filename file_name,
              to_char(e.phyrds - nvl(b.phyrds,0),'9,999,999,990') reads,
 	     to_char((e.phyrds - nvl(b.phyrds,0))/ELA,'9,990.00') rps,
 	     to_char(decode(e.phyrds - nvl(b.phyrds,0),
@@ -177,8 +177,8 @@
          AND b.filename(+)= e.filename
          AND ( (e.phyrds - nvl(b.phyrds,0) ) +
                (e.phywrts - nvl(b.phywrts,0) ) ) > 0
-      UNION SELECT e.tsname tsname,
-             e.filename filename,
+      UNION SELECT e.tsname ts_name,
+             e.filename file_name,
              to_char(e.phyrds - nvl(b.phyrds,0),'9,999,999,990') reads,
              to_char((e.phyrds - nvl(b.phyrds,0))/ELA,'9,990.00') rps,
 	     to_char(decode(e.phyrds - nvl(b.phyrds,0),
@@ -220,7 +220,7 @@
          AND b.filename(+)= e.filename
          AND ( (e.phyrds - nvl(b.phyrds,0) ) +
                (e.phywrts - nvl(b.phywrts,0) ) ) > 0
-       ORDER BY tsname,filename;
+       ORDER BY ts_name,file_name;
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="12">File IO Summary Statistics'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'fileio'||CHR(39)||
@@ -245,8 +245,8 @@
         WRTSIZ := format_fsize(R_TSIO.bwrite);
         S1 := alert_gt_warn(R_TSIO.bprn,I1*AR_TS_BLKRD/100,I1*WR_TS_BLKRD/100);
         S2 := alert_gt_warn(R_TSIO.avems,AR_TS_RD,WR_TS_RD);
-        L_LINE := ' <TR><TD CLASS="td_name">'||R_TSIO.tsname||'</TD><TD CLASS="td_name">'||
-                  R_TSIO.filename||'</TD><TD ALIGN="right">'||
+        L_LINE := ' <TR><TD CLASS="td_name">'||R_TSIO.ts_name||'</TD><TD CLASS="td_name">'||
+                  R_TSIO.file_name||'</TD><TD ALIGN="right">'||
                   R_TSIO.reads||'</TD><TD ALIGN="right">'||R_TSIO.rps||
                   '</TD><TD ALIGN="right"'||S2||'>'||R_TSIO.avgrd;
         print(L_LINE);

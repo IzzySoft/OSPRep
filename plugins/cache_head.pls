@@ -59,7 +59,7 @@
 
   PROCEDURE libcache IS
     CURSOR C_CAM IS
-      SELECT b.namespace namespace,
+      SELECT b.namespace name_space,
              to_char(e.gets - b.gets,'999,999,999,990') gets,
              nvl(to_char(decode(e.gets,b.gets,NULL,
 	                  100 - (e.gethits - b.gethits) * 100 /
@@ -88,7 +88,7 @@
          AND b.instance_number = e.instance_number
          AND b.namespace       = e.namespace
          AND e.gets - b.gets   > 0
-       ORDER BY namespace;
+       ORDER BY name_space;
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7">Library Cache'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'libcache'||CHR(39)||
@@ -107,7 +107,7 @@
         S1 := alert_gt_warn(R_CA.ngetm,AR_LC_MISS,WR_LC_MISS);
         S2 := alert_gt_warn(R_CA.rpg,AR_LC_RLPRQ,WR_LC_RLPRQ);
         S3 := alert_gt_warn(R_CA.ipg,AR_LC_INVPRQ,WR_LC_INVPRQ);
-        L_LINE := ' <TR><TD CLASS="td_name">'||R_CA.namespace||'</TD><TD ALIGN="right">'||
+        L_LINE := ' <TR><TD CLASS="td_name">'||R_CA.name_space||'</TD><TD ALIGN="right">'||
                   R_CA.gets||'</TD><TD ALIGN="right"'||S1||'>'||R_CA.getm||
                   '</TD><TD ALIGN="right">'||R_CA.pins||'</TD>';
         print(L_LINE);
