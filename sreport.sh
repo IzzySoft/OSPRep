@@ -131,6 +131,11 @@ if [ $DBVER -lt 90 ]; then
   MK_RECO=0
   MK_USS=0
   MK_USSTAT=0
+  MK_ENQ=0
+  # Until we found a replacement algorith, we also need to disable these for 8i:
+  MK_SPSTAT=0
+  MK_BUFFP=0
+  MK_BUFFW=0
 fi
 
 if [ $MK_INSTEFF -eq 1 ]; then
