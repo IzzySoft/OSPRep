@@ -3,6 +3,10 @@ $Id$
 History for OSPRep
 ==================
 
+v0.4.4
+-------------------
+* center the graph (*_chart.html)
+
 v0.4.3 (09.06.2008)
 -------------------
 * connecting a 10g DB using a 9i client leads to dbms_output.put_line
