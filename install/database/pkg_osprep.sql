@@ -8,6 +8,7 @@
 -- view does not exist", "GRANT SELECT ANY DICTIONARY" to your PERFSTAT user.
 -- ---------------------------------------------------------------------------
 -- $Id$
+SET SCAN OFF DEFINE OFF
 
 CREATE OR REPLACE PACKAGE osprep AS
   PROCEDURE chart_data(start_id IN NUMBER := 0, end_id IN NUMBER := 0, max_chart_interval IN NUMBER := 14); -- Create the chart data
