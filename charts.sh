@@ -105,7 +105,7 @@ Set TRIMSPOOL On
 Set FEEDBACK OFF
 Set Echo Off
 SPOOL $REPDIR/${ORACLE_SID}_chart.js
-exec osp_charts.chart_data($START_ID,$END_ID,$MAX_CHART_INTERVAL);
+exec osprep.chart_data($START_ID,$END_ID,$MAX_CHART_INTERVAL);
 
 ENDSQLFTS
 
