@@ -131,7 +131,7 @@
       pcomment := 'Number of retries per hour necessary to allocate space in the redo buffer. '||
                   'Should be very low.';
       I1 := dbstat('redo buffer allocation retries') / (ELA/3600);
-      S1 := to_char(I1,'9,990.00');
+      S1 := to_char(I1,'999,990.00');
       writerow('redo buffer allocation retries / h',S1,pcomment);
       I1 := dbstats('redo buffer allocation retries','redo blocks written');
       writerow('redo buffer allocation retries / redo blocks written',decformat(I1),
