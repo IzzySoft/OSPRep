@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# Oracle StatsPack Report 2 HTML       (c) 2003 by IzzySoft (devel@izzysoft.de)
+# Oracle StatsPack Report 2 HTML  (c) 2003-2011 by IzzySoft (devel@izzysoft.de)
 # -----------------------------------------------------------------------------
 # $Id$
 # -----------------------------------------------------------------------------
@@ -18,9 +18,9 @@ PROCEDURE get_waitobj IS
    SELECT owner,segment_name,segment_type,event,sum(waited) waited,count(waited) entries
      FROM ( SELECT snap_id,owner,segment_name,segment_type,event,
                    DECODE(wait_time,0,seconds_in_wait,wait_time) waited,
- 		   instance_number,dbid
- 	      FROM istats\$waitobjects
-	     WHERE owner NOT IN ($EXCLUDE_OWNERS) )
+                   instance_number,dbid
+              FROM istats\$waitobjects
+             WHERE owner NOT IN ($EXCLUDE_OWNERS) )
     WHERE dbid = DB_ID
       AND instance_number = INST_NUM
       AND snap_id BETWEEN BID AND EID
@@ -43,12 +43,12 @@ PROCEDURE get_waitobj IS
     print(L_LINE);
     L_LINE := ' <TR><TH CLASS="th_sub">Object</TH><TH CLASS="th_sub">Type</TH>'||
               '<TH CLASS="th_sub">Event</TH><TH CLASS="th_sub">Waited (s)</TH>'||
-	      '<TH CLASS="th_sub">Entries</TH></TR>';
+              '<TH CLASS="th_sub">Entries</TH></TR>';
     print(L_LINE);
     FOR rec IN cur LOOP
       L_LINE := ' <TR><TD CLASS="td_name">'||rec.owner||'.'||rec.segment_name||'</TD><TD>'||
                 rec.segment_type||'</TD><TD>'||rec.event||'</TD><TD ALIGN="right">'||
-		format_stime(rec.waited,1)||'</TD><TD ALIGN="right">'||rec.entries||'</TD></TR>';
+                format_stime(rec.waited,1)||'</TD><TD ALIGN="right">'||rec.entries||'</TD></TR>';
       print(L_LINE);
     END LOOP;
     L_LINE := TABLE_CLOSE;

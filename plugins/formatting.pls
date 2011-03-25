@@ -6,7 +6,7 @@
       END IF;
       IF fs < 0 THEN
         signed := 1;
-	fs := (-1) * fs;
+        fs := (-1) * fs;
       ELSE
         signed := 0;
       END IF;
@@ -38,7 +38,7 @@
         RETURN '&nbsp;';
       ELSIF st < 0 THEN
         signed := 1;
-	st := (-1) * st;
+        st := (-1) * st;
       ELSE
         signed := 0;
       END IF;
