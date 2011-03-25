@@ -36,7 +36,7 @@
       SELECT nvl(replace(b.pool,'pool',''),'&nbsp;') pool,
              b.name name,
              to_char(b.bytes,'999,999,999,999') snap1,
-	     to_char(e.bytes,'999,999,999,999') snap2,
+             to_char(e.bytes,'999,999,999,999') snap2,
              to_char(100* (e.bytes - b.bytes)/b.bytes,'9,990.00') diff
         FROM stats$sgastat b, stats$sgastat e
        WHERE b.snap_id = BID
@@ -53,15 +53,15 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">SGA BreakDown Difference</TH></TR>'||
                 ' <TR><TH CLASS="th_sub">Pool</TH><TH CLASS="th_sub">Name</TH>'||
-	        '<TH CLASS="th_sub">Begin Value</TH>';
+                '<TH CLASS="th_sub">Begin Value</TH>';
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">End Value</TH><TH CLASS="th_sub">% Diff</TH></TR>';
       print(L_LINE);
       FOR R_SGASum in C_SGABreak LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_SGASum.pool||'</TD><TD CLASS="td_name">'||
                   R_SGASum.name||'</TD><TD ALIGN="right">'||R_SGASum.snap1||
-	          '</TD><TD ALIGN="right">'||R_SGASum.snap2||'</TD><TD ALIGN="right">'||
-	          R_SGASum.diff||'</TD></TR>';
+                  '</TD><TD ALIGN="right">'||R_SGASum.snap2||'</TD><TD ALIGN="right">'||
+                  R_SGASum.diff||'</TD></TR>';
         print(L_LINE);
       END LOOP;
       L_LINE := TABLE_CLOSE;

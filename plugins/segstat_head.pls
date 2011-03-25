@@ -2,10 +2,9 @@
   PROCEDURE seg_lr IS
     CURSOR C_SegStat IS
       SELECT n.owner,n.tablespace_name,n.object_name,
-             case when length(n.subobject_name) < 11
-	          then n.subobject_name
-		  else substr(n.subobject_name,length(n.subobject_name)-9)
-	     end subobject_name,
+             CASE WHEN length(n.subobject_name) < 11 THEN n.subobject_name
+                  ELSE substr(n.subobject_name,length(n.subobject_name)-9)
+                  END subobject_name,
              n.object_type,to_char(r.logical_reads,'999,999,999,999') logical_reads,
              to_char(round(r.ratio * 100, 2),'990.00') ratio
         FROM stats$seg_stat_obj n,
@@ -54,10 +53,9 @@
   PROCEDURE seg_pr IS
     CURSOR C_SegStat IS
       SELECT n.owner,n.tablespace_name,n.object_name,
-             case when length(n.subobject_name) < 11
-	          then n.subobject_name
-		  else substr(n.subobject_name,length(n.subobject_name)-9)
-	     end subobject_name,
+             CASE WHEN length(n.subobject_name) < 11 THEN n.subobject_name
+                  ELSE substr(n.subobject_name,length(n.subobject_name)-9)
+                  END subobject_name,
              n.object_type,to_char(r.physical_reads,'999,999,999,999') physical_reads,
              to_char(round(r.ratio * 100, 2),'990.00') ratio
         FROM stats$seg_stat_obj n,
@@ -107,10 +105,9 @@
   PROCEDURE seg_bw IS
     CURSOR C_SegStat IS
       SELECT n.owner,n.tablespace_name,n.object_name,
-             case when length(n.subobject_name) < 11
-	          then n.subobject_name
-		  else substr(n.subobject_name,length(n.subobject_name)-9)
-	     end subobject_name,
+             CASE WHEN length(n.subobject_name) < 11 THEN n.subobject_name
+                  ELSE substr(n.subobject_name,length(n.subobject_name)-9)
+                  END subobject_name,
              n.object_type,to_char(r.waits,'999,999,999') waits,
              to_char(round(r.ratio * 100, 2),'990.00') ratio
         FROM stats$seg_stat_obj n,
@@ -160,10 +157,9 @@
   PROCEDURE seg_lw IS
     CURSOR C_SegStat IS
       SELECT n.owner,n.tablespace_name,n.object_name,
-             case when length(n.subobject_name) < 11
-	          then n.subobject_name
-		  else substr(n.subobject_name,length(n.subobject_name)-9)
-	     end subobject_name,
+             CASE WHEN length(n.subobject_name) < 11 THEN n.subobject_name
+                  ELSE substr(n.subobject_name,length(n.subobject_name)-9)
+                  END subobject_name,
              n.object_type,to_char(r.waits,'999,999,999') waits,
              to_char(round(r.ratio * 100, 2),'990.00') ratio
         FROM stats$seg_stat_obj n,
@@ -213,10 +209,9 @@
   PROCEDURE seg_iw IS
     CURSOR C_SegStat IS
       SELECT n.owner,n.tablespace_name,n.object_name,
-             case when length(n.subobject_name) < 11
-	          then n.subobject_name
-		  else substr(n.subobject_name,length(n.subobject_name)-9)
-	     end subobject_name,
+             CASE WHEN length(n.subobject_name) < 11 THEN n.subobject_name
+                  ELSE substr(n.subobject_name,length(n.subobject_name)-9)
+                  END subobject_name,
              n.object_type,to_char(r.waits,'999,999,999') waits,
              to_char(round(r.ratio * 100, 2),'990.00') ratio
         FROM stats$seg_stat_obj n,

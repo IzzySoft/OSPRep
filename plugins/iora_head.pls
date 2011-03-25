@@ -15,12 +15,12 @@
          AND (   nvl(b.isdefault,'X')   = 'FALSE'
               or nvl(b.ismodified,'X') != 'FALSE'
               or     e.ismodified      != 'FALSE'
-	      or nvl(e.value,0)        != nvl(b.value,0) );
+              or nvl(e.value,0)        != nvl(b.value,0) );
 
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="3"><A NAME="initora">Initialization Parameters (init.ora)</A></TH></TR>'||
                 ' <TR><TH CLASS="th_sub">Parameter Name</TH><TH CLASS="th_sub">Begin Value</TH>'||
-	        '<TH CLASS="th_sub">End Value (if different)</TH></TR>';
+                '<TH CLASS="th_sub">End Value (if different)</TH></TR>';
       print(L_LINE);
       FOR R_IParm in C_IParm LOOP
         L_LINE := ' <TR><TD CLASS="td_name">'||R_IParm.name||'</TD><TD>'||

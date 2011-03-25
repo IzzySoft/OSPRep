@@ -5,8 +5,8 @@
               ' <TR><TD COLSPAN="5" ALIGN="center">"Current" is the time of the End SnapShot</TD></TR>';
     print(L_LINE);
     L_LINE := ' <TR><TH CLASS="th_sub">Resource</TH><TH CLASS="th_sub">Curr Utilization</TH>'||
-	      '<TH CLASS="th_sub">Max Utilization</TH><TH CLASS="th_sub">'||
-	      'Init Allocation</TH><TH CLASS="th_sub">Limit</TH></TR>';
+              '<TH CLASS="th_sub">Max Utilization</TH><TH CLASS="th_sub">'||
+              'Init Allocation</TH><TH CLASS="th_sub">Limit</TH></TR>';
     print(L_LINE);
     FOR R_RLim in C_RLim LOOP
       S1 := alert_gt_warn(R_RLim.curnum,R_RLim.limnum*AR_RLIM/100,R_RLim.limnum*WR_RLIM/100);
