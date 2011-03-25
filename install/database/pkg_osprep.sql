@@ -1,5 +1,5 @@
 -- ===========================================================================
--- Oracle StatsPack Report 2 Html (c)2003-2007 by IzzySoft (devel@izzysoft.de)
+-- Oracle StatsPack Report 2 Html (c)2003-2011 by IzzySoft (devel@izzysoft.de)
 -- ---------------------------------------------------------------------------
 -- Chart generation package
 -- This code gathers the data for the charts. Run this SQL script while
@@ -87,7 +87,7 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
        WHERE dbid = DB_ID AND instance_number = INST_NUM
          AND startup_time = (SELECT startup_time FROM stats$snapshot
                             WHERE dbid = db_id AND instance_number = INST_NUM
-		 AND snap_id = EID);
+         AND snap_id = EID);
     END;
 
   -- Find the "first SnapShot to Report" and store it into BID
@@ -142,12 +142,12 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
       WHEN OTHERS THEN
         IF SQLERRM LIKE '%ORU-10028%' THEN
           pos := strpos(line,' ',-1);
-	  print(SUBSTR(line,1,pos));
-	  pos := pos +1;
-	  print(SUBSTR(line,pos));
-	ELSE
+          print(SUBSTR(line,1,pos));
+          pos := pos +1;
+          print(SUBSTR(line,pos));
+        ELSE
           dbms_output.put_line('*!* Problem in print() *!*');
-	END IF;
+        END IF;
     END;
 
 /* --------------------------------------------------------------------------
@@ -161,25 +161,25 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
         FROM stats$system_event
        WHERE event=eventname
          AND instance_number=INST_NUM
-	 AND dbid=DB_ID
-	 AND snap_id BETWEEN BID AND EID;
+         AND dbid=DB_ID
+         AND snap_id BETWEEN BID AND EID;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_Sev LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
+        IF ( rec.snap_id - DBUP_ID ) > 0 THEN
           IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
             MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
           END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
-	LASTVAL := rec.value;
+        END IF;
+        IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
+          MAXDELTA := ABS(rec.value - LASTVAL);
+        END IF;
+        LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
       print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
@@ -195,25 +195,25 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
         FROM stats$sysstat
        WHERE name=eventname
          AND instance_number=INST_NUM
-	 AND dbid=DB_ID
-	 AND snap_id BETWEEN BID AND EID;
+         AND dbid=DB_ID
+         AND snap_id BETWEEN BID AND EID;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_Sys LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
+        IF ( rec.snap_id - DBUP_ID ) > 0 THEN
           IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
             MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
           END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
-	LASTVAL := rec.value;
+        END IF;
+        IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
+          MAXDELTA := ABS(rec.value - LASTVAL);
+        END IF;
+        LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
       print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
@@ -230,25 +230,25 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
        WHERE b.name=eventname
          AND a.statistic#=b.statistic#
          AND a.instance_number=INST_NUM
-	 AND a.dbid=DB_ID
-	 AND a.snap_id BETWEEN BID AND EID;
+         AND a.dbid=DB_ID
+         AND a.snap_id BETWEEN BID AND EID;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_Sys LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
+        IF ( rec.snap_id - DBUP_ID ) > 0 THEN
           IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
             MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
           END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
-	LASTVAL := rec.value;
+        END IF;
+        IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
+          MAXDELTA := ABS(rec.value - LASTVAL);
+        END IF;
+        LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
       print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
@@ -265,8 +265,8 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
         FROM stats$sysstat
        WHERE name IN (event1,event2)
          AND instance_number=INST_NUM
-	 AND dbid=DB_ID
-	 AND snap_id BETWEEN BID AND EID
+         AND dbid=DB_ID
+         AND snap_id BETWEEN BID AND EID
        GROUP BY snap_id;
     BEGIN
       MAXVAL := 0; LASTVAL := 0;
@@ -276,11 +276,11 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
         IF rec.snap_id > bid THEN
           VALUE := ACTVAL - LASTVAL;
           print(arrname||'['||rec.snap_id||'] = '||VALUE||';');
-	  IF VALUE > MAXVAL THEN
-	    MAXVAL := VALUE;
+          IF VALUE > MAXVAL THEN
+            MAXVAL := VALUE;
           END IF;
         END IF;
-	LASTVAL := ACTVAL;
+        LASTVAL := ACTVAL;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
     EXCEPTION
@@ -297,19 +297,19 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
          AND b.name=event2
          AND a.instance_number=INST_NUM
          AND b.instance_number=INST_NUM
-	 AND a.dbid=DB_ID
-	 AND b.dbid=DB_ID
-	 AND a.snap_id BETWEEN BID AND EID
-	 AND a.snap_id=b.snap_id;
+         AND a.dbid=DB_ID
+         AND b.dbid=DB_ID
+         AND a.snap_id BETWEEN BID AND EID
+         AND a.snap_id=b.snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_Sys LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
-	LASTVAL := rec.value;
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
+        LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
     EXCEPTION
@@ -321,7 +321,7 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
     CURSOR C_Lib IS
       SELECT arrname||'['||snap_id||'] = '||
              decode(nvl(sum(gets),0),0,0,100-nvl((sum(gethits)/sum(gets)),0)*100)||
-	     ';' line, snap_id,
+             ';' line, snap_id,
              decode(nvl(sum(gets),0),0,0,100-nvl((sum(gethits)/sum(gets)),0)*100) value
         FROM stats$librarycache
        WHERE snap_id BETWEEN BID AND EID
@@ -333,18 +333,18 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_Lib LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
-	IF ( rec.snap_id - DBUP_ID ) > 0 THEN
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
+        IF ( rec.snap_id - DBUP_ID ) > 0 THEN
           IF rec.value / (rec.snap_id - DBUP_ID) > MAXAVEDELTA THEN
             MAXAVEDELTA := rec.value / (rec.snap_id - DBUP_ID);
           END IF;
-	END IF;
-	IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
-	  MAXDELTA := ABS(rec.value - LASTVAL);
-	END IF;
-	LASTVAL := rec.value;
+        END IF;
+        IF ABS(rec.value - LASTVAL) > MAXDELTA THEN
+          MAXDELTA := ABS(rec.value - LASTVAL);
+        END IF;
+        LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
       print('amaxavedelta["'||arrname||'"] = '||MAXAVEDELTA||';');
@@ -360,18 +360,18 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
              snap_id, round(100*sum(reloads)/sum(pins),3) value
         FROM stats$librarycache
        WHERE instance_number=INST_NUM
-	 AND dbid=DB_ID
-	 AND snap_id BETWEEN BID AND EID
+         AND dbid=DB_ID
+         AND snap_id BETWEEN BID AND EID
        GROUP BY snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_LibR LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
-	LASTVAL := rec.value;
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
+        LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
     EXCEPTION
@@ -385,18 +385,18 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
              snap_id, round(100*sum(gethits)/sum(gets),3) value
         FROM stats$librarycache
        WHERE instance_number=INST_NUM
-	 AND dbid=DB_ID
-	 AND snap_id BETWEEN BID AND EID
+         AND dbid=DB_ID
+         AND snap_id BETWEEN BID AND EID
        GROUP BY snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_LibR LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
-	LASTVAL := rec.value;
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
+        LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
     EXCEPTION
@@ -410,18 +410,18 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
              snap_id, round(100*sum(getmisses)/sum(gets),3) value
         FROM stats$rowcache_summary
        WHERE instance_number=INST_NUM
-	 AND dbid=DB_ID
-	 AND snap_id BETWEEN BID AND EID
+         AND dbid=DB_ID
+         AND snap_id BETWEEN BID AND EID
        GROUP BY snap_id;
     BEGIN
       MAXVAL := 0; MAXDELTA := 0; MAXAVEDELTA :=0; LASTVAL := 0;
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_RowR LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
-	LASTVAL := rec.value;
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
+        LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
     EXCEPTION
@@ -433,7 +433,7 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
     CURSOR C_Read IS
       SELECT arrname||'['||b.snap_id||'] = '||round(sum(e.phyblkrd - b.phyblkrd)*DB_BLOCKSIZE/1024/1024,2)||';' line,
              b.snap_id snap_id,
-	     round(sum(e.phyblkrd - b.phyblkrd)*DB_BLOCKSIZE/1024/1024,2) value
+             round(sum(e.phyblkrd - b.phyblkrd)*DB_BLOCKSIZE/1024/1024,2) value
         FROM stats$filestatxs b, stats$filestatxs e
        WHERE e.dbid = DB_ID
          AND b.dbid = DB_ID
@@ -449,10 +449,10 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_Read LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
-	LASTVAL := rec.value;
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
+        LASTVAL := rec.value;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
     EXCEPTION
@@ -464,7 +464,7 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
     CURSOR C_Read IS
       SELECT arrname||'['||b.snap_id||'] = '||round(sum(e.phyblkwrt - b.phyblkwrt)*DB_BLOCKSIZE/1024/1024,2)||';' line,
              b.snap_id snap_id,
-	     round(sum(e.phyblkwrt - b.phyblkwrt)*DB_BLOCKSIZE/1024/1024,2) value
+             round(sum(e.phyblkwrt - b.phyblkwrt)*DB_BLOCKSIZE/1024/1024,2) value
         FROM stats$filestatxs b, stats$filestatxs e
        WHERE e.dbid = DB_ID
          AND b.dbid = DB_ID
@@ -480,9 +480,9 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
       print(CHR(10)||'var '||arrname||' = new Array();');
       FOR rec IN C_Read LOOP
         print(rec.line);
-	IF rec.value > MAXVAL THEN
-	  MAXVAL := rec.value;
-	END IF;
+        IF rec.value > MAXVAL THEN
+          MAXVAL := rec.value;
+        END IF;
       END LOOP;
       print('amaxval["'||arrname||'"] = '||MAXVAL||';');
     EXCEPTION
@@ -501,11 +501,11 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
              cost ncost,
              bytes,cpu_cost,io_cost,depth
         FROM stats$sql_plan,
-	     ( SELECT MAX(snap_id) maxid FROM stats$sql_plan
-	        WHERE snap_id BETWEEN BID AND EID
-		  AND plan_hash_value = hash_val ) id
+             ( SELECT MAX(snap_id) maxid FROM stats$sql_plan
+                WHERE snap_id BETWEEN BID AND EID
+                  AND plan_hash_value = hash_val ) id
        WHERE plan_hash_value = hash_val
-	 ORDER BY id;
+       ORDER BY id;
     BEGIN
       SELECT MAX(snap_id) INTO SI
         FROM ( SELECT plan_hash_value,snap_id
@@ -541,24 +541,24 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
           ELSE
             OSIZE := TO_CHAR(rplan.bytes/1024,'999,999,990')||' k';
           END IF;
-	  IND := '';
-	  FOR CI IN 1..rplan.depth LOOP
-	    IND := IND||'. ';
-	  END LOOP;
-	  SI := 11*(LENGTH(rplan.operation) + LENGTH(rplan.options) + 2*rplan.depth)/9;
-	  CI := 3*(LENGTH(OSIZE)+1)/10;
-	  IF SI > CW THEN CW := SI; END IF;
-	  IF rplan.operation||' '||rplan.options = 'TABLE ACCESS FULL' THEN
-	    IF NVL(rplan.ncost,0) > AR_EP_FTS THEN
-	      S1 := ' CLASS="alert"';
-	    ELSE
-	      S1 := ' CLASS="warn"';
-	    END IF;
+          IND := '';
+          FOR CI IN 1..rplan.depth LOOP
+            IND := IND||'. ';
+          END LOOP;
+          SI := 11*(LENGTH(rplan.operation) + LENGTH(rplan.options) + 2*rplan.depth)/9;
+          CI := 3*(LENGTH(OSIZE)+1)/10;
+          IF SI > CW THEN CW := SI; END IF;
+          IF rplan.operation||' '||rplan.options = 'TABLE ACCESS FULL' THEN
+            IF NVL(rplan.ncost,0) > AR_EP_FTS THEN
+              S1 := ' CLASS="alert"';
+            ELSE
+              S1 := ' CLASS="warn"';
+            END IF;
             TDI := '';
-	  ELSE
-	    S1 := '';
+          ELSE
+            S1 := '';
             TDI := ' CLASS="inner"';
-	  END IF;
+          END IF;
           print('<TR'||S1||'><TD'||TDI||'><DIV STYLE="width:'||5*CW/9||'em"><CODE>'||IND||rplan.operation||' '||rplan.options||
                 '</CODE></DIV></TD><TD'||TDI||'>'||rplan.object_owner||'.'||rplan.object_name||
                 '</TD><TD'||TDI||'>'||NVL(rplan.optimizer,'&nbsp;'));
@@ -600,13 +600,13 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
              EXCEPTION
                WHEN NO_DATA_FOUND THEN min_id := BID;
              END;
-         END;        
+         END;
           SELECT TRIM(to_char((e.buffer_gets - nvl(b.buffer_gets,0)),'99,999,999,990')),
                  TRIM(to_char(e.executions - nvl(b.executions,0),'999,999,990')),
                  TRIM(to_char((e.disk_reads - nvl(b.disk_reads,0)),'99,999,999,990')),
                  TRIM(to_char((e.rows_processed - nvl(b.rows_processed,0)),'99,999,999,990')),
                  (e.cpu_time - nvl(b.cpu_time,0))/1000,
-       	         (e.elapsed_time - nvl(b.elapsed_time,0))/1000,
+                 (e.elapsed_time - nvl(b.elapsed_time,0))/1000,
                  e.module
             INTO bufgets,exe,diskreads,numrows,cputime,elapsed,module
             FROM stats$sql_summary e, stats$sql_summary b
@@ -658,7 +658,7 @@ CREATE OR REPLACE PACKAGE BODY osprep AS
       eval_DBUP_ID;
       eval_BID(start_id,max_chart_interval);
       eval_common;
-       -- General variables
+      -- General variables
       print('var bid   = '||bid||';');
       print('var eid   = '||eid||';');
       print('var btime = "'||BTIME||'";');

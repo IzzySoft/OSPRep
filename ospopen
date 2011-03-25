@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Oracle StatsPack Report 2 HTML (c) 2003-2005 by IzzySoft (devel@izzysoft.de)
+# Oracle StatsPack Report 2 HTML (c) 2003-2011 by IzzySoft (devel@izzysoft.de)
 # ----------------------------------------------------------------------------
 # $Id$
 # ----------------------------------------------------------------------------
@@ -159,7 +159,7 @@ DECLARE
      WHERE dbid = DB_ID AND instance_number = INST_NUM
        AND startup_time = (SELECT startup_time FROM stats\$snapshot
                             WHERE dbid = DB_ID AND instance_number = INST_NUM
-			      AND snap_id = BID);
+                              AND snap_id = BID);
 
   CURSOR C_MinSnap IS
     SELECT MIN(snap_id) minid, MIN(startup_time) startup_time, MIN(snap_time) snap_time
@@ -167,7 +167,7 @@ DECLARE
      WHERE dbid = DB_ID AND instance_number = INST_NUM
        AND startup_time = (SELECT startup_time FROM stats\$snapshot
                             WHERE dbid = DB_ID AND instance_number = INST_NUM
-			      AND snap_id = EID);
+                              AND snap_id = EID);
 
   CURSOR C_MinSnapRel(id IN NUMBER) IS
     SELECT MIN(snap_id) minid FROM stats\$snapshot
@@ -175,7 +175,7 @@ DECLARE
        AND snap_id > id
        AND startup_time = (SELECT startup_time FROM stats\$snapshot
                             WHERE dbid = DB_ID AND instance_number = INST_NUM
-			      AND snap_id = EID);
+                              AND snap_id = EID);
 
   CURSOR C_SnapBind IS
     SELECT parallel,version,host_name
@@ -187,14 +187,14 @@ DECLARE
   CURSOR C_SnapInfo IS
     SELECT b.snap_id begin_snap_id,to_char(b.snap_time,'dd.mm.yyyy hh24:mi') begin_snap_time,
            NVL(b.ucomment,'&nbsp;') begin_snap_comment,
-	   e.snap_id end_snap_id,to_char(e.snap_time,'dd.mm.yyyy hh24:mi') end_snap_time,
-	   NVL(e.ucomment,'&nbsp;') end_snap_comment,
-	   to_char(round(((e.snap_time - b.snap_time) * 1440 * 60),0)/60,'9,999,990.00') elapsed,
-	   (e.snap_time - b.snap_time)*1440*60 ela,
-	   e.buffer_gets_th ebgt,
-	   e.disk_reads_th edrt,
-	   e.executions_th eet,
-	   e.parse_calls_th epc
+           e.snap_id end_snap_id,to_char(e.snap_time,'dd.mm.yyyy hh24:mi') end_snap_time,
+           NVL(e.ucomment,'&nbsp;') end_snap_comment,
+           to_char(round(((e.snap_time - b.snap_time) * 1440 * 60),0)/60,'9,999,990.00') elapsed,
+           (e.snap_time - b.snap_time)*1440*60 ela,
+           e.buffer_gets_th ebgt,
+           e.disk_reads_th edrt,
+           e.executions_th eet,
+           e.parse_calls_th epc
       FROM stats\$snapshot b, stats\$snapshot e
      WHERE b.snap_id=BID
        AND e.snap_id=EID
@@ -222,34 +222,34 @@ $RLIM_CURSOR
       IF (LENGTH(line) < 255) OR ((substr($SQLPLUSRELEASE,1,2) < 20) AND ($DBVER > 92)) THEN
         dbms_output.put_line(line);
       ELSE
-	pos := strpos(line,' ',-1);
-	print(SUBSTR(line,1,pos));
-	pos := pos +1;
-	print(SUBSTR(line,pos));
+        pos := strpos(line,' ',-1);
+        print(SUBSTR(line,1,pos));
+        pos := pos +1;
+        print(SUBSTR(line,pos));
       END IF;
     EXCEPTION
       WHEN OTHERS THEN
         IF SQLERRM LIKE '%ORU-10028%' THEN
           pos := strpos(line,' ',-1);
-	  print(SUBSTR(line,1,pos));
-	  pos := pos +1;
-	  print(SUBSTR(line,pos));
-	ELSE
+          print(SUBSTR(line,1,pos));
+          pos := pos +1;
+          print(SUBSTR(line,pos));
+        ELSE
           dbms_output.put_line('*!* Problem in print() *!*');
-	END IF;
+        END IF;
     END;
 
   FUNCTION have_rlims RETURN BOOLEAN IS
     CI NUMBER; statement VARCHAR2(500);
     BEGIN
       IF DBVER < 9 THEN
-        statement := 'SELECT 0 from dual';
+        statement := 'SELECT 0 from dual WHERE 1=1 OR 1 IN (:EID,:DB_ID,:INST_NUM)';
       ELSE
         statement := 'SELECT COUNT(resource_name) FROM stats\$resource_limit '||
-                     ' WHERE snap_id = '||EID||' AND dbid = '||DB_ID||
-                     '   AND instance_number = '||INST_NUM;
+                     ' WHERE snap_id = :EID AND dbid = :DB_ID'||
+                     '   AND instance_number = :INST_NUM';
       END IF;
-      EXECUTE IMMEDIATE statement INTO CI;
+      EXECUTE IMMEDIATE statement INTO CI USING EID,DB_ID,INST_NUM;
       IF CI > 0 THEN
         RETURN TRUE;
       ELSE
@@ -263,9 +263,9 @@ $RLIM_CURSOR
     CI NUMBER; statement VARCHAR2(500);
     BEGIN
       statement := 'SELECT COUNT(logical_reads) FROM stats\$seg_stat '||
-                   ' WHERE snap_id BETWEEN '||BID||' AND '||EID||' AND dbid = '||DB_ID||
-		   '   AND instance_number = '||INST_NUM;
-      EXECUTE IMMEDIATE statement INTO CI;
+                   ' WHERE snap_id BETWEEN :BID AND :EID AND dbid = :DB_ID'||
+                   '   AND instance_number = :INST_NUM';
+      EXECUTE IMMEDIATE statement INTO CI USING BID,EID,DB_ID,INST_NUM;
       print(statement);
       IF CI > 0 THEN
         RETURN TRUE;
@@ -285,10 +285,10 @@ $RLIM_CURSOR
         is_ok := 1;
       ELSE
         IF temp_count = 0 THEN
-	  is_ok := 0;
-	ELSE
-	  is_ok := 1;
-	END IF;
+          is_ok := 0;
+        ELSE
+          is_ok := 1;
+        END IF;
       END IF;
     EXCEPTION
       WHEN OTHERS THEN is_ok := 0;
@@ -598,18 +598,18 @@ BEGIN
   print(L_LINE);
   L_LINE := ' <LINK REL="stylesheet" TYPE="text/css" HREF="$CSS">'||CHR(10)||
             ' <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript">'||CHR(10)||
-	    '   function popup(page) {'||CHR(10)||
-	    '     url = "help/" + page + ".html";';
+            '   function popup(page) {'||CHR(10)||
+            '     url = "help/" + page + ".html";';
   print(L_LINE);
   L_LINE := '     pos = (screen.width/2)-400;'||CHR(10)||
             '     helpwin = eval("window.open(url,'||CHR(39)||'help'||CHR(39)||
-	    ','||CHR(39)||'toolbar=no,location=no,titlebar=no,directories=no,'||
-	    'status=yes,copyhistory=no,scrollbars=yes,width=600,height=400,top=0,left="+pos+"'||
-	    CHR(39)||')");';
+            ','||CHR(39)||'toolbar=no,location=no,titlebar=no,directories=no,'||
+            'status=yes,copyhistory=no,scrollbars=yes,width=600,height=400,top=0,left="+pos+"'||
+            CHR(39)||')");';
   print(L_LINE);
   L_LINE := '   }'||CHR(10)||'  version="'||OSPVER||'";'||CHR(10)||
             ' </SCRIPT>'||CHR(10)||'</HEAD><BODY>'||CHR(10)||'<H2>'||
-	    R_TITLE||'</H2>'||CHR(10);
+            R_TITLE||'</H2>'||CHR(10);
   print(L_LINE);
 
   -- Navigation
@@ -746,7 +746,7 @@ BEGIN
   S1 := to_char(I3,'999,999,999.99');
   SELECT to_char(startup_time,'DD.MM.YYYY HH24:MI'),
          to_char(sysdate - startup_time,'9990.00'),
-	 sysdate - startup_time
+         sysdate - startup_time
     INTO S2,S3,DB_UPTIME FROM v\$instance;
   L_LINE := ' <TR><TD class="td_name">FileSize (Data+Log)</TD><TD>'||S1||' MB</TD></TR>'||CHR(10)||
             ' <TR><TD class="td_name">Startup / Uptime</TD><TD>'||S2||' / '||S3||' d</TD></TR>';
