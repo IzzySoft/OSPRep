@@ -4,13 +4,12 @@
       SELECT event, waits, time, pctwtt
         FROM ( SELECT e.event event,
                     to_char(e.total_waits - NVL(b.total_waits,0),'9,999,999,999') waits,
-		    (e.time_waited - nvl(b.time_waited,0)) time,
-		    decode(twt,0,'0.00',
-		      to_char(100*((e.time_waited - NVL(b.time_waited,0))/TWT),'9,990.00')) pctwtt
+                    (e.time_waited - nvl(b.time_waited,0)) time,
+                    decode(twt,0,'0.00', to_char(100*((e.time_waited - NVL(b.time_waited,0))/TWT),'9,990.00')) pctwtt
                  FROM stats$system_event b, stats$system_event e
-	        WHERE b.snap_id(+) = BID
-	          AND e.snap_id    = EID
-	          AND b.dbid(+)    = DB_ID
+                WHERE b.snap_id(+) = BID
+                  AND e.snap_id    = EID
+                  AND b.dbid(+)    = DB_ID
                   AND e.dbid       = DB_ID
                   AND b.instance_number(+) = INST_NUM
                   AND e.instance_number    = INST_NUM
@@ -21,7 +20,7 @@
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="top5wait">Top '||TOP_N_WAITS||' Wait Events</A>'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'waitevents'||CHR(39)||
-	        ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></TH></TR>';
+                ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></TH></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TD COLSPAN="4" ALIGN="center">Ordered by Wait Time (desc), Waits (desc)';
       print(L_LINE);

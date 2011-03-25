@@ -10,11 +10,11 @@
         print(' <TR><TD>'||statname||'</TD><TD ALIGN="right">'||S1||'</TD><TD>'||S2||'</TD></TR>');
       EXCEPTION
         WHEN OTHERS THEN
-	  BEGIN
-	    print(' <TR><TD>'||statname||'</TD><TD ALIGN="right">'||S1||'</TD><TD>&nbsp;</TD></TR>');
-	  EXCEPTION
-	    WHEN OTHERS THEN NULL;
-	  END;
+          BEGIN
+            print(' <TR><TD>'||statname||'</TD><TD ALIGN="right">'||S1||'</TD><TD>&nbsp;</TD></TR>');
+          EXCEPTION
+            WHEN OTHERS THEN NULL;
+          END;
       END;
 
     PROCEDURE tabscan IS

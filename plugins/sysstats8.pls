@@ -59,10 +59,10 @@
     wert VARCHAR2(200);
     statement VARCHAR2(500);
     BEGIN
-      statement := 'SELECT value FROM stats$parameter WHERE name='''||name||''''||
-                   ' AND snap_id='||EID||' AND dbid='||DB_ID||
-                   ' AND instance_number='||INST_NUM;
-      EXECUTE IMMEDIATE statement INTO wert;
+      statement := 'SELECT value FROM stats$parameter WHERE name=:name'||
+                   ' AND snap_id=:EID AND dbid=:DB_ID'||
+                   ' AND instance_number=:INST_NUM';
+      EXECUTE IMMEDIATE statement INTO wert USING name,EID,DB_ID,INST_NUM;
       RETURN wert;
     EXCEPTION
       WHEN OTHERS THEN wert := ''; RETURN wert;
@@ -78,7 +78,7 @@
        FROM (
         SELECT e.total_waits - b.total_waits totwaits,
                e.time_waited - b.time_waited twait,
-	       e.total_timeouts - b.total_timeouts time_outs
+               e.total_timeouts - b.total_timeouts time_outs
           FROM stats$system_event b, stats$system_event e
          WHERE b.snap_id = BID
            AND e.snap_id = EID
