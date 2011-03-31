@@ -402,7 +402,6 @@
     END;
 
 
-
   -- SQL by CPU usage
   PROCEDURE sqlbyCPU IS
     WARN VARCHAR2(50);
@@ -457,6 +456,76 @@
                   R_SQL.rowsperexec||'</TD></TD><TD ALIGN="right">';
         print(L_LINE);
         L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
+                  R_SQL.hashval||'</TD></TR>'||CHR(10)||' <TR'||WARN||
+                  '><TD>&nbsp;</TD><TD COLSPAN="6">';
+        print(L_LINE);
+        print_tsql(R_SQL.hashval);
+        print('</TD></TR>');
+        IF MK_EP = 1 THEN
+          get_plan(R_SQL.hashval);
+        END IF;
+      END LOOP;
+      print(TABLE_CLOSE||'<HR>');
+    EXCEPTION
+      WHEN OTHERS THEN NULL;
+    END;
+
+
+
+  -- SQL by Time Elapsed
+  PROCEDURE sqlbyela IS
+    WARN VARCHAR2(50);
+    CURSOR C_SQLByEla IS
+      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela
+        FROM ( SELECT /*+ ordered use_nl (b st) */
+                  to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
+                  to_char((nvl(e.rows_processed,0) - nvl(b.rows_processed,0)),
+                         '99,999,999,999') rowsproc,
+                  to_char(decode(nvl(e.rows_processed,0) - nvl(b.rows_processed,0),
+                             0, 0,
+                             (e.rows_processed - nvl(b.rows_processed,0)) /
+                                 (e.executions - nvl(b.executions,0))),
+                             '9,999,999,990.0') rowsperexec,
+                  (e.cpu_time - nvl(b.cpu_time,0)) /
+                     (e.executions - nvl(b.executions,0)) / 1000 cputime,
+                  (e.elapsed_time - nvl(b.elapsed_time,0)) /
+                     (e.executions - nvl(b.executions,0)) / 1000 elapsed,
+                  NVL ( e.hash_value,0 ) hashval
+              FROM stats$sql_summary e, stats$sql_summary b
+             WHERE b.snap_id(+)  = BID
+               AND b.dbid(+)     = e.dbid
+               AND b.instance_number(+) = e.instance_number
+               AND b.hash_value(+)      = e.hash_value
+               AND b.address(+)  = e.address
+               AND b.text_subset(+)     = e.text_subset
+               AND e.snap_id     = EID
+               AND e.dbid        = DB_ID
+               AND e.instance_number    = INST_NUM
+               AND e.executions  > nvl(b.executions,0)
+               AND phyr          > 0
+             ORDER BY (e.elapsed_time - nvl(b.elapsed_time,0)) / (e.executions - nvl(b.executions,0)) desc,
+                       e.hash_value
+           )
+       WHERE rownum <= TOP_N_SQL;
+    BEGIN
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="sqlbyexec">Top '||TOP_N_SQL||' SQL ordered by Executions</A></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="6" ALIGN="center">End Executions Treshold: '||EET||
+                '<BR>Start with tuning these ';
+      print(L_LINE);
+      L_LINE := 'statements if your primary goal is to increase the response time.</TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">Executions</TH>'||
+                '<TH CLASS="th_sub">Rows Processed</TH><TH CLASS="th_sub">Rows per Exec</TH>';
+      print(L_LINE);
+      L_LINE := '<TH CLASS="th_sub">CPU per Exec</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+      print(L_LINE);
+      FOR R_SQL IN C_SQLByExec LOOP
+        WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.rowsproc||
+                  '</TD><TD ALIGN="right">'||R_SQL.rowsperexec||'</TD><TD ALIGN="right">';
+        print(L_LINE);
+        L_LINE := format_stime(R_SQL.cputime,1000)||'</TD><TD ALIGN="right">'||
                   R_SQL.hashval||'</TD></TR>'||CHR(10)||' <TR'||WARN||
                   '><TD>&nbsp;</TD><TD COLSPAN="6">';
         print(L_LINE);

@@ -9,7 +9,7 @@ v0.4.4
 + support for 11gR2 (untested)
 * some minor adjustments and improvements
 * some code formatting, including check for (missing) BINDs to be improved
-+ added "..by CPU usage" section to Top-N SQL Statements
++ added "..by CPU usage" and "..by time elapsed" section to Top-N SQL Statements
 
 v0.4.3 (09.06.2008)
 -------------------

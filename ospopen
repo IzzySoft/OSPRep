@@ -645,7 +645,7 @@ BEGIN
   IF MK_TOPSQL = 1 THEN
     L_LINE := ' [ <A HREF="#sqlbygets">SQL by Gets</A> ] [ <A HREF="#sqlbyreads">SQL by Reads</A> ]'||
               ' [ <A HREF="#sqlbyexec">SQL by Exec</A> ] [ <A HREF="#sqlbyparse">SQL by Parse</A> ]'||
-              ' [ <A HREF="#sqlbycpu">SQL by CPU</A> ]';
+              ' [ <A HREF="#sqlbycpu">SQL by CPU</A> ] [ <A HREF="#sqlbyela">SQL by Ela</A> ]';
   ELSE
     L_LINE := '';
   END IF;

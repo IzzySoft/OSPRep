@@ -4,3 +4,4 @@
   sqlbyexec;
   sqlbyparse;
   sqlbycpu;
+  sqlbyela;
