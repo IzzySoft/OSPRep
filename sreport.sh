@@ -2,7 +2,7 @@
 # $Id$
 #
 # =============================================================================
-# Oracle StatsPack Report 2 Html  (c) 2003-2005 by IzzySoft (devel@izzysoft.de)     
+# Oracle StatsPack Report 2 Html  (c) 2003-2011 by IzzySoft (devel@izzysoft.de)     
 # -----------------------------------------------------------------------------
 # This report script creates a HTML document containing the StatsPack Report.
 # It is a simple rewrite of the standard sprepins.sql script
@@ -18,7 +18,7 @@ function syntax {
   SCRIPT=${0##*/}
   echo
   echo ============================================================================
-  echo "OSPRep v$version                (c) 2003 by Itzchak Rehberg (devel@izzysoft.de)"
+  echo "OSPRep v$version           (c) 2003-2011 by Itzchak Rehberg (devel@izzysoft.de)"
   echo ----------------------------------------------------------------------------
   echo This script is intended to generate a HTML report for the Oracle StatsPack
   echo collected statistics. Look inside the script header for closer details, and
@@ -29,6 +29,7 @@ function syntax {
   echo "     -c <alternate ConfigFile>"
   echo "     -b <BEGIN_ID (Snapshot)>"
   echo "     -e <END_ID (Snapshot)>"
+  echo "     -h (Display this help message and exit)"
   echo "     -o <Output Filename>"
   echo "     -p <Password>"
   echo "     -r <ReportDirectory>"
@@ -65,6 +66,7 @@ while [ "$1" != "" ] ; do
     -c) shift; CONFIG=$1;;
     -r) shift; REPORTDIR=$1;;
     -o) shift; FILENAME=$1;;
+    -h|--help|"?"|"-?") syntax;;
   esac
   shift
 done

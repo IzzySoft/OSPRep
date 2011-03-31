@@ -4,6 +4,7 @@
 DESTDIR=
 prefix=/usr/local
 BINDIR=$(DESTDIR)$(prefix)/share/osprep
+datadir=$(BINDIR)/reports
 INSTALL=
 
 WEBROOT=$(DESTDIR)/var/www

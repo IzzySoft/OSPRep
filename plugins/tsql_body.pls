@@ -3,3 +3,4 @@
   sqlbyreads;
   sqlbyexec;
   sqlbyparse;
+  sqlbycpu;
