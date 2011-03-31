@@ -134,7 +134,7 @@
   PROCEDURE sqlbygets IS
     WARN VARCHAR2(50);
     CURSOR C_SQLByGets (gets IN NUMBER) IS
-      SELECT bufgets,execs,getsperexec,pcttotal,cputime,elapsed,exe,ela,sql_id,hashval,oldhashval
+      SELECT bufgets,execs,getsperexec,pcttotal,cputime,elapsed,exe,ela,sql_id,hashval,oldhashval,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.buffer_gets - nvl(b.buffer_gets,0)),'99,999,999,990') bufgets,
                   to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
@@ -150,7 +150,9 @@
                   NVL((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
                   NVL ( e.hash_value,0 ) hashval,
                   NVL ( e.old_hash_value,0 ) oldhashval,
-                  NVL ( e.sql_id,0 ) sql_id
+                  NVL ( e.sql_id,0 ) sql_id,
+                  to_char(e.last_active_time,'YYYY-MM-DD HH24:MI') last_active,
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -166,8 +168,8 @@
            )
        WHERE rownum <= TOP_N_SQL;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="sqlbygets">Top '||TOP_N_SQL||' SQL ordered by Gets</A></TH></TR>'||
-                CHR(10)||' <TR><TD COLSPAN="8" ALIGN="center">End Buffer Gets Treshold: '||EBGT;
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="sqlbygets">Top '||TOP_N_SQL||' SQL ordered by Gets</A></TH></TR>'||
+                CHR(10)||' <TR><TD COLSPAN="10" ALIGN="center">End Buffer Gets Treshold: '||EBGT;
       print(L_LINE);
       L_LINE := '<P ALIGN="justify" STYLE="margin-top:4">Note that resources reported for PL/SQL includes the '||
                 'resources used by all SQL statements called within the PL/SQL code.'||
@@ -184,7 +186,8 @@
                 '<TH CLASS="th_sub">Total</TH><TH CLASS="th_sub">CPU Time</TH>'||
                 '<TH CLASS="th_sub">Elapsed Time</TH><TH CLASS="th_sub">SQL ID</TH>';
       print(L_LINE);
-      L_LINE := '<TH CLASS="th_sub">Hash Value</TD></TR>';
+      L_LINE := '<TH CLASS="th_sub">Hash Value</TD>'||
+                '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByGets(GETS) LOOP
         WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
@@ -194,8 +197,10 @@
         print(L_LINE);
         L_LINE := format_stime(R_SQL.cputime,1000)||'</TD><TD ALIGN="right">'||
                   format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||CHR(10)||
-                  ' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="7">';
+                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        print(L_LINE);
+        L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="9">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -212,7 +217,7 @@
   PROCEDURE sqlbyreads IS
     WARN VARCHAR2(50);
     CURSOR C_SQLByReads IS
-      SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,hashval,exe,ela,sql_id
+      SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,hashval,exe,ela,sql_id,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.disk_reads - nvl(b.disk_reads,0)),'99,999,999,990') phyreads,
                   to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
@@ -227,7 +232,9 @@
                   (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
                   NVL((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL ( e.sql_id,0 ) sql_id
+                  NVL ( e.sql_id,0 ) sql_id,
+                  to_char(e.last_active_time,'YYYY-MM-DD HH24:MI') last_active,
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -244,8 +251,8 @@
            )
        WHERE rownum <= TOP_N_SQL;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="sqlbyreads">Top '||TOP_N_SQL||' SQL ordered by Reads</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="8" ALIGN="center">End Disk Reads Treshold: '||EDRT||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="10"><A NAME="sqlbyreads">Top '||TOP_N_SQL||' SQL ordered by Reads</A></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="10" ALIGN="center">End Disk Reads Treshold: '||EDRT||
                 '<BR>If your primary tuning ';
       print(L_LINE);
       L_LINE := 'goal is to reduce resource usage, start by tuning these '||
@@ -256,7 +263,8 @@
                 '<TH CLASS="th_sub">Reads per Exec</TH><TH CLASS="th_sub">Total</TH>';
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">CPU Time</TH><TH CLASS="th_sub">'||
-                'Elapsed Time</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+                'Elapsed Time</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
+                '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByReads LOOP
         WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
@@ -266,8 +274,10 @@
         print(L_LINE);
         L_LINE := format_stime(R_SQL.cputime,1000)||'</TD><TD ALIGN="right">'||
                   format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||CHR(10)||
-                  ' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="7">';
+                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        print(L_LINE);
+        L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="9">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -284,7 +294,7 @@
   PROCEDURE sqlbyexec IS
     WARN VARCHAR2(50);
     CURSOR C_SQLByExec IS
-      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela,sql_id
+      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela,sql_id,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
                   to_char((nvl(e.rows_processed,0) - nvl(b.rows_processed,0)),
@@ -296,7 +306,9 @@
                   (e.cpu_time - nvl(b.cpu_time,0)) / (e.executions - nvl(b.executions,0)) / 1000 cputime,
                   (e.elapsed_time - nvl(b.elapsed_time,0)) / (e.executions - nvl(b.executions,0)) / 1000 elapsed,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL ( e.sql_id,0 ) sql_id
+                  NVL ( e.sql_id,0 ) sql_id,
+                  to_char(e.last_active_time,'YYYY-MM-DD HH24:MI') last_active,
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -314,8 +326,8 @@
            )
        WHERE rownum <= TOP_N_SQL;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbyexec">Top '||TOP_N_SQL||' SQL ordered by Executions</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="7" ALIGN="center">End Executions Treshold: '||EET||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbyexec">Top '||TOP_N_SQL||' SQL ordered by Executions</A></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="9" ALIGN="center">End Executions Treshold: '||EET||
                 '<BR>Start with tuning these ';
       print(L_LINE);
       L_LINE := 'statements if your primary goal is to increase the response time.</TD></TR>';
@@ -323,7 +335,8 @@
       L_LINE := ' <TR><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Rows Processed</TH>'||
                 '<TH CLASS="th_sub">Rows per Exec</TH><TH CLASS="th_sub">CPU per Exec</TH>';
       print(L_LINE);
-      L_LINE := '<TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+      L_LINE := '<TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
+                '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByExec LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
@@ -333,8 +346,10 @@
                   '</TD><TD ALIGN="right">';
         print(L_LINE);
         L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||
-                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="6">';
+                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        print(L_LINE);
+        L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -350,13 +365,15 @@
   -- SQL by Parse
   PROCEDURE sqlbyparse IS
     CURSOR C_SQLByParse IS
-      SELECT parses,execs,pctparses,hashval,sql_id
+      SELECT parses,execs,pctparses,hashval,sql_id,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.parse_calls - nvl(b.parse_calls,0)),'999,999,990') parses,
                   to_char((e.executions - nvl(b.executions,0)),'999,999,990') execs,
                   to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/PRSE, '990.00') pctparses,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL ( e.sql_id,0 ) sql_id
+                  NVL ( e.sql_id,0 ) sql_id,
+                  to_char(e.last_active_time,'YYYY-MM-DD HH24:MI') last_active,
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -372,21 +389,24 @@
        WHERE rownum <= TOP_N_SQL;
     BEGIN
       get_parsecpupct(S1);
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="5" ALIGN="center">End Parse Calls Treshold: '||EPC||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="7" ALIGN="center">End Parse Calls Treshold: '||EPC||
                 '<BR>Consider tuning these ';
       print(L_LINE);
       L_LINE := 'statements/objects, if the percentage of CPU used for parsing is high. '||
                 'Currently, parsing takes avg. '||S1||'% of all CPU usage by all sessions.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
-                '<TH CLASS="th_sub">Total Parses</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+                '<TH CLASS="th_sub">Total Parses</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
+                '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByParse LOOP
         L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.parses||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
-                  '%</TD><TD ALIGN="right">'||R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||
-                  '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="4">';
+                  '%</TD><TD ALIGN="right">'||R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval;
+        print(L_LINE);
+        L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+                  '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -404,7 +424,7 @@
   PROCEDURE sqlbycpu IS
     WARN VARCHAR2(50);
     CURSOR C_SQLByCPU IS
-      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela,sql_id
+      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela,sql_id,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
                   to_char((nvl(e.rows_processed,0) - nvl(b.rows_processed,0)),
@@ -416,7 +436,9 @@
                   (e.cpu_time - nvl(b.cpu_time,0)) / (e.executions - nvl(b.executions,0)) / 1000 cputime,
                   (e.elapsed_time - nvl(b.elapsed_time,0)) / (e.executions - nvl(b.executions,0)) / 1000 elapsed,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL ( e.sql_id,0 ) sql_id
+                  NVL ( e.sql_id,0 ) sql_id,
+                  to_char(e.last_active_time,'YYYY-MM-DD HH24:MI') last_active,
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -434,14 +456,15 @@
            )
        WHERE rownum <= TOP_N_SQL;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbycpu">Top '||TOP_N_SQL||' SQL ordered by CPU Time</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="7" ALIGN="center">End Executions Treshold: '||EET||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbycpu">Top '||TOP_N_SQL||' SQL ordered by CPU Time</A></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="9" ALIGN="center">End Executions Treshold: '||EET||
                 '</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">CPU per Exec</TH><TH CLASS="th_sub">Executions</TH>'||
                 '<TH CLASS="th_sub">Rows Processed</TH><TH CLASS="th_sub">Rows per Exec</TH>';
       print(L_LINE);
-      L_LINE := '<TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+      L_LINE := '<TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
+                '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByCPU LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
@@ -450,8 +473,9 @@
                   R_SQL.rowsperexec||'</TD></TD><TD ALIGN="right">';
         print(L_LINE);
         L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||
-                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="6">';
+                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||
+                  '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -465,13 +489,11 @@
     END;
 
 
-
-
   -- SQL by Time Elapsed
   PROCEDURE sqlbyela IS
     WARN VARCHAR2(50);
     CURSOR C_SQLByEla IS
-      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela,sql_id
+      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela,sql_id,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
                   to_char((nvl(e.rows_processed,0) - nvl(b.rows_processed,0)),
@@ -483,7 +505,9 @@
                   (e.cpu_time - nvl(b.cpu_time,0)) / (e.executions - nvl(b.executions,0)) / 1000 cputime,
                   (e.elapsed_time - nvl(b.elapsed_time,0)) / (e.executions - nvl(b.executions,0)) / 1000 elapsed,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL ( e.sql_id,0 ) sql_id
+                  NVL ( e.sql_id,0 ) sql_id,
+                  to_char(e.last_active_time,'YYYY-MM-DD HH24:MI') last_active,
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -501,16 +525,14 @@
            )
        WHERE rownum <= TOP_N_SQL;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbyela">Top '||TOP_N_SQL||' SQL ordered by Executions</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="7" ALIGN="center">End Executions Treshold: '||EET||
-                '<BR>Start with tuning these ';
-      print(L_LINE);
-      L_LINE := 'statements if your primary goal is to increase the response time.</TD></TR>';
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbyela">Top '||TOP_N_SQL||' SQL ordered by Time Elapsed</A></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="9" ALIGN="center">End Executions Treshold: '||EET||'</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">Executions</TH>'||
                 '<TH CLASS="th_sub">Rows Processed</TH><TH CLASS="th_sub">Rows per Exec</TH>';
       print(L_LINE);
-      L_LINE := '<TH CLASS="th_sub">CPU per Exec</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
+      L_LINE := '<TH CLASS="th_sub">CPU per Exec</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
+                '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByEla LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
@@ -519,8 +541,10 @@
                   R_SQL.rowsperexec||'</TD><TD ALIGN="right">'||format_stime(R_SQL.cputime,1000);
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD></TR>'||
-                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="6">';
+                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        print(L_LINE);
+        L_LINE := '<TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');

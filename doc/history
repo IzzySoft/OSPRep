@@ -10,6 +10,7 @@ v0.4.4
 * some minor adjustments and improvements
 * some code formatting, including check for (missing) BINDs to be improved
 + added "..by CPU usage" and "..by time elapsed" section to Top-N SQL Statements
++ added columns "Last Active" and "Module" to Top-N SQL on 10g+
 
 v0.4.3 (09.06.2008)
 -------------------
