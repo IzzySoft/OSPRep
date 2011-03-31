@@ -1,4 +1,4 @@
-  FUNCTION format_fsize(fs IN OUT NUMBER) RETURN VARCHAR2 IS
+  FUNCTION format_fsize(fs IN OUT NUMBER, format IN VARCHAR2 DEFAULT '990.0') RETURN VARCHAR2 IS
     string VARCHAR2(50); signed NUMBER;
     BEGIN
       IF fs IS NULL THEN
@@ -13,15 +13,15 @@
       IF fs/1024 > 999 THEN
         IF fs/1024/1024 > 999 THEN
           IF fs/1024/1024/1024 > 999 THEN
-            string := to_char(round(fs/1024/1024/1024/1024,1),'990.0')||' T';
+            string := to_char(round(fs/1024/1024/1024/1024,1),format)||' T';
           ELSE
-            string := to_char(round(fs/1024/1024/1024,1),'990.0')||' G';
+            string := to_char(round(fs/1024/1024/1024,1),format)||' G';
           END IF;
         ELSE
-          string := to_char(round(fs/1024/1024,1),'990.0')||' M';
+          string := to_char(round(fs/1024/1024,1),format)||' M';
         END IF;
       ELSE
-        string := to_char(round(fs/1024,1),'990.0')||' K';
+        string := to_char(round(fs/1024,1),format)||' K';
       END IF;
       IF signed = 1 THEN
         string := '- '||string;

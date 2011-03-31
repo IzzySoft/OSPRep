@@ -18,7 +18,7 @@
     CW NUMBER; TDI VARCHAR2(20);
     CURSOR C_PGet (hash_val IN VARCHAR2) IS
       SELECT operation,options,object_owner,object_name,optimizer,cost,
-             NVL(TO_CHAR(cost,'999,990'),'&nbsp;') vcost,
+             NVL(TO_CHAR(cost,'999,999,990'),'&nbsp;') vcost,
              bytes,cpu_cost,io_cost,depth
         FROM stats$sql_plan,
              ( SELECT MAX(snap_id) maxid FROM stats$sql_plan
@@ -48,7 +48,7 @@
       IF CI > 0
       THEN
         CW := 20;
-        print('<TR><TD>&nbsp;</TD><TD COLSPAN="7">');
+        print('<TR><TD>&nbsp;</TD><TD COLSPAN="9">');
         print(TABLE_OPEN||'<TR><TH CLASS="th_sub2">Operation</TH><TH CLASS="th_sub2">'||
               'Object</TH><TH CLASS="th_sub2">');
         print('Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">'||
@@ -65,14 +65,14 @@
               OSIZE := OSIZE||' b';
             END IF;
           ELSE
-            OSIZE := TO_CHAR(rplan.bytes/1024,'999,999,990')||' k';
+            OSIZE := format_fsize(rplan.bytes,'990');
           END IF;
           IND := '';
           FOR CI IN 1..rplan.depth LOOP
             IND := IND||'. ';
           END LOOP;
           SI := 11*(LENGTH(rplan.operation) + LENGTH(rplan.options) + 2*rplan.depth)/9;
-          CI := 3*(LENGTH(OSIZE)+1)/10;
+          CI := 4*(LENGTH(TRIM(OSIZE))+2)/10 +0.5;
           IF SI > CW THEN CW := SI; END IF;
           IF rplan.operation||' '||rplan.options = 'TABLE ACCESS FULL' THEN
             IF rplan.cost > AR_EP_FTS THEN
@@ -90,7 +90,7 @@
                 '</TD><TD'||TDI||'>'||NVL(rplan.optimizer,'&nbsp;'));
           print('</TD><TD ALIGN="right"'||TDI||'>'||rplan.vcost||'</TD><TD ALIGN="right"'||TDI||'>'||
                 NVL(TO_CHAR(rplan.cpu_cost,'9,999,999,999,990'),'&nbsp;')||
-                '</TD><TD ALIGN="right"'||TDI||'>'||NVL(TO_CHAR(rplan.io_cost,'999,990'),'&nbsp;')||
+                '</TD><TD ALIGN="right"'||TDI||'>'||NVL(TO_CHAR(rplan.io_cost,'999,999,990'),'&nbsp;')||
                 '</TD><TD ALIGN="right"'||TDI||'><DIV STYLE="width:'||CI||'em">'||OSIZE||'</DIV></TD></TR>');
         END LOOP;
         print('</TABLE></TD></TR>');
