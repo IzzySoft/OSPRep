@@ -30,6 +30,10 @@ CODE {
   padding: 4px;
   color: #660033;
 }
+.keyword {
+  font-weight: bold;
+  color: #00B;
+}
 
 /* ------------------------------------------------------------------------ */
 /*                           Headers and Paragraphs                         */

@@ -1,13 +1,35 @@
   -- Get and print an SQL statement
   PROCEDURE print_tsql(id IN VARCHAR2) IS
+    stmt VARCHAR2(16200);
     CURSOR C_GetSQL (sqlid IN VARCHAR2) IS
       SELECT replace(replace(sql_text,'<','&lt;'),'>','&gt;') AS sql_text
         FROM stats$sqltext WHERE sql_id=sqlid
        ORDER BY piece;
+    PROCEDURE hlite(stmt IN OUT VARCHAR2) IS
+      CURSOR C_KWords IS
+        SELECT keyword
+          FROM v$reserved_words
+         WHERE reserved='Y'
+           AND length>1;
+      BEGIN
+        FOR kw IN C_KWords LOOP
+          stmt := regexp_replace(stmt,'(^|\s)('||kw.keyword||')(\s)','\1<SPAN CLASS="keyword">\2</SPAN>\3',1,0,'i');
+        END LOOP;
+      EXCEPTION
+        WHEN OTHERS THEN NULL;
+      END;
     BEGIN
+      stmt := '';
       FOR R_Statement IN C_GetSQL(id) LOOP
-        print(R_Statement.sql_text);
+        stmt := stmt || R_Statement.sql_text;
+        IF LENGTH(stmt)>12000 THEN
+          hlite(stmt);
+          print(stmt);
+          stmt := '';
+        END IF;
       END LOOP;
+      hlite(stmt);
+      print(stmt);
     EXCEPTION
       WHEN OTHERS THEN NULL;
     END;
