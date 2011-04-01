@@ -9,12 +9,12 @@
       CURSOR C_KWords IS
         SELECT keyword
           FROM v$reserved_words
-         WHERE reserved='Y'
-           AND length>1;
+         WHERE length>1;
       BEGIN
         FOR kw IN C_KWords LOOP
           stmt := regexp_replace(stmt,'(^|\s)('||kw.keyword||')(\s)','\1<SPAN CLASS="keyword">\2</SPAN>\3',1,0,'i');
         END LOOP;
+        stmt := replace(replace(stmt,CHR(10),'<BR>'),CHR(13),'<BR>');
       EXCEPTION
         WHEN OTHERS THEN NULL;
       END;
@@ -222,7 +222,7 @@
                   R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
-                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="9">';
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="9" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -299,7 +299,7 @@
                   R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
-                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="9">';
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="9" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -371,7 +371,7 @@
                   R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
-                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8">';
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -428,7 +428,7 @@
                   '%</TD><TD ALIGN="right">'||R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval;
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
-                  '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="6">';
+                  '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="6" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -497,7 +497,7 @@
         L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
                   R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||
                   '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
-                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8">';
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -566,7 +566,77 @@
                   R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
         print(L_LINE);
         L_LINE := '<TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
-                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8">';
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8" CLASS="icode">';
+        print(L_LINE);
+        print_tsql(R_SQL.sql_id);
+        print('</TD></TR>');
+        IF MK_EP = 1 THEN
+          get_plan(R_SQL.sql_id);
+        END IF;
+      END LOOP;
+      print(TABLE_CLOSE||'<HR>');
+    EXCEPTION
+      WHEN OTHERS THEN NULL;
+    END;
+
+
+
+  -- SQL by Invalidations
+  PROCEDURE sqlbyinv IS
+    WARN VARCHAR2(50);
+    CURSOR C_SQLByInv IS
+      SELECT execs,invals,rowsperexec,cputime,elapsed,hashval,ela,sql_id,last_active,modul
+        FROM ( SELECT /*+ ordered use_nl (b st) */
+                  to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
+                  to_char((nvl(e.invalidations,0) - nvl(b.invalidations,0)),
+                         '99,999,999,999') invals,
+                  to_char(decode(nvl(e.rows_processed,0) - nvl(b.rows_processed,0),
+                         0, 0,
+                         (e.rows_processed - nvl(b.rows_processed,0)) / (e.executions - nvl(b.executions,0))),
+                         '9,999,999,990.0') rowsperexec,
+                  (e.cpu_time - nvl(b.cpu_time,0)) / (e.executions - nvl(b.executions,0)) / 1000 cputime,
+                  (e.elapsed_time - nvl(b.elapsed_time,0)) / (e.executions - nvl(b.executions,0)) / 1000 elapsed,
+                  NVL ( e.hash_value,0 ) hashval,
+                  NVL ( e.sql_id,0 ) sql_id,
+                  to_char(e.last_active_time,'YYYY-MM-DD HH24:MI') last_active,
+                  NVL(e.module,'&nbsp;') modul
+              FROM stats$sql_summary e, stats$sql_summary b
+             WHERE b.snap_id(+)  = BID
+               AND b.dbid(+)     = e.dbid
+               AND b.instance_number(+) = e.instance_number
+               AND b.hash_value(+)      = e.hash_value
+               AND b.address(+)  = e.address
+               AND b.text_subset(+)     = e.text_subset
+               AND e.snap_id     = EID
+               AND e.dbid        = DB_ID
+               AND e.instance_number    = INST_NUM
+               AND e.executions  > nvl(b.executions,0)
+               AND phyr          > 0
+             ORDER BY (nvl(e.invalidations,0) - nvl(b.invalidations,0)) desc,
+                      e.hash_value
+           )
+       WHERE rownum <= TOP_N_SQL;
+    BEGIN
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbyinv">Top '||TOP_N_SQL||' SQL ordered by Invalidations</A>&nbsp;<a href="JavaScript:popup('||CHR(39)||'invalidations'||CHR(39)||')"><img src="help/help.gif" alt="Help" align="top" border="0" height="16"></a></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="9" ALIGN="center">End Executions Treshold: '||EET||'</TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TH CLASS="th_sub">Invalidations</TH><TH CLASS="th_sub">Executions</TH>'||
+                '<TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">Rows per Exec</TH>';
+      print(L_LINE);
+      L_LINE := '<TH CLASS="th_sub">CPU per Exec</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
+                '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
+      print(L_LINE);
+      FOR R_SQL IN C_SQLByInv LOOP
+        WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.invals||'</TD><TD ALIGN="right">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right">'||format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
+                  R_SQL.rowsperexec||'</TD><TD ALIGN="right">'||format_stime(R_SQL.cputime,1000);
+        print(L_LINE);
+        L_LINE := '</TD><TD ALIGN="right">'||
+                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        print(L_LINE);
+        L_LINE := '<TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+                  CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');

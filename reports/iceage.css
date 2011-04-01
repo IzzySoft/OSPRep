@@ -7,9 +7,11 @@ BODY {
 /* ------------------------------------------------------------------------ */
 /*                              Character Classes                           */
 /* ------------------------------------------------------------------------ */
-CODE {
+CODE, .code, .icode {
  font-family:monospace;
- font-size: 8pt; 
+ font-size: 8pt;
+}
+CODE, .code {
  color:#660033;
 }
 .ObjectName {
@@ -21,14 +23,15 @@ CODE {
  font-size:10px;
 }
 .code {
-  font-family: monospace; 
-  font-size: 8pt; 
   background-color: #FFEEAA;
   border:  1px solid #000000;
   margin-bottom: 6px;
   margin-top: 6px;
   padding: 4px;
-  color: #660033;
+}
+.keyword {
+  font-weight: bold;
+  color: #00B;
 }
 
 /* ------------------------------------------------------------------------ */

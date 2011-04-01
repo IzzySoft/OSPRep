@@ -13,6 +13,7 @@ v0.4.4
 + added columns "Last Active" and "Module" to Top-N SQL on 10g+
 + highlighting of keywords in (Top-N) SQL statements on 10g+
   (and hopefully no more "random" spaces within)
++ added "..by Invalidations" to Top-N SQL on 10g+
 
 v0.4.3 (09.06.2008)
 -------------------

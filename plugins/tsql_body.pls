@@ -5,3 +5,4 @@
   sqlbyparse;
   sqlbycpu;
   sqlbyela;
+  sqlbyinv;
