@@ -3,7 +3,7 @@
     t1p VARCHAR2(50); t2p VARCHAR2(50);
     CURSOR C_LAA IS
       SELECT b.name name,
-             to_char(e.gets - b.gets,'99,999,999,999') gets,
+             to_char(e.gets - b.gets,'9,999,999,999,999') gets,
              DECODE(e.gets,b.gets,'&nbsp;',
                    TO_CHAR((e.misses - b.misses) * 100 /
                           (e.gets - b.gets),'990.00')||'%') missed,
@@ -30,8 +30,8 @@
        ORDER BY wt DESC,sleeps DESC,imiss DESC;
     CURSOR C_LAS IS
       SELECT b.name name,
-             to_char(e.gets - b.gets,'99,999,999,999') gets,
-             to_char(e.misses - b.misses,'99,999,999') misses,
+             to_char(e.gets - b.gets,'9,999,999,999,999') gets,
+             to_char(e.misses - b.misses,'9,999,999,999') misses,
              to_char(100*((e.misses - b.misses)/(e.gets - b.gets)),'990.00') pctmiss,
              to_char(e.sleeps - b.sleeps,'999,999,999') sleeps,
              to_char(100*((e.sleeps - b.sleeps)/(e.gets - b.gets)),'990.00') pctsleep,
