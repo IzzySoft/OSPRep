@@ -416,7 +416,7 @@
                 '<BR>Consider tuning these ';
       print(L_LINE);
       L_LINE := 'statements/objects, if the percentage of CPU used for parsing is high. '||
-                'Currently, parsing takes avg. '||S1||'% of all CPU usage by all sessions.</TD></TR>';
+                'Currently, parsing takes avg. '||S1||' of all CPU usage by all sessions.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
                 '<TH CLASS="th_sub">Total Parses</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
@@ -446,11 +446,10 @@
   PROCEDURE sqlbycpu IS
     WARN VARCHAR2(50);
     CURSOR C_SQLByCPU IS
-      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela,sql_id,last_active,modul
+      SELECT execs,pctparses,rowsperexec,cputime,elapsed,hashval,ela,sql_id,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
-                  to_char((nvl(e.rows_processed,0) - nvl(b.rows_processed,0)),
-                         '99,999,999,999') rowsproc,
+                  to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/PRSE, '990.00') pctparses,
                   to_char(decode(nvl(e.rows_processed,0) - nvl(b.rows_processed,0),
                          0, 0,
                          (e.rows_processed - nvl(b.rows_processed,0)) / (e.executions - nvl(b.executions,0))),
@@ -478,12 +477,10 @@
            )
        WHERE rownum <= TOP_N_SQL;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbycpu">Top '||TOP_N_SQL||' SQL ordered by CPU Time</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="9" ALIGN="center">End Executions Treshold: '||EET||
-                '</TD></TR>';
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbycpu">Top '||TOP_N_SQL||' SQL ordered by CPU Time</A>&nbsp;<a href="JavaScript:popup('||CHR(39)||'cputime'||CHR(39)||')"><img src="help/help.gif" alt="Help" align="top" border="0" height="16"></a></TH></TR>'||CHR(10);
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">CPU per Exec</TH><TH CLASS="th_sub">Executions</TH>'||
-                '<TH CLASS="th_sub">Rows Processed</TH><TH CLASS="th_sub">Rows per Exec</TH>';
+                '<TH CLASS="th_sub">Total Parses</TH><TH CLASS="th_sub">Rows per Exec</TH>';
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
                 '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
@@ -491,7 +488,7 @@
       FOR R_SQL IN C_SQLByCPU LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
         L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||format_stime(R_SQL.cputime,1000)||'<TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.rowsproc||'</TD><TD ALIGN="right">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.pctparses||'</TD><TD ALIGN="right">'||
                   R_SQL.rowsperexec||'</TD></TD><TD ALIGN="right">';
         print(L_LINE);
         L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
@@ -515,11 +512,13 @@
   PROCEDURE sqlbyela IS
     WARN VARCHAR2(50);
     CURSOR C_SQLByEla IS
-      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,hashval,ela,sql_id,last_active,modul
+      SELECT execs,readsperexec,rowsperexec,cputime,elapsed,hashval,ela,sql_id,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.executions - nvl(b.executions,0)),'999,999,999') execs,
-                  to_char((nvl(e.rows_processed,0) - nvl(b.rows_processed,0)),
-                         '99,999,999,999') rowsproc,
+                  to_char(decode(e.executions - nvl(b.executions,0),
+                             0, '&nbsp;',
+                             (e.disk_reads - nvl(b.disk_reads,0)) / (e.executions - nvl(b.executions,0))),
+                             '999,999,990.0') readsperexec,
                   to_char(decode(nvl(e.rows_processed,0) - nvl(b.rows_processed,0),
                          0, 0,
                          (e.rows_processed - nvl(b.rows_processed,0)) / (e.executions - nvl(b.executions,0))),
@@ -548,10 +547,10 @@
        WHERE rownum <= TOP_N_SQL;
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbyela">Top '||TOP_N_SQL||' SQL ordered by Time Elapsed</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="9" ALIGN="center">End Executions Treshold: '||EET||'</TD></TR>';
+                ' <TR><TD COLSPAN="9" ALIGN="center">Statements may consume much time either waiting for resources or waisting them - check the Reads and CPU to find out which applies.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">Executions</TH>'||
-                '<TH CLASS="th_sub">Rows Processed</TH><TH CLASS="th_sub">Rows per Exec</TH>';
+                '<TH CLASS="th_sub">Reads per Exec</TH><TH CLASS="th_sub">Rows per Exec</TH>';
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">CPU per Exec</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
                 '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
@@ -559,7 +558,7 @@
       FOR R_SQL IN C_SQLByEla LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
         L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.rowsproc||'</TD><TD ALIGN="right">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.readsperexec||'</TD><TD ALIGN="right">'||
                   R_SQL.rowsperexec||'</TD><TD ALIGN="right">'||format_stime(R_SQL.cputime,1000);
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||
@@ -578,7 +577,6 @@
     EXCEPTION
       WHEN OTHERS THEN NULL;
     END;
-
 
 
   -- SQL by Invalidations
@@ -618,7 +616,7 @@
        WHERE rownum <= TOP_N_SQL;
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbyinv">Top '||TOP_N_SQL||' SQL ordered by Invalidations</A>&nbsp;<a href="JavaScript:popup('||CHR(39)||'invalidations'||CHR(39)||')"><img src="help/help.gif" alt="Help" align="top" border="0" height="16"></a></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="9" ALIGN="center">End Executions Treshold: '||EET||'</TD></TR>';
+                ' <TR><TD COLSPAN="9" ALIGN="center">Invalidations usually mean changes on underlying objects.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Invalidations</TH><TH CLASS="th_sub">Executions</TH>'||
                 '<TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">Rows per Exec</TH>';

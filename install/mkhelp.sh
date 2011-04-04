@@ -13,7 +13,7 @@
 
 . ../config
 
-CYEAR="2003-2007"
+CYEAR="2003-2011"
 HCSS=`echo $CSS|sed 's/\.\./\\\.\\\./g'|sed 's/\//\\\\\//g'`
 SEDC="s/{css}/$HCSS/g"
 SED2="s/{copy}/$CYEAR/g"
