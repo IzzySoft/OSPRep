@@ -27,6 +27,16 @@
            <LI>LGWR waits for pending i/o's during database shutdown due to standby database failure</LI>
            <LI>Archive log write waits when detaching rfs process.</LI></UL></TD>
        <TD CLASS="inner">Waits for the requested number of IO completions, or until posted.</TD></TR>
+   <TR><TD CLASS="td_name">buffer busy</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           These are waits for a buffer that is being used in an unsharable way,
+           or is being read into the buffer cache. Buffer busy waits should not
+           exceed 1%.<BR>
+           Check the buffer pool statistics (or consult <CODE>V$WAITSTAT</CODE>)
+           to find out where the wait is - and consult the <A
+           HREF="buffwaits.html">help in that section</A> for possible actions.
+       </TD><TD CLASS="inner">&nbsp;
+       </TD></TR>
    <TR><TD CLASS="td_name">control file parallel write</TD>
        <TD CLASS="inner" STYLE="text-align:justify">This event occurs while the session is writing
            physical blocks to all control files. This happens when:<UL>
@@ -81,11 +91,23 @@
            for a multiblock IO to complete. This typically occurs during full table scans or
            index fast full scans. Oracle reads up to <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE>
            consecutive blocks at a time and scatters them into buffers in the buffer cache.<BR>
-           See also "db file sequential read" for how to minimize this wait. Additionally to the
-           items listed there, the <CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE> should generally
-           be made as large as possible. The value is usually capped by Oracle and so it cannot
-           be set too high. The 'capped' value differs between platforms and versions and
-           usually depends on the settings of <CODE>DB_BLOCK_SIZE</CODE>.</TD>
+           A large number here also often points to missing or supressed indexes (the latter
+           could be intended, as sometimes it is more efficient to use a full table scan
+           than to go by the index).<BR>
+           Possible tuning options here include, but are not restricted to:<UL>
+           <LI>Tune your SQL (yepp, always do this first). Check where some hints
+               could help the Optimizer chosing the better execution plan, for
+               example.</LI>
+           <LI><CODE>DB_FILE_MULTIBLOCK_READ_COUNT</CODE> should generally
+               be made as large as possible (but keep in mind that the larger
+               the value, the more the Optimizer tends to prefer FTS over index
+               scans). The value is usually capped by Oracle and so it cannot be set
+               too high. The 'capped' value differs between platforms and versions
+               and usually depends on the settings of <CODE>DB_BLOCK_SIZE</CODE>.</LI>
+           <LI>Consider caching small tables to avoid reading them over and over
+               again, partition large tables and indexes (if you obtained
+               this option), and/or looking for faster disks.</LI>
+           </UL></TD>
        <TD CLASS="inner">The wait time is the actual time it takes to do all of the I/Os
            (The wait blocks until all blocks in the IO request have been read).</TD></TR>
    <TR><TD CLASS="td_name">db file sequential read</TD>
@@ -101,7 +123,9 @@
            be helpful in this case to determine which segment/s Oracle is performing the reads
            against. This you can find out in the segment stats section of the report.<BR>
            How to minimize this wait event:<UL>
-           <LI>tune the affecting SQL statements (if possible)</LI>
+           <LI>tune the affecting SQL statements (if possible). Pay special
+               attention to index usage (consider hints where necessary) and
+               joins.</LI>
            <LI>A larger buffer cache can help - test this by actually increasing
                <CODE>DB_BLOCK_BUFFERS</CODE> (Oracle 8i) / <CODE>DB_CACHE_SIZE</CODE> (9i+)
                parameter.</LI>
@@ -158,6 +182,60 @@
            asynchronous I/O. It will never wait the entire 10 seconds. The session waits in a tight
            loop until all outstanding I/Os have completed.</TD></TR>
    <TR><TD CLASS="td_name">direct path write</TD></TR>
+   <TR><TD CLASS="td_name">enqueue</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           An <A HREF="enqueue.html">enqueue</A> is a lock protecting a shared
+           resource. For details, please consult the Enqueue Activity segment
+           of this report - and its respective <A HREF="enqwaits.html">help page</A>.
+       </TD><TD CLASS="inner">&nbsp;</TD></TR>
+   <TR><TD CLASS="td_name">free buffer</TD>
+       <TD CLASS="inner">Increase <CODE>DB_CACHE_SIZE</CODE>, shorten checkpoints, tune your SQL</TD>
+       <TD CLASS="inner">&nbsp;</TD></TR>
+   <TR><TD CLASS="td_name">global cache cr request</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           This one is typical for RAC environments and occurs when one instance
+           waits for blocks from another instance's cache (sent via interconnect),
+           as it cannot find a consistent read (CR) version in the local cache.
+           If the requested block is neither found in the remote cache, a "db file
+           sequential read" wait event will follow.<BR>
+           Possible solutions include:<UL>
+           <LI>Tune SQL that causes large amounts of reads getting moved between nodes</LI>
+           <LI>Try putting sessions using the same blocks on the same instance</LI>
+           <LI>Pin long processes from application servers (those who frequently
+               switch between nodes to find the "fastest one" - they are probably
+               unaware of the fact that they move the blocks along)</LI>
+           <LI>increase the size of local cache if slow I/O combined with small cache
+               may be the cause</LI>
+           <LI>monitor <CODE>V$CR_BLOCK_SERVER</CODE> to see whether there is an
+               issue with undo segments</LI>
+           </UL>
+       </TD><TD CLASS="inner">&nbsp;</TD></TR>
+   <TR><TD CLASS="td_name">latch free</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           Latches can be basically explained as "mini-locks in the SGA". Other
+           than locks, they are usually quickly obtained and released, and they
+           do not have a FIFO-style wait list.<BR>
+           Most latch problems are related to the failure to use bind variables
+           (library cache, shared pool), redo generation (redo allocation),
+           buffer cache contention (cache buffers lru chain), and hot blocks in
+           the buffer cache (cache buffers chain). Consider investigation when
+           latch miss ratios reach 0.5% - the Latch Activity section of this
+           report will give you <A HREF="latchfree.html">additional help</A>.
+       </TD><TD CLASS="inner">&nbsp;</TD></TR>
+   <TR><TD CLASS="td_name">log buffer space</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           Every change gets written to the log buffer. If this buffer doesn't
+           make it fast enough into the redo logs, this wait event may be the result.
+           Other causes include committing large amount of data at once.<BR>
+           Hints for possible solutions:<UL>
+           <LI>increasing the log file size</LI>
+           <LI>get faster disks (solid-state disks?) to hold the redo log files</LI>
+           <LI>increasing the log buffer (as a last resort)</LI>
+           <LI>in case of large transactions, check whether it is possible
+               to commit more often (but not too often - or you may get
+               "log file sync" waits instead)</LI>
+           </UL>
+       </TD><TD CLASS="inner">&nbsp;</TD></TR>
    <TR><TD CLASS="td_name">log file parallel write</TD>
        <TD CLASS="inner" STYLE="text-align:justify">Writing redo records to the redo log files
            from the log buffer. The waits occur in log writer (LGWR) as part of normal activity
@@ -189,6 +267,18 @@
            <LI>increase the log file size</LI>
            <LI>increase the number of redo log groups</LI></UL></TD>
        <TD CLASS="inner">Time it takes to complete the physical I/O (read)</TD></TR>
+   <TR><TD CLASS="td_name">log file switch</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           This event means that all commit requests are waiting for a log file
+           switch (either for "archiving needed" or "checkpoint incomplete"), and
+           thus are stalled until a new log file becomes available. Possible actions
+           to solve this issue include:<UL>
+           <LI>ensure the archive disk is neither full nor slow</LI>
+           <LI>check whether the DBWR is slow due to I/O</LI>
+           <LI>you may need to use larger redo logs or additional redo log groups</LI>
+           <LI>you may need to add database writers (if DBWR turns out to be the cause)</LI>
+           </UL>
+       <TD CLASS="inner">&nbsp;</TD></TR>
    <TR><TD CLASS="td_name">log file sync</TD>
        <TD CLASS="inner" STYLE="text-align:justify">When a user session commits, the session's
            redo information needs to be flushed to the redo logfile. The user session will post
@@ -198,7 +288,7 @@
            "log file sync" lso applies to <CODE>ROLLBACK</CODE> in that once the rollback is
            complete the end of the rollback operation requires all changes to complete the
            rollback to be flushed to the redo log.<BR><BR>
-           There are 3 main things you can do to help reduce waits on "log file sync":<UL>
+           There are 4 main things you can do to help reduce waits on "log file sync":<UL>
            <LI>Tune LGWR to get good throughput to disk, eg: Do not put redo logs on RAID 5.</LI>
            <LI>If there are lots of short duration transactions see if it is possible to BATCH
                transactions together so there are fewer distinct <CODE>COMMIT</CODE> operations.
@@ -206,12 +296,14 @@
                commits can be "piggybacked" by Oracle reducing the overall number of commits by
                batching transactions can have a very beneficial effect.</LI>
            <LI>See if any activity can safely be done with <CODE>NOLOGGING</CODE> /
-               <CODE>UNRECOVERABLE</CODE> options.</LI></UL></TD>
-       <TD CLASS="inner">The wait time includes the writing of the log buffer and the post.
+               <CODE>UNRECOVERABLE</CODE> options.</LI>
+           <LI>Check your transaction whether they commit too often (i.e. do
+               not commit every single line, but e.g. groups of 50 - don't
+               overdo it, or you may come up with "log buffer space" waits
+               instead).</LI>
+           </UL>
+       </TD><TD CLASS="inner">The wait time includes the writing of the log buffer and the post.
            The waiter times out and increments the sequence number every second while waiting.</TD></TR>
-   <TR><TD CLASS="td_name"></TD>
-       <TD CLASS="inner" STYLE="text-align:justify"></TD>
-       <TD CLASS="inner"></TD></TR>
   </TABLE>
 </TD></TR></TABLE>
 

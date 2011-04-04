@@ -35,11 +35,11 @@
              to_char(100*((e.misses - b.misses)/(e.gets - b.gets)),'990.00') pctmiss,
              to_char(e.sleeps - b.sleeps,'999,999,999') sleeps,
              to_char(100*((e.sleeps - b.sleeps)/(e.gets - b.gets)),'990.00') pctsleep,
-             to_char(e.spin_gets - b.spin_gets)||'/'||
-             to_char(e.sleep1 - b.sleep1)||'/'||
-             to_char(e.sleep2 - b.sleep2)||'/'||
-             to_char(e.sleep3 - b.sleep3)||'/'||
-             to_char(e.sleep4 - b.sleep4) sleep4
+             NVL(to_char(e.spin_gets - b.spin_gets),'-')||'/'||
+             NVL(to_char(e.sleep1 - b.sleep1),'-')||'/'||
+             NVL(to_char(e.sleep2 - b.sleep2),'-')||'/'||
+             NVL(to_char(e.sleep3 - b.sleep3),'-')||'/'||
+             NVL(to_char(e.sleep4 - b.sleep4),'-') sleep4
         FROM stats$latch b, stats$latch e
        WHERE b.snap_id = BID
          AND e.snap_id = EID

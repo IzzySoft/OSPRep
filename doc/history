@@ -14,6 +14,7 @@ v0.4.4
 + highlighting of keywords in (Top-N) SQL statements on 10g+
   (and hopefully no more "random" spaces within)
 + added "..by Invalidations" to Top-N SQL on 10g+
++ added some more helpful background info (context-help)
 
 v0.4.3 (09.06.2008)
 -------------------

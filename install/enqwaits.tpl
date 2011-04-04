@@ -31,7 +31,8 @@
   <TR><TD CLASS="smallname">FS</TD>
       <TD CLASS="text"><B>File Set</B></TD></TR>
   <TR><TD CLASS="smallname">HW</TD>
-      <TD CLASS="text"><B>High Water Mark</B></TD></TR>
+      <TD CLASS="text"><B>High Water Mark</B> (manually allocating extents can
+          circumvent this wait)</TD></TR>
   <TR><TD CLASS="smallname">IN</TD>
       <TD CLASS="text"><B>Instance Number</B></TD></TR>
   <TR><TD CLASS="smallname">IR</TD>
@@ -47,12 +48,12 @@
   <TR><TD CLASS="smallname">HW</TD>
       <TD CLASS="text"><B>Space Management</B> operations on a specific
           segment. This enqueue is used to serialize the allocation of space
-	  above the high water mark of a segment:<BR>
-	  <CODE>V$SESSION_WAIT.P2 / V$LOCK.ID1</CODE> is the tablespace number<BR>
-	  <CODE>V$SESSION_WAIT.P2 / V$LOCK.ID2</CODE> is the relative dba segment
-	  header of the object for which space is being allocated<BR>
-	  If this is a point of contention for an object, then manual allocation
-	  of extents solves the problem.</TD></TR>
+          above the high water mark of a segment:<BR>
+          <CODE>V$SESSION_WAIT.P2 / V$LOCK.ID1</CODE> is the tablespace number<BR>
+          <CODE>V$SESSION_WAIT.P2 / V$LOCK.ID2</CODE> is the relative dba segment
+          header of the object for which space is being allocated<BR>
+          If this is a point of contention for an object, then manual allocation
+          of extents solves the problem.</TD></TR>
   <TR><TD CLASS="smallname">KK</TD>
       <TD CLASS="text"><B>Redo Log "Kick"</B></TD></TR>
   <TR><TD CLASS="smallname">LA..LP</TD>
@@ -62,7 +63,7 @@
   <TR><TD CLASS="smallname">MD</TD>
       <TD CLASS="text"><B>Materialized Views:</B> enqueue for change data
           capture materialized view log (gotten internally for DDL on a
-	  snapshot log); id1=object# of the snapshot log.</TD></TR>
+          snapshot log); id1=object# of the snapshot log.</TD></TR>
   <TR><TD CLASS="smallname">MM</TD>
       <TD CLASS="text"><B>Mount Definition</B></TD></TR>
   <TR><TD CLASS="smallname">MR</TD>
@@ -96,7 +97,7 @@
   <TR><TD CLASS="smallname">SQ</TD>
       <TD CLASS="text"><B>SeQuences</B> not being cached, having a to small
           cache size or being aged out of the shared pool. Consider pinning
-	  sequences or increasing the shared_pool_size.</TD></TR>
+          sequences or increasing the shared_pool_size.</TD></TR>
   <TR><TD CLASS="smallname">SR</TD>
       <TD CLASS="text"><B>Synchronized Replication</B></TD></TR>
   <TR><TD CLASS="smallname">SS</TD>
@@ -104,21 +105,21 @@
   <TR><TD CLASS="smallname">ST</TD>
       <TD CLASS="text"><B>Space management locks</B> could be caused by using
           permanent tablespaces for sorting (rather than temporary), or by
-	  dynamic allocation resulting from inadequate storage clauses (only
-	  with Dictionary Managed TableSpaces). In the latter case, using
-	  locally-managed tablespaces may help avoiding this problem. If this
-	  is not an option for some reason, you may at least change the next
-	  extent sizes of the growing objects to be large enough to avoid
-	  constant space allocation. To determine which segments are growing
-	  constantly, monitor the <CODE>EXTENTS</CODE> column of the
-	  <CODE>DBA_SEGMENTS</CODE> view for all <CODE>SEGMENT_NAME</CODE>s
-	  over time to identify which segments are growing and how quickly.
-	  Also, you may pre-allocate space in the regarding segment.<BR>
-	  For the first case, the solution is quite obvious: check whether
-	  the temporary tablespace uses <CODE>TEMPFILES</CODE> and whether
-	  the temporary tablespace for the users is set correctly (at least
-	  up to Oracle 8i, if you didn't specify it explicitly it was set
-	  to SYSTEM!).</TD></TR>
+          dynamic allocation resulting from inadequate storage clauses (only
+          with Dictionary Managed TableSpaces). In the latter case, using
+          locally-managed tablespaces may help avoiding this problem. If this
+          is not an option for some reason, you may at least change the next
+          extent sizes of the growing objects to be large enough to avoid
+          constant space allocation. To determine which segments are growing
+          constantly, monitor the <CODE>EXTENTS</CODE> column of the
+          <CODE>DBA_SEGMENTS</CODE> view for all <CODE>SEGMENT_NAME</CODE>s
+          over time to identify which segments are growing and how quickly.
+          Also, you may pre-allocate space in the regarding segment.<BR>
+          For the first case, the solution is quite obvious: check whether
+          the temporary tablespace uses <CODE>TEMPFILES</CODE> and whether
+          the temporary tablespace for the users is set correctly (at least
+          up to Oracle 8i, if you didn't specify it explicitly it was set
+          to SYSTEM!).</TD></TR>
   <TR><TD CLASS="smallname">SV</TD>
       <TD CLASS="text"><B>Sequence Number Value</B></TD></TR>
   <TR><TD CLASS="smallname">TA</TD>
@@ -139,15 +140,19 @@
   <TR><TD CLASS="smallname">TX</TD>
       <TD CLASS="text"><B>Transaction locks</B> indicate multiple users try
           modifying the same row of a table (row-level-lock) or a row that is
-	  covered by the same bitmap index fragment, or a session is waiting
-	  for an ITL (interested transaction list) slot in a block, but one or
-	  more sessions have rows locked in the same block, and there is no
-	  free ITL slot in the block. In the first case, the first user has to
-	  <CODE>COMMIT</CODE> or <CODE>ROLLBACK</CODE> to solve the problem. In
-	  the second case, increasing the number of ITLs available is the
-	  answer - which can be done by changing either the
-	  <A HREF="initrans.html"><CODE>INITRANS</CODE> or <CODE>MAXTRANS</CODE></A>
-	  for the table in question.</TD></TR>
+          covered by the same bitmap index fragment, or a session is waiting
+          for an ITL (interested transaction list) slot in a block, but one or
+          more sessions have rows locked in the same block, and there is no
+          free ITL slot in the block. In the first case, the first user has to
+          <CODE>COMMIT</CODE> or <CODE>ROLLBACK</CODE> to solve the problem. In
+          the second case, increasing the number of ITLs available is the
+          answer - which can be done by changing either the
+          <A HREF="initrans.html"><CODE>INITRANS</CODE> or <CODE>MAXTRANS</CODE></A>
+          for the table in question, or make the block smaller by using smaller
+          block sizes (or increasing pctfree).<BR>
+          Another issue involves duplicates in an unique index; freeing this
+          enqueue requires commit/rollback when multiple users try to modify
+          the same segment.</TD></TR>
   <TR><TD CLASS="smallname">UL</TD>
       <TD CLASS="text"><B>User-defined Locks</B></TD></TR>
   <TR><TD CLASS="smallname">UN</TD>

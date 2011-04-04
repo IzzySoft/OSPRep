@@ -6,13 +6,24 @@
 </HEAD><BODY>
 
 <TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
- <P>If Waits/s are high for a given class, you may consider some tuning: For
-  the undo headers/blocks, adding more rollback segments can help. With data
-  blocks, increasing the size of the database buffer cache can reduce these
-  waits. Segment header waits generally point to the need to add freelists to
-  the affected table. Freelist block waits indicate that the affected segment
-  needs a higher number of freelists - for the Oracle Parallel Server, make
-  sure each instance has its own freelist groups.</P>
+ <P>If Waits/s are high for a given class, you may consider some tuning:</P><UL>
+ <LI><B>Segment Header:</B> increase freelists / freelist groups, increase the
+     pctfree-to-pctused gap. Consider ASSM to let Oracle take care for this
+     automatically. For the Oracle Parallel Server, make sure each instance
+     has its own freelist groups.</LI>
+ <LI><B>Undo Header:</B> add rollback segments or increase the undo area.</LI>
+ <LI><B>Undo Block:</B> Commit more often (but not too often, or you simply convert
+     this wait into "log file sync" waits). Use larger rollback segments or
+     undo areas. Increase <CODE>DB_CACHE_SIZE</CODE>.
+ <LI><B>Data Block:</B> Reduce the number of rows per block (e.g. use smaller
+     blocks, adjust pctused/pctfree) to make blocks "less hot". Use partitioning
+     (for large tables and indexes) to avoid unnecessary scans. Increase
+     <CODE><A HREF="initrans.html">INITRANS</A></CODE> (but not too much) for
+     the hot block(s) to allow for multiple ITL slots. Increasing the size of
+     the database buffer cache can reduce these waits as well.</LI>
+ <LI><B>Index Block:</B> Reduce the number of rows per block (see above).
+     Consider reverse-key indexes. Rebuild indexes. Increase <CODE>INITTRANS</CODE>
+     (see above). Check for unselective indexes (bad code / bad indexes).</LI>
 </TD></TR></TABLE>
 
 <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
