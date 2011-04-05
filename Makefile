@@ -17,6 +17,7 @@ install: installdirs
 
 installdirs:
 	mkdir -p $(BINDIR)
+	if [ ! -e $(WEBROOT) ]; then mkdir -p $(WEBROOT); fi
 
 uninstall:
 	linkstat=`readlink $(LINKTO)`
