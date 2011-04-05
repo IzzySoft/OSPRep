@@ -19,7 +19,9 @@
      blocks, adjust pctused/pctfree) to make blocks "less hot". Use partitioning
      (for large tables and indexes) to avoid unnecessary scans. Increase
      <CODE><A HREF="initrans.html">INITRANS</A></CODE> (but not too much) for
-     the hot block(s) to allow for multiple ITL slots. Increasing the size of
+     the hot block(s) to allow for multiple ITL slots, consider using ASSM
+     (Automatic Segment Space Management) if it is not already active (introduced
+     with 9i, default for new tablespaces since 10g). Increasing the size of
      the database buffer cache can reduce these waits as well.</LI>
  <LI><B>Index Block:</B> Reduce the number of rows per block (see above).
      Consider reverse-key indexes. Rebuild indexes. Increase <CODE>INITTRANS</CODE>

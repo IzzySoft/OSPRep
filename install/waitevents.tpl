@@ -191,25 +191,6 @@
    <TR><TD CLASS="td_name">free buffer</TD>
        <TD CLASS="inner">Increase <CODE>DB_CACHE_SIZE</CODE>, shorten checkpoints, tune your SQL</TD>
        <TD CLASS="inner">&nbsp;</TD></TR>
-   <TR><TD CLASS="td_name">global cache cr request</TD>
-       <TD CLASS="inner" STYLE="text-align:justify">
-           This one is typical for RAC environments and occurs when one instance
-           waits for blocks from another instance's cache (sent via interconnect),
-           as it cannot find a consistent read (CR) version in the local cache.
-           If the requested block is neither found in the remote cache, a "db file
-           sequential read" wait event will follow.<BR>
-           Possible solutions include:<UL>
-           <LI>Tune SQL that causes large amounts of reads getting moved between nodes</LI>
-           <LI>Try putting sessions using the same blocks on the same instance</LI>
-           <LI>Pin long processes from application servers (those who frequently
-               switch between nodes to find the "fastest one" - they are probably
-               unaware of the fact that they move the blocks along)</LI>
-           <LI>increase the size of local cache if slow I/O combined with small cache
-               may be the cause</LI>
-           <LI>monitor <CODE>V$CR_BLOCK_SERVER</CODE> to see whether there is an
-               issue with undo segments</LI>
-           </UL>
-       </TD><TD CLASS="inner">&nbsp;</TD></TR>
    <TR><TD CLASS="td_name">latch free</TD>
        <TD CLASS="inner" STYLE="text-align:justify">
            Latches can be basically explained as "mini-locks in the SGA". Other
@@ -304,6 +285,37 @@
            </UL>
        </TD><TD CLASS="inner">The wait time includes the writing of the log buffer and the post.
            The waiter times out and increments the sequence number every second while waiting.</TD></TR>
+
+   <TR><TD CLASS="td_name" COLSPAN="3" ALIGN="center">RAC specific</TD></TR>
+   <TR><TD CLASS="td_name">global cache cr request</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           This one is typical for RAC environments and occurs when one instance
+           waits for blocks from another instance's cache (sent via interconnect),
+           as it cannot find a consistent read (CR) version in the local cache.
+           If the requested block is neither found in the remote cache, a "db file
+           sequential read" wait event will follow.<BR>
+           Possible solutions include:<UL>
+           <LI>Tune SQL that causes large amounts of reads getting moved between nodes</LI>
+           <LI>Try putting sessions using the same blocks on the same instance</LI>
+           <LI>Pin long processes from application servers (those who frequently
+               switch between nodes to find the "fastest one" - they are probably
+               unaware of the fact that they move the blocks along)</LI>
+           <LI>increase the size of local cache if slow I/O combined with small cache
+               may be the cause</LI>
+           <LI>monitor <CODE>V$CR_BLOCK_SERVER</CODE> to see whether there is an
+               issue with undo segments</LI>
+           </UL>
+       </TD><TD CLASS="inner">&nbsp;</TD></TR>
+   <TR><TD CLASS="td_name">gc buffer busy</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           Session has to wait for an ongoing operation on the resource to
+           complete because the block is in use (i.e. another process has it).
+       </TD><TD CLASS="inner">&nbsp;</TD></TR>
+   <TR><TD CLASS="td_name">gc current block busy</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           An instance requested a "CURR" data block to do some DML upon, but
+           the block to be transferred is in use.
+       </TD><TD CLASS="inner">&nbsp;</TD></TR>
   </TABLE>
 </TD></TR></TABLE>
 

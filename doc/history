@@ -3,7 +3,7 @@ $Id$
 History for OSPRep
 ==================
 
-v0.4.4
+v0.4.4 (05.04.2011)
 -------------------
 * center the graph (*_chart.html)
 + support for 11gR2 (untested)
