@@ -3,6 +3,10 @@ $Id$
 History for OSPRep
 ==================
 
+v0.4.5
+-------------------
+! TopSQL was broken for Oracle < 10
+
 v0.4.4 (05.04.2011)
 -------------------
 * center the graph (*_chart.html)

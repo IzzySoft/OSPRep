@@ -519,7 +519,7 @@
       print(L_LINE);
       L_LINE := '<TH CLASS="th_sub">CPU per Exec</TH><TH CLASS="th_sub">Hash Value</TH></TR>';
       print(L_LINE);
-      FOR R_SQL IN C_SQLByExec LOOP
+      FOR R_SQL IN C_SQLByEla LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
         L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
                   R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.rowsproc||
@@ -540,3 +540,8 @@
       WHEN OTHERS THEN NULL;
     END;
 
+  -- SQL by Invalidations (Dummy for compatibility)
+  PROCEDURE sqlbyinv IS
+    BEGIN
+      NULL;
+    END;
