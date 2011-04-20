@@ -117,6 +117,10 @@
            This call differs from "db file scattered read" in that a sequential read reads data
            into contiguous memory (whilst a scattered read reads multiple blocks and scatters
            them into different buffers in the SGA).<BR>
+           A large number of waits here could indicate poor joining orders of tables, or unselective
+           indexing. It is normal for this number to be large for a high-transaction, well-tuned
+           system, but it can indicate problems in some circumstances. You should correlate this wait
+           statistic with other known issues within the Statspack report, such as inefficient SQL.<BR>
            If this value is significantly high, see the "Tablespace IO" and "File IO" sections of
            the report to get information on which tablespaces / files are servicing the most IO
            requests, and to get an indication of the speed of the IO subsystem. Furthermore it can
@@ -126,13 +130,19 @@
            <LI>tune the affecting SQL statements (if possible). Pay special
                attention to index usage (consider hints where necessary) and
                joins.</LI>
+           <LI>check join orders for multiple table joins.</LI>
+           <LI>Problematic hash-area joins should show up in the PGA memory, but they're also
+               memory hogs that could cause high wait numbers for sequential reads.
+               They can also show up as direct path read/write waits.</LI>
            <LI>A larger buffer cache can help - test this by actually increasing
                <CODE>DB_BLOCK_BUFFERS</CODE> (Oracle 8i) / <CODE>DB_CACHE_SIZE</CODE> (9i+)
                parameter.</LI>
            <LI>See if partitioning can be used to reduce the amount of data you need to look at.</LI>
            <LI>It can help to place files which incur frequent index scans on disks which have
                are buffered by an O/S file system cache. Often this will allow some of Oracles read
-               requests to be satisfied from the OS cache rather than from a real disk IO.</LI></UL></TD>
+               requests to be satisfied from the OS cache rather than from a real disk IO.</LI>
+           <LI>check to ensure that index scans are necessary</LI>
+           </UL></TD>
        <TD CLASS="inner">The wait time is the actual time it takes to do the I/O.
            The wait blocks until the IO request completes.</TD></TR>
    <TR><TD CLASS="td_name">direct path read</TD>
@@ -189,7 +199,18 @@
            of this report - and its respective <A HREF="enqwaits.html">help page</A>.
        </TD><TD CLASS="inner">&nbsp;</TD></TR>
    <TR><TD CLASS="td_name">free buffer</TD>
-       <TD CLASS="inner">Increase <CODE>DB_CACHE_SIZE</CODE>, shorten checkpoints, tune your SQL</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           This indicates your system is waiting for a buffer in memory, because none is currently
+           available. Waits in this category may indicate that you need to increase the
+           <code>DB_CACHE_SIZE</code> / <code>DB_BUFFER_CACHE</code>, if all your SQL is tuned. Free
+           buffer waits could also indicate that unselective SQL is causing data to flood the buffer
+           cache with index blocks, leaving none for this particular statement that is waiting for the
+           system to process. This normally indicates that there is a substantial amount of DML
+           (insert/update/delete) being done and that the Database Writer (DBWR) is not writing
+           quickly enough; the buffer cache could be full of multiple versions of the same buffer,
+           causing great inefficiency. To address this, you may want to consider accelerating
+           incremental checkpointing, using more DBWR processes, or increasing the number of physical
+           disks.</TD>
        <TD CLASS="inner">&nbsp;</TD></TR>
    <TR><TD CLASS="td_name">latch free</TD>
        <TD CLASS="inner" STYLE="text-align:justify">
@@ -266,7 +287,7 @@
            the LGWR to write the log buffer to the redo log file. When the LGWR has finished
            writing, it will post the user session. The user session waits on this wait event
            while waiting for LGWR to post it back to confirm all redo changes are safely on disk.<BR>
-           "log file sync" lso applies to <CODE>ROLLBACK</CODE> in that once the rollback is
+           "log file sync" also applies to <CODE>ROLLBACK</CODE> in that once the rollback is
            complete the end of the rollback operation requires all changes to complete the
            rollback to be flushed to the redo log.<BR><BR>
            There are 4 main things you can do to help reduce waits on "log file sync":<UL>

@@ -6,6 +6,19 @@
 </HEAD><BODY>
 
 <TABLE WIDTH="95%" ALIGN="center"><TR><TD CLASS="text">
+ <H3>OLTP System</H3>
+ <P>The Soft Parse % value is one of the most important ratio in the database. For a typical OLTP
+  system, it should be as near to 100% as possible. You quite simply do not hard parse after the
+  database has been up for a while in your typical transactional / general-purpose database. The
+  way you achieve that is with bind variables. In a regular system like this, we are doing many
+  executions per second, and hard parsing is something to be avoided.</P>
+ <H3>Data Warehouse</H3>
+ <P>In a data warehouse, we would like to generally see the Soft Parse ratio lower. We don't
+  necessarily want to use bind variables in a data warehouse. This is because they typically use
+  materialized views, histograms, and other things that are easily thwarted by bind variables. In
+  a data warehouse, we may have many seconds between executions, so hard parsing is not evil; in
+  fact, it is good in those environments.</P>
+ <H3>General</H3>
  <P>A soft parse occurs when a session attempts to execute a SQL statement and
   a usable version of the statement is already in the shared pool, so the
   statement can be executed immediately. The hard parse is the opposite and an
@@ -21,15 +34,15 @@
    <TR><TD CLASS="td_name">similiar</TD>
        <TD CLASS="inner" STYLE="text-align:justify">Statements that may differ in some literals but are
            otherwise identical are caused to share a cursor, unless the
-	   literals affect either the meaning of the statement or the degree to
-	   which the plan is optimized (I recommend this for e.g. a low soft
-	   parse ratio or high library cache getmiss ratio).</TD></TR>
+       literals affect either the meaning of the statement or the degree to
+       which the plan is optimized (I recommend this for e.g. a low soft
+       parse ratio or high library cache getmiss ratio).</TD></TR>
    <TR><TD CLASS="td_name">force</TD>
        <TD CLASS="inner" STYLE="text-align:justify">Even statements that may differ in some literals but
            are otherwise identical are forced to share a cursor, unless the
-	   literals affect the meaning of the statement (since this also means
-	   the optimizer cannot predict precise selectivity you should think
-	   twice before using this)</TD></TR>
+       literals affect the meaning of the statement (since this also means
+       the optimizer cannot predict precise selectivity you should think
+       twice before using this)</TD></TR>
   </TABLE>
  <P>Since this parameter is dynamic, you may use <CODE>ALTER SYSTEM</CODE> to
   change its value without restarting the instance.</P>
