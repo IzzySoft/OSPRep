@@ -6,6 +6,7 @@ History for OSPRep
 v0.4.5
 -------------------
 ! TopSQL was broken for Oracle < 10
++ added Module-Column to Top-N SQL for Oracle 9i and 8i(?)
 
 v0.4.4 (05.04.2011)
 -------------------
