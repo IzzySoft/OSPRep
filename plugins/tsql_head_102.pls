@@ -387,10 +387,12 @@
   -- SQL by Parse
   PROCEDURE sqlbyparse IS
     CURSOR C_SQLByParse IS
-      SELECT parses,execs,pctparses,hashval,sql_id,last_active,modul
+      SELECT parses,execs,CASE parsenum WHEN 0 THEN '&nbsp;' ELSE to_char(execnum/parsenum,'999,990.0') END execsperparse,pctparses,hashval,sql_id,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.parse_calls - nvl(b.parse_calls,0)),'999,999,990') parses,
                   to_char((e.executions - nvl(b.executions,0)),'999,999,990') execs,
+				  NVL(e.executions,0) - NVL(b.executions,0) execnum,
+				  NVL(e.parse_calls,0) - NVL(b.parse_calls,0) parsenum,
                   to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/PRSE, '990.00') pctparses,
                   NVL ( e.hash_value,0 ) hashval,
                   NVL ( e.sql_id,0 ) sql_id,
@@ -411,24 +413,24 @@
        WHERE rownum <= TOP_N_SQL;
     BEGIN
       get_parsecpupct(S1);
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="7"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="7" ALIGN="center">End Parse Calls Treshold: '||EPC||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="8" ALIGN="center">End Parse Calls Treshold: '||EPC||
                 '<BR>Consider tuning these ';
       print(L_LINE);
       L_LINE := 'statements/objects, if the percentage of CPU used for parsing is high. '||
-                'Currently, parsing takes avg. '||S1||' of all CPU usage by all sessions.</TD></TR>';
+                'Currently, parsing takes avg. '||S1||'% of all CPU usage by all sessions.</TD></TR>';
       print(L_LINE);
-      L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
+      L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Exec / Parse</TH>'||
                 '<TH CLASS="th_sub">Total Parses</TH><TH CLASS="th_sub">SQL ID</TH><TH CLASS="th_sub">Hash Value</TH>'||
                 '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByParse LOOP
         L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.parses||'</TD><TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
+                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.execsperparse||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
                   '%</TD><TD ALIGN="right">'||R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval;
         print(L_LINE);
         L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
-                  '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="6" CLASS="icode">';
+                  '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="7" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
@@ -646,4 +648,3 @@
     EXCEPTION
       WHEN OTHERS THEN NULL;
     END;
-

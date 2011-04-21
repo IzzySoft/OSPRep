@@ -150,7 +150,7 @@
                   (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
                   NVL((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL(e.module,'&nbsp;') modul
+				  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -227,7 +227,7 @@
               (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
               NVL((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
               NVL ( e.hash_value,0 ) hashval,
-              NVL(e.module,'&nbsp;') modul
+			  NVL(e.module,'&nbsp;') modul
           FROM stats$sql_summary e, stats$sql_summary b
          WHERE b.snap_id(+)  = BID
            AND b.dbid(+)     = e.dbid
@@ -300,7 +300,7 @@
                   (e.elapsed_time - nvl(b.elapsed_time,0)) /
                      (e.executions - nvl(b.executions,0)) / 1000 elapsed,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL(e.module,'&nbsp;') modul
+				  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -354,14 +354,16 @@
   -- SQL by Parse
   PROCEDURE sqlbyparse IS
     CURSOR C_SQLByParse IS
-      SELECT parses,execs,pctparses,hashval,modul
+      SELECT parses,execs,CASE parsenum WHEN 0 THEN '&nbsp;' ELSE to_char(execnum/parsenum,'999,990.0') END execsperparse,pctparses,hashval,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.parse_calls - nvl(b.parse_calls,0)),'999,999,990') parses,
                   to_char((e.executions - nvl(b.executions,0)),'999,999,990') execs,
+				  nvl(e.executions,0) - nvl(b.executions,0) execnum,
+				  nvl(e.parse_calls,0) - nvl(b.parse_calls,0) parsenum,
                   to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/PRSE,
                          '990.00') pctparses,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL(e.module,'&nbsp;') modul
+				  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -378,19 +380,19 @@
        WHERE rownum <= TOP_N_SQL;
     BEGIN
       get_parsecpupct(S1);
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="5" ALIGN="center">End Parse Calls Treshold: '||EPC||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="6"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="6" ALIGN="center">End Parse Calls Treshold: '||EPC||
                 '<BR>Consider tuning these ';
       print(L_LINE);
       L_LINE := 'statements/objects, if the percentage of CPU used for parsing is high. '||
-                'Currently, parsing takes avg. '||S1||'% of all CPU usage by all sessions.</TD></TR>';
+                'Currently, parsing takes avg. '||S1||' of all CPU usage by all sessions.</TD></TR>';
       print(L_LINE);
-      L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH>'||
+      L_LINE := ' <TR><TH CLASS="th_sub">Parse Calls</TH><TH CLASS="th_sub">Executions</TH><TH CLASS="th_sub">Exec / Parse</TH>'||
                 '<TH CLASS="th_sub">Total Parses</TH><TH CLASS="th_sub">Hash Value</TH><TH CLASS="th_sub">Module</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByParse LOOP
         L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.parses||'</TD><TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
+                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.execsperparse||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
                   '%</TD><TD ALIGN="right">'||R_SQL.hashval||
                   '</TD><TD>'||R_SQL.modul||'</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="7">';
         print(L_LINE);
@@ -402,7 +404,9 @@
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN
+        print(TABLE_CLOSE||'<HR>');
+		print(SQLERRM);
     END;
 
 
@@ -425,7 +429,7 @@
                   (e.elapsed_time - nvl(b.elapsed_time,0)) /
                      (e.executions - nvl(b.executions,0)) / 1000 elapsed,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL(e.module,'&nbsp;') modul
+				  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -492,7 +496,7 @@
                   (e.elapsed_time - nvl(b.elapsed_time,0)) /
                      (e.executions - nvl(b.executions,0)) / 1000 elapsed,
                   NVL ( e.hash_value,0 ) hashval,
-                  NVL(e.module,'&nbsp;') modul
+				  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -539,8 +543,8 @@
       WHEN OTHERS THEN NULL;
     END;
 
-  -- SQL by Invalidations (Dummy for compatibility)
+  -- SQL by Invalidations (dummy for compatibility)
   PROCEDURE sqlbyinv IS
     BEGIN
-      NULL;
-    END;
+	  NULL;
+	END;

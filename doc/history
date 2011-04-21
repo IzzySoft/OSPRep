@@ -8,6 +8,7 @@ v0.4.5
 ! TopSQL was broken for Oracle < 10
 + added Module-Column to Top-N SQL for Oracle 9i and 8i(?)
 * some more help-file updates
++ added column for "execs per parse" to top-N SQL by parse table
 
 v0.4.4 (05.04.2011)
 -------------------
