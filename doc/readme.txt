@@ -95,7 +95,39 @@ by ?/rdbms/admin/spauto.sql - but also catering the extensions).
 To verify whether it ran successfully, you may check the logfiles it created
 (one is created by spcreate.sh, and some more by the called Oracle scripts).
 
-4b) OSPRep itself
+4b) AWR Compatibility Layer
+°°°°°°°°°°°°°°°°°°°°°°°°°°°
+
+Starting with OSPRep v0.4.5, a basic "compatibility layer" to the AWR (Auto
+Workload Repository) of Oracle 10g was added. So if you are running Oracle 10g,
+and do not want to install StatsPack in addition to the already included AWR,
+this may be an option for you.
+
+There are still some restrictions and limitations (see the introductional
+comments in install/database/awr_setup.sql), but many things are already covered.
+
+In order to be able to generate OSPRep reports based on AWR data, you first
+need to establish the compatibility layer. That is, in general, emulating
+the StatsPack tables by creating corresponding views, plus the minimal PL/SQL
+stuff. For this, you need to complete the following steps:
+
+1. Create a new database user with at least the same privileges as PERFSTAT
+   usually gets. Of course you may also use an existing one matching these
+   conditions, but take care NOT to have ANY StatsPack objects installed with
+   this user (especially not running spcreate.sql and the like), for those are
+   conflicting with the compatibility layer.
+2. Change to the install/database directory of the extracted OSPRep sources
+3. Use SQL*Plus to connect to the user created in step 1, and execute the script
+   @awr_setup.sql -- you should see the progress of creating the layer, but no
+   error messages.
+4. Remember to configure OSPRep (in the config file, or later using command
+   line options) to connect to this user
+5. While in the configuration (the "config" file), check the settings against
+   the "problematic ones" mentioned in awr_setup.sql as e.g. "not yet working",
+   and make sure to disable them. Otherwise, report generation will most
+   likely fail.
+
+4c) OSPRep itself
 °°°°°°°°°°°°°°°°°
 
 1. Create the directory where the report files (*.html) should be placed in.
@@ -128,7 +160,7 @@ to report on as only parameter - provided, your Oracle environment is set up
 correctly. For the optional parameters -b (BEGIN_SNAP_ID) and -e (END_SNAP_ID),
 see the config file on START_ID and END_ID.
 
-4c) AddOns
+4d) AddOns
 °°°°°°°°°°
 
 Starting with v0.4.x, the AddOns are already converted from "anonymous blocks"
