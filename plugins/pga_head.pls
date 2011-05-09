@@ -40,7 +40,6 @@
          AND p.dbid    = DB_ID
          AND p.instance_number = INST_NUM
          AND p.name    = 'pga_aggregate_target'
-         AND p.value  != 0
       UNION SELECT 'E' snap,
              to_number(p.value) pgaat,
              mu.PGA_inuse       tot_pga_used,
@@ -78,8 +77,7 @@
        WHERE p.snap_id = EID
          AND p.dbid    = DB_ID
          AND p.instance_number = INST_NUM
-         AND p.name    = 'pga_aggregate_target'
-         AND p.value  != 0;
+         AND p.name    = 'pga_aggregate_target';
     BEGIN
       L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9">PGA Aggreg Target Memory Statistics</TH></TR>'||
                 ' <TR><TD COLSPAN="9" ALIGN="center">B: Begin SnapShot, E: End SnapShot</TD></TR>';
@@ -109,7 +107,8 @@
       END LOOP;
       print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN
+        print(TABLE_CLOSE);
     END;
 
   PROCEDURE pgam IS
@@ -170,5 +169,6 @@
       END LOOP;
       print(TABLE_CLOSE);
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN
+        print(TABLE_CLOSE);
     END;

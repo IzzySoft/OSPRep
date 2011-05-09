@@ -14,9 +14,8 @@
 -- AWR support is far from being complete. There are still several open issues:
 -- * Top-N-SQL Statements don't work. Here the table structure in AWR is
 --   that much different from StatsPack, I couldn't yet figure out how to
---   create the layer (see below, look out for stats$sql_plan_usage)
--- * common datafile stats (MK_DFSTAT) are not yet implemented
--- * somehow the PGA Aggregate table (MK_PGAA) remains empty
+--   create the layer (see below, look out for stats$sql_plan_usage).
+--   It won't crash if enabled, but you will get no data for now.
 -- * the enqueue stats (MK_ENQ) list multiple rows for the same enq with
 --   different values. Not for all, but for some. This needs further investigation.
 -- If you have any ideas concerning these points, you are very welcome!
@@ -185,12 +184,38 @@ CREATE OR REPLACE VIEW stats$sql_plan AS
          p.projection, p.time, p.qblock_name, p.remarks, p.snap_id
     FROM sys.wrh$_sql_plan p;
 
---PROMPT - stats$sql_plan_usage
+-- For now just a dummy
+PROMPT ... stats$sql_plan_usage (dummy)
 --CREATE OR REPLACE VIEW stats$sql_plan_usage AS
 --  SELECT ?.snap_id, ?.dbid, ?.instance_number, pt.sql_id old_hash_value, NULL text_subset,
 --         pt.plan_hash_value, pt.sql_id hash_value, pt.sql_id, ?.cost, ?.address, ?.optimizer,
 --         pt.last_load_time last_active_time
 --    FROM sys.wri$_sqlset_plans_tocap pt;
+CREATE OR REPLACE VIEW stats$sql_plan_usage AS
+  SELECT NULL snap_id, NULL dbid, NULL instance_number, NULL old_hash_value, NULL text_subset,
+         NULL plan_hash_value, NULL hash_value, NULL sql_id, NULL cost, NULL address,
+         NULL optimizer, NULL last_active_time
+    FROM DUAL
+   WHERE 0=1;
+
+-- Again a dummy -- until something suitable can be found
+PROMPT ... stats$sql_summary (dummy)
+--CREATE OR REPLACE VIEW stats$sql_summary AS
+--  SELECT s.snap_id, s.dbid, s.instance_number
+--    FROM dba_hist_sql_summary s;
+CREATE OR REPLACE VIEW stats$sql_summary AS
+  SELECT NULL snap_id, NULL dbid, NULL instance_number, NULL text_subset, NULL sql_text, NULL sql_id,
+         NULL sharable_mem, NULL sorts, NULL module, NULL loaded_versions, NULL fetches,
+         NULL executions, NULL px_server_executions, NULL end_of_fetch_count, NULL loads,
+         NULL invalidations, NULL parse_calls, NULL disk_reads, NULL direct_writes, NULL buffer_gets,
+         NULL application_wait_time, NULL concurrency_wait_time, NULL cluster_wait_time,
+         NULL user_io_wait_time, NULL plsql_exec_time, NULL java_exec_time, NULL rows_processed,
+         NULL command_type, NULL address, NULL hash_value, NULL old_hash_value, NULL version_count,
+         NULL cpu_time, NULL elapsed_time, NULL outline_sid, NULL outline_category,
+         NULL child_latch, NULL sql_profile, NULL program_id, NULL program_line#,
+         NULL exact_matching_signature, NULL force__matching_signature, NULL last_active_time
+    FROM DUAL
+   WHERE 0=1;
 
 -- TSIO and FIO: TableSpace and File Stats
 PROMPT - TableSpace and File Stats
@@ -279,6 +304,14 @@ CREATE OR REPLACE VIEW stats$undostat AS
          u.unxpblkrelcnt, u.unxpblkreucnt, u.expstealcnt, u.expblkrelcnt, u.expblkreucnt,
          u.ssolderrcnt, u.nospaceerrcnt, u.activeblks, u.unexpiredblks, u.expiredblks, u.tuned_undoretention
     FROM dba_hist_undostat u;
+
+PROMPT ... stats$rollstat (dummy)
+CREATE OR REPLACE VIEW stats$rollstat AS
+  SELECT NULL snap_id, NULL dbid, NULL instance_number, NULL usn, NULL extents, NULL rssize,
+         NULL writes, NULL xacts, NULL gets, NULL waits, NULL optsize, NULL hwmsize,
+         NULL shrinks, NULL wraps, NULL extends, NULL aveshrink, NULL aveactive
+    FROM DUAL
+   WHERE 0=1;
 
 -- Latch Misses Summary
 PROMPT - Latch Misses Summary

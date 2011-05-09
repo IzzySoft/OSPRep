@@ -13,6 +13,10 @@ v0.4.5
   Still not complete, and has some minor issues. See
   install/database/awr_setup.sql for details -- which is also needed
   to be run before you can access AWR data with OSPRep.
++ added a few "dummies" to the AWR layer for stats not available
+  with AWR (e.g. rollback stats), so scripts don't choke on those
+  but simply get "empty result sets"
+! PGAA still chocked with AWR. Fixed up the statement in the "plugin"
 
 v0.4.4 (05.04.2011)
 -------------------
