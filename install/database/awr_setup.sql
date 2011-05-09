@@ -16,8 +16,6 @@
 --   that much different from StatsPack, I couldn't yet figure out how to
 --   create the layer (see below, look out for stats$sql_plan_usage).
 --   It won't crash if enabled, but you will get no data for now.
--- * the enqueue stats (MK_ENQ) list multiple rows for the same enq with
---   different values. Not for all, but for some. This needs further investigation.
 -- If you have any ideas concerning these points, you are very welcome!
 -- ---------------------------------------------------------------------------
 

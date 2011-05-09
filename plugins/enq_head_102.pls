@@ -36,7 +36,8 @@
                      (  (e.cum_wait_time - nvl(b.cum_wait_time,0))
                         / (e.total_wait# - nvl(b.total_wait#,0))
                      ) ) awttm,
-             (e.cum_wait_time - nvl(b.cum_wait_time,0)) wttm
+             (e.cum_wait_time - nvl(b.cum_wait_time,0)) wttm,
+             e.req_reason reason
         FROM stats$enqueue_statistics b, stats$enqueue_statistics e
        WHERE b.snap_id(+) = BID
          AND e.snap_id    = EID
@@ -47,17 +48,18 @@
          AND e.instance_number    = INST_NUM
          AND b.instance_number(+) = e.instance_number
          AND b.eq_type(+) = e.eq_type
+         AND b.req_reason(+) = e.req_reason
          AND e.total_wait# - nvl(b.total_wait#,0) <> 0
        ORDER BY waits desc, reqs desc;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="enq">Enqueue Activity</A>'||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="enq">Enqueue Activity</A>'||
                 '&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'enqwaits'||CHR(39)||
                 ')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>';
       print(L_LINE);
-      L_LINE:=  ' <TR><TD COLSPAN="8" ALIGN="center">Enqueue Stats gathered prior to 9i '||
+      L_LINE:=  ' <TR><TD COLSPAN="9" ALIGN="center">Enqueue Stats gathered prior to 9i '||
                 'should not be compared with 9i data<BR>Ordered by Waits desc, Requests desc';
       print(L_LINE);
-      L_LINE := ' <TR><TH CLASS="th_sub">Eq</TH><TH CLASS="th_sub">Requests</TH>'||
+      L_LINE := ' <TR><TH CLASS="th_sub">Eq</TH><TH CLASS="th_sub">Reason</TH><TH CLASS="th_sub">Requests</TH>'||
                 '<TH CLASS="th_sub">Succ Gets</TH><TH CLASS="th_sub">Failed Gets</TH>'||
                 '<TH CLASS="th_sub">PctFail</TH>';
       print(L_LINE);
@@ -65,8 +67,8 @@
                 '</TH><TH CLASS="th_sub">Wait Time</TH></TR>';
       print(L_LINE);
       FOR R_Enq IN C_Enq LOOP
-        L_LINE := ' <TR><TD CLASS="td_name">'||R_Enq.name||'</TD><TD ALIGN="right">'||
-                  R_Enq.reqs||'</TD><TD ALIGN="right">'||R_Enq.sreq||
+        L_LINE := ' <TR><TD CLASS="td_name">'||R_Enq.name||'</TD><TD>'||R_Enq.reason||
+                  '</TD><TD ALIGN="right">'||R_Enq.reqs||'</TD><TD ALIGN="right">'||R_Enq.sreq||
                   '</TD><TD ALIGN="right">'||R_Enq.freq||'</TD>';
         print(L_LINE);
         L_LINE := '<TD ALIGN="right">'||R_Enq.pctfail||'</TD><TD ALIGN="right">'||

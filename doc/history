@@ -17,6 +17,7 @@ v0.4.5
   with AWR (e.g. rollback stats), so scripts don't choke on those
   but simply get "empty result sets"
 ! PGAA still chocked with AWR. Fixed up the statement in the "plugin"
+* enqueue stats have an additional column in 10g which we did not consider
 
 v0.4.4 (05.04.2011)
 -------------------
