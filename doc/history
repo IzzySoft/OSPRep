@@ -18,6 +18,7 @@ v0.4.5
   but simply get "empty result sets"
 ! PGAA still chocked with AWR. Fixed up the statement in the "plugin"
 * enqueue stats have an additional column in 10g which we did not consider
+* catch connection error (wrong credentials or wrong db or TNS not found)
 
 v0.4.4 (05.04.2011)
 -------------------

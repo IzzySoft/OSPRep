@@ -104,7 +104,10 @@ DFDUMMY=$TMPDIR/osprep_dfdummy_$ORACLE_SID.$$
 SQLPLUSRELEASE=`echo "prompt &_SQLPLUS_RELEASE" | $ORACLE_HOME/bin/sqlplus -s $user/$password@$ORACLE_CONNECT`
 
 # Serveroutput: 10g+ supports unlimited
-if [ ${SQLPLUSRELEASE:0:2} -lt 20 ]; then
+if [ "${SQLPLUSRELEASE:0:13}" = "where <logon>" ]; then
+  echo "Could not connect to the specified database. Please check your login data!"
+  exit 1
+elif [ ${SQLPLUSRELEASE:0:2} -lt 20 ]; then
   SERVOUT="Size Unlimited"
 else
   SERVOUT="Size 1000000"
