@@ -15,6 +15,7 @@
   <a href="tech.html#require">Requirements</a> section of this documentation are
   met. Especially: an Oracle Database Server up and running.
  </td></tr>
+ <tr><th class="th_sub"><a name="fullinst"></a>Installing OSPRep and Oracle StatsPack by script</th></tr>
  <tr><td class="text">
   If you have not yet installed the StatsPack (as delivered by Oracle) into
   your database - no problem: We make this easy for you providing a script
@@ -63,6 +64,44 @@
    <li>Wait Statistics: <code>get_waitevents</code></li>
   </ol>
  </td></tr>
+ <tr><th class="th_sub"><a name="awr"></a>Using the AWR compatibility layer</th></tr>
+ <tr><td class="text">
+    Starting with OSPRep v0.4.5, a basic "compatibility layer" to the AWR (Auto
+    Workload Repository) of Oracle 10g was added. So if you are running Oracle 10g,
+    and do not want to install StatsPack in addition to the already included AWR,
+    this may be an option for you.
+ </td></tr>
+ <tr><td class="text">
+    There are still some restrictions and limitations (see the introductional
+    comments in <code>install/database/awr_setup.sql</code>), but many things are
+    already covered.
+ </td></tr>
+ <tr><td class="text">
+    In order to be able to generate OSPRep reports based on AWR data, you first
+    need to establish the compatibility layer. That is, in general, emulating
+    the StatsPack tables by creating corresponding views, plus the minimal PL/SQL
+    stuff. For this, you need to complete the following steps:
+ </td></tr>
+ <tr><td class="text">
+   <ol>
+    <li><b>Create a new database user</b> with at least the same privileges as PERFSTAT
+        usually gets. Of course you may also use an existing one matching these
+        conditions, but take care NOT to have ANY StatsPack objects installed with
+        this user (especially not running <code>spcreate.sql</code> and the like),
+        for those are conflicting with the compatibility layer.</li>
+    <li><b>Change to the <code>install/database</code> directory</b> of the extracted OSPRep sources</li>
+    <li><b>Use SQL*Plus</b> to connect to the user created in step 1, and execute the script
+        <code>@awr_setup.sql</code> &ndash; you should see the progress of creating the
+        layer, but no error messages.</li>
+    <li>Remember to <b>configure OSPRep</b> (in the <code>config</code> file, or later using command
+        line options) to connect to this user</li>
+    <li>While in the configuration (the <code>config</code> file), <b>check the settings against
+        the "problematic ones"</b> mentioned in <code>awr_setup.sql</code> as e.g. "not yet working",
+        and make sure to disable them. Otherwise, report generation will most likely fail.</li>
+   </ol>
+ </td></tr>
+
+ <tr><th class="th_sub"><a name="ospsetup"></a>Setting up OSPRep</th></tr>
  <tr><td class="text">
   Now we can go to setup OSPRep itself:
  </td></tr>
@@ -102,6 +141,7 @@
        (installation) work is done!</li>
   </ol>
  </td></tr>
+ <tr><th class="th_sub"><a name="addons"></a>OSPRep Addons</th></tr>
  <tr><td class="text">
   And finally: The AddOns. Starting with v0.4.x, the AddOns are already
   converted from "anonymous blocks" to "stored procedures" - which means, in
@@ -116,6 +156,7 @@
    <li>Run the following command:<br><code>@pkg_osprep.sql</code></li>
   </ol>
  </td></tr>
+ <tr><th class="th_sub"><a name="more"></a>Further Readings</th></tr>
  <tr><td class="text">
   Now that you succeeded up to this point, continue with the
   <a href="usage.html">usage</a> page to read important things about how to
@@ -126,6 +167,6 @@
  </td></tr>
 </table>
 
-<DIV ALIGN="center" STYLE="margin-top:5px;color:#fff"><IMG SRC="w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" STYLE="vertical-align:middle">OSPRep &copy; 2003-2007 by Itzchak Rehberg &amp; <A STYLE="text-decoration:none;color:#ff0;" HREF="http://www.izzysoft.de/" TARGET="_blank">IzzySoft</A></SPAN><IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"></DIV>
+<DIV ALIGN="center" STYLE="margin-top:5px;color:#fff"><IMG SRC="w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" STYLE="vertical-align:middle">OSPRep &copy; 2003-2011 by Itzchak Rehberg &amp; <A STYLE="text-decoration:none;color:#ff0;" HREF="http://www.izzysoft.de/" TARGET="_blank">IzzySoft</A></SPAN><IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"></DIV>
 </body>
 </html>

@@ -13,8 +13,9 @@
  <tr><th class="th_sub"><a name="whatis"></a>What is OSPRep?</th></tr>
  <tr><td class="text">
   OSPRep is an Oracle Statspack Report Generator, used to create reports about your
-  database activity statistics in a nice, human readable format - which in this
-  case is HTML -, based on the data collected by Oracle Statspack and, optionally,
+  database activity statistics in a nice, human readable format &ndash; which in this
+  case is HTML &ndash;, based on the data collected by Oracle Statspack (or alternatively,
+  using the compatibility layer, on the AWR collected data) and, optionally,
   some <a href="tech.html#plugins">plugins</a> shipped with OSPRep. The generated
   report provides you with information on the physical database design (tablespaces,
   datafiles, memory), statistical values on your databases efficiency and more.
@@ -39,9 +40,10 @@
   Other useful things to mention here are the <code>fts_plans.sh</code> script
   provided by OSPrep, which can be used to gather execution plans for all SQL
   statements executed during a certain period of time, having caused full table
-  scans (FTS) - and the <code>charts.sh</code> script, generating some simple
-  charts for selected statistics. This way OSPRep gives you the information on
-  your finger tips to start the tuning of your applications.
+  scans (FTS; this does not work against AWR data currently) &ndash; and the
+  <code>charts.sh</code> script, generating some simple charts for selected
+  statistics. This way OSPRep gives you the information on your finger tips
+  to start the tuning of your applications.
  </td></tr>
  <tr><th class="th_sub"><a name="whatnot"></a>What does OSPRep <strong>NOT</strong> do?</th></tr>
  <tr><td class="text">
@@ -56,6 +58,6 @@
  </td></tr>
 </table>
 
-<DIV ALIGN="center" STYLE="margin-top:5px;color:#fff"><IMG SRC="w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" STYLE="vertical-align:middle">OSPRep &copy; 2003-2007 by Itzchak Rehberg</A> &amp; <A STYLE="text-decoration:none;color:#ff0;" HREF="http://www.izzysoft.de/" TARGET="_blank">IzzySoft</A></SPAN><IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"></DIV>
+<DIV ALIGN="center" STYLE="margin-top:5px;color:#fff"><IMG SRC="w3c.jpg" ALT="w3c" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-right:3px"><SPAN CLASS="small" STYLE="vertical-align:middle">OSPRep &copy; 2003-2011 by Itzchak Rehberg</A> &amp; <A STYLE="text-decoration:none;color:#ff0;" HREF="http://www.izzysoft.de/" TARGET="_blank">IzzySoft</A></SPAN><IMG SRC="islogo.gif" ALT="IzzySoft" WIDTH="14" HEIGHT="14" ALIGN="middle" STYLE="margin-left:3px"></DIV>
 </body>
 </html>
