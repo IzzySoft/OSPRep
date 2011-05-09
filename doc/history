@@ -3,7 +3,7 @@ $Id$
 History for OSPRep
 ==================
 
-v0.4.5
+v0.4.5 (09.05.2011)
 -------------------
 ! TopSQL was broken for Oracle < 10
 + added Module-Column to Top-N SQL for Oracle 9i and 8i(?)
