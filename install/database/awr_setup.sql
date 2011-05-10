@@ -281,6 +281,13 @@ CREATE OR REPLACE VIEW stats$buffer_pool_statistics AS
          b.physical_reads, b.physical_writes
     FROM dba_hist_buffer_pool_stat b;
 
+-- Wait Events
+PROMPT - Wait Events
+PROMPT ... stats$bg_event_summary
+CREATE OR REPLACE VIEW stats$bg_event_summary AS
+  SELECT e.snap_id, e.dbid, e.instance_number, e.event_name event, e.total_waits, e.total_timeouts, e.time_waited_micro
+    FROM dba_hist_bg_event_summary e;
+
 -- Enqueue Stats
 PROMPT - Enqueue Stats
 PROMPT ... stats$enqueue_statistics
