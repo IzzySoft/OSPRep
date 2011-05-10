@@ -174,7 +174,9 @@ if [ $MK_WAITOBJ -eq 1 ]; then
   WAITOBJ=$PLUGINDIR/wait_obj.pls
 fi
 if [ $MK_TOPSQL -eq 1 ]; then
-  if [ $DBVER -gt 92 ]; then
+  if [ $IS_AWR -eq 1 ]; then
+    TSQLHEAD=$PLUGINDIR/tsql_head_awr.pls
+  elif [ $DBVER -gt 92 ]; then
     TSQLHEAD=$PLUGINDIR/tsql_head_102.pls
   else
     TSQLHEAD=$PLUGINDIR/tsql_head.pls

@@ -7,6 +7,7 @@ v0.4.6
 -------------------
 * updated documentation
 + added stats$bg_event_summary to AWR compatibility layer (now MK_BGWAITS works)
++ Top-N SQL statements now can be fetched in "AWR mode" (no execution plans yet)
 
 v0.4.5 (09.05.2011)
 -------------------

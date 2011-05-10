@@ -23,6 +23,8 @@ export ORACLE_SID=$1
 # login information
 user=perfstat
 password="perfstat"
+# are you using the AWR compatibility layer? (Currently only needed for TopSQL)
+IS_AWR=1
 
 # -------------------------------------------------------------------[ SQL ]---
 # Top settings: Display Top N Statements [Number]
