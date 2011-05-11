@@ -22,9 +22,10 @@
       stmt := '';
       FOR R_Statement IN C_GetSQL(id) LOOP
         stmt := stmt || R_Statement.sql_text;
-        IF LENGTH(stmt)>12000 THEN
+        IF LENGTH(stmt)>SQL_MAXLEN THEN
           hlite(stmt);
           print(stmt);
+          RETURN;
           stmt := '';
         END IF;
       END LOOP;

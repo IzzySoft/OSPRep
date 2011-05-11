@@ -17,12 +17,12 @@
       END;
     BEGIN
       stmt := '';
-      SELECT dbms_lob.getlength(sql_text), replace(replace(dbms_lob.substr(sql_text,4000),'<','&lt;'),'>','&gt;')
+      SELECT dbms_lob.getlength(sql_text), replace(replace(dbms_lob.substr(sql_text,SQL_MAXLEN),'<','&lt;'),'>','&gt;')
         INTO slen, stmt
         FROM dba_hist_sqltext
        WHERE sql_id=id;
-      IF slen > 4000 THEN
-        stmt := stmt||'<B>[...]</B>';
+      IF slen > SQL_MAXLEN -1 THEN
+        stmt := stmt||'<SPAN CLASS="continues" TITLE="text truncated">[...]</SPAN>';
       END IF;
       hlite(stmt);
       print(stmt);

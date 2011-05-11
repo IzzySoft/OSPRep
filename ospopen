@@ -51,6 +51,7 @@ DECLARE
   MK_DBWR NUMBER;
   MK_LGWR NUMBER;
   MK_TOPSQL NUMBER;
+  SQL_MAXLEN NUMBER;
   MK_EP NUMBER;
   MK_SEG_LR NUMBER;
   MK_SEG_PR NUMBER;
@@ -457,6 +458,7 @@ BEGIN
   MK_DBWR     := :MK_DBWR;
   MK_LGWR     := :MK_LGWR;
   MK_TOPSQL   := :MK_TOPSQL;
+  SQL_MAXLEN  := :SQL_MAXLEN;
   MK_EP       := :MK_EP;
   MK_SEG_LR   := :MK_SEG_LR;
   MK_SEG_PR   := :MK_SEG_PR;
@@ -508,7 +510,11 @@ BEGIN
   START_ID := $START_ID;
   END_ID := $END_ID;
   dbms_output.enable($DBMS_LIMIT);
-  R_TITLE := 'StatsPack Report for $ORACLE_SID';
+  IF $IS_AWR = 1 THEN
+    R_TITLE := 'AWR Report for $ORACLE_SID';
+  ELSE
+    R_TITLE := 'StatsPack Report for $ORACLE_SID';
+  END IF;
   TABLE_OPEN := '<TABLE ALIGN="center" BORDER="1">';
   TABLE_CLOSE := '</TABLE>'||CHR(10)||'<BR CLEAR="all">'||CHR(10);
 

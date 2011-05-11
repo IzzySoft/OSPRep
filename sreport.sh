@@ -101,11 +101,11 @@ TMPOUT=$TMPDIR/osprep_tmpout_$ORACLE_SID.$$
 GWDUMMY=$TMPDIR/osprep_gwdummy_$ORACLE_SID.$$
 DFDUMMY=$TMPDIR/osprep_dfdummy_$ORACLE_SID.$$
 
-SQLPLUSRELEASE=`echo "prompt &_SQLPLUS_RELEASE" | $ORACLE_HOME/bin/sqlplus -s $user/$password@$ORACLE_CONNECT`
+SQLPLUSRELEASE=`echo "prompt &_SQLPLUS_RELEASE" | $ORACLE_HOME/bin/sqlplus -s $user/$password@$ORACLE_CONNECT |tail -n 1`
 
 # Serveroutput: 10g+ supports unlimited
 if [ "${SQLPLUSRELEASE:0:13}" = "where <logon>" ]; then
-  echo "Could not connect to the specified database. Please check your login data!"
+  echo "Could not connect to the specified database. Please check your login/connection data!"
   exit 1
 elif [ ${SQLPLUSRELEASE:0:2} -lt 20 ]; then
   SERVOUT="Size Unlimited"
@@ -369,6 +369,7 @@ variable MK_FIO NUMBER;
 variable MK_DBWR NUMBER;
 variable MK_LGWR NUMBER;
 variable MK_TOPSQL NUMBER;
+variable SQL_MAXLEN NUMBER;
 variable MK_EP NUMBER;
 variable MK_SEG_LR NUMBER;
 variable MK_SEG_PR NUMBER;
@@ -444,6 +445,7 @@ BEGIN
   :MK_DBWR     := $MK_DBWR;
   :MK_LGWR     := $MK_LGWR;
   :MK_TOPSQL   := $MK_TOPSQL;
+  :SQL_MAXLEN  := $SQL_MAXLEN;
   :MK_EP       := $MK_EP;
   :MK_SEG_LR   := $MK_SEG_LR;
   :MK_SEG_PR   := $MK_SEG_PR;
