@@ -214,15 +214,15 @@
       print(L_LINE);
       FOR R_SQL IN C_SQLByGets(GETS) LOOP
         WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
-        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.bufgets||'</TD><TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.getsperexec||
-                  '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'%</TD><TD ALIGN="right">';
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right" TITLE="Buffer Gets">'||R_SQL.bufgets||'</TD><TD ALIGN="right" TITLE="Executions">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right" TITLE="Gets/Exec">'||R_SQL.getsperexec||
+                  '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'%</TD><TD ALIGN="right" TITLE="CPU Time">';
         print(L_LINE);
-        L_LINE := format_stime(R_SQL.cputime,1000)||'</TD><TD ALIGN="right">'||
-                  format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        L_LINE := format_stime(R_SQL.cputime,1000)||'</TD><TD ALIGN="right" TITLE="Elapsed Time">'||
+                  format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right" TITLE="SQL ID">'||
+                  R_SQL.sql_id||'</TD><TD ALIGN="right" TITLE="Hash Value">'||R_SQL.hashval||'</TD>';
         print(L_LINE);
-        L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+        L_LINE := '</TD><TD ALIGN="right" TITLE="Last Seen">'||R_SQL.last_active||'</TD><TD TITLE="Modul">'||R_SQL.modul||'</TD></TR>'||
                   CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="9" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
@@ -291,15 +291,15 @@
       print(L_LINE);
       FOR R_SQL IN C_SQLByReads LOOP
         WARN := alert_gt_warn(R_SQL.ela/R_SQL.exe,AR_ET,WR_ET);
-        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.phyreads||'</TD><TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.readsperexec||
-                  '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'%</TD><TD ALIGN="right">';
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right" TITLE="Physical Reads">'||R_SQL.phyreads||'</TD><TD ALIGN="right" TITLE="Executions">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right" TITLE="Reads/Exec">'||R_SQL.readsperexec||
+                  '</TD><TD ALIGN="right">'||R_SQL.pcttotal||'%</TD><TD ALIGN="right" TITLE="CPU Time">';
         print(L_LINE);
-        L_LINE := format_stime(R_SQL.cputime,1000)||'</TD><TD ALIGN="right">'||
-                  format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        L_LINE := format_stime(R_SQL.cputime,1000)||'</TD><TD ALIGN="right" TITLE="Elapsed Time">'||
+                  format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right" TITLE="SQL ID">'||
+                  R_SQL.sql_id||'</TD><TD ALIGN="right" TITLE="Hash Value">'||R_SQL.hashval||'</TD>';
         print(L_LINE);
-        L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+        L_LINE := '</TD><TD ALIGN="right" TITLE="Last Seen">'||R_SQL.last_active||'</TD><TD TITLE="Modul">'||R_SQL.modul||'</TD></TR>'||
                   CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="9" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
@@ -363,15 +363,15 @@
       print(L_LINE);
       FOR R_SQL IN C_SQLByExec LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
-        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.execs||'</TD><TD ALIGN="right">'||
-                  R_SQL.rowsproc||'</TD><TD ALIGN="right">'||R_SQL.rowsperexec||
-                  '</TD><TD ALIGN="right">'||format_stime(R_SQL.cputime,1000)||
-                  '</TD><TD ALIGN="right">';
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right" TITLE="Executions">'||R_SQL.execs||'</TD><TD ALIGN="right" TITLE="Rows Processed">'||
+                  R_SQL.rowsproc||'</TD><TD ALIGN="right" TITLE="Rows/Exec">'||R_SQL.rowsperexec||
+                  '</TD><TD ALIGN="right" TITLE="CPU Time">'||format_stime(R_SQL.cputime,1000)||
+                  '</TD><TD ALIGN="right" TITLE="Elapsed Time">';
         print(L_LINE);
-        L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right" TITLE="SQL ID">'||
+                  R_SQL.sql_id||'</TD><TD ALIGN="right" TITLE="Hash Value">'||R_SQL.hashval||'</TD>';
         print(L_LINE);
-        L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+        L_LINE := '</TD><TD ALIGN="right" TITLE="Last Seen">'||R_SQL.last_active||'</TD><TD TITLE="Modul">'||R_SQL.modul||'</TD></TR>'||
                   CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
@@ -426,11 +426,11 @@
                 '<TH CLASS="th_sub">Last Active</TH><TH CLASS="th_sub">Module</TH></TR>';
       print(L_LINE);
       FOR R_SQL IN C_SQLByParse LOOP
-        L_LINE := ' <TR><TD ALIGN="right">'||R_SQL.parses||'</TD><TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.execsperparse||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
-                  '%</TD><TD ALIGN="right">'||R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval;
+        L_LINE := ' <TR><TD ALIGN="right" TITLE="Parse Calls">'||R_SQL.parses||'</TD><TD ALIGN="right" TITLE="Executions">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right" TITLE="Exec/Parse">'||R_SQL.execsperparse||'</TD><TD ALIGN="right">'||R_SQL.pctparses||
+                  '%</TD><TD ALIGN="right" TITLE="SQL ID">'||R_SQL.sql_id||'</TD><TD ALIGN="right" TITLE="Hash Value">'||R_SQL.hashval;
         print(L_LINE);
-        L_LINE := '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+        L_LINE := '</TD><TD ALIGN="right" TITLE="Last Seen">'||R_SQL.last_active||'</TD><TD TITLE="Modul">'||R_SQL.modul||'</TD></TR>'||
                   '</TD></TR>'||CHR(10)||' <TR><TD>&nbsp;</TD><TD COLSPAN="7" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
@@ -490,13 +490,13 @@
       print(L_LINE);
       FOR R_SQL IN C_SQLByCPU LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
-        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||format_stime(R_SQL.cputime,1000)||'<TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.pctparses||'</TD><TD ALIGN="right">'||
-                  R_SQL.rowsperexec||'</TD></TD><TD ALIGN="right">';
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right" TITLE="CPU Time">'||format_stime(R_SQL.cputime,1000)||'<TD ALIGN="right" TITLE="Executions">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right" TITLE="Total Parses">'||R_SQL.pctparses||'</TD><TD ALIGN="right" TITLE="Rows/Exec">'||
+                  R_SQL.rowsperexec||'</TD></TD><TD ALIGN="right" TITLE="Elapsed Time">';
         print(L_LINE);
-        L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||
-                  '</TD><TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+        L_LINE := format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right" TITLE="SQL ID">'||
+                  R_SQL.sql_id||'</TD><TD ALIGN="right" TITLE="Hash Value">'||R_SQL.hashval||
+                  '</TD><TD ALIGN="right" TITLE="Last Seen">'||R_SQL.last_active||'</TD><TD TITLE="Modul">'||R_SQL.modul||'</TD></TR>'||
                   CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
@@ -560,14 +560,13 @@
       print(L_LINE);
       FOR R_SQL IN C_SQLByEla LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
-        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||R_SQL.readsperexec||'</TD><TD ALIGN="right">'||
-                  R_SQL.rowsperexec||'</TD><TD ALIGN="right">'||format_stime(R_SQL.cputime,1000);
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right" TITLE="Elapsed Time">'||format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right" TITLE="Executions">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right" TITLE="Reads/Exec">'||R_SQL.readsperexec||'</TD><TD ALIGN="right" TITLE="Rows/Exec">'||
+                  R_SQL.rowsperexec||'</TD><TD ALIGN="right" TITLE="CPU Time">'||format_stime(R_SQL.cputime,1000);
         print(L_LINE);
-        L_LINE := '</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        L_LINE := '</TD><TD ALIGN="right" TITLE="SQL ID">'||R_SQL.sql_id||'</TD><TD ALIGN="right" TITLE="Hash Value">'||R_SQL.hashval||'</TD>';
         print(L_LINE);
-        L_LINE := '<TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+        L_LINE := '<TD ALIGN="right" TITLE="Last Seen">'||R_SQL.last_active||'</TD><TD TITLE="Modul">'||R_SQL.modul||'</TD></TR>'||
                   CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);
@@ -629,14 +628,14 @@
       print(L_LINE);
       FOR R_SQL IN C_SQLByInv LOOP
         WARN := alert_gt_warn(R_SQL.elapsed,AR_ET,WR_ET);
-        L_LINE := ' <TR'||WARN||'><TD ALIGN="right">'||R_SQL.invals||'</TD><TD ALIGN="right">'||
-                  R_SQL.execs||'</TD><TD ALIGN="right">'||format_stime(R_SQL.elapsed,1000)||'</TD><TD ALIGN="right">'||
-                  R_SQL.rowsperexec||'</TD><TD ALIGN="right">'||format_stime(R_SQL.cputime,1000);
+        L_LINE := ' <TR'||WARN||'><TD ALIGN="right" TITLE="Invalidations">'||R_SQL.invals||'</TD><TD ALIGN="right" TITLE="Executions">'||
+                  R_SQL.execs||'</TD><TD ALIGN="right" TITLE="Elapsed Time">'||format_stime(R_SQL.elapsed,1000)||
+                  '</TD><TD ALIGN="right" TITLE="Rows/Exec">'||R_SQL.rowsperexec||
+                  '</TD><TD ALIGN="right" TITLE="CPU Time">'||format_stime(R_SQL.cputime,1000);
         print(L_LINE);
-        L_LINE := '</TD><TD ALIGN="right">'||
-                  R_SQL.sql_id||'</TD><TD ALIGN="right">'||R_SQL.hashval||'</TD>';
+        L_LINE := '</TD><TD ALIGN="right" TITLE="SQL ID">'||R_SQL.sql_id||'</TD><TD ALIGN="right" TITLE="Hash Value">'||R_SQL.hashval||'</TD>';
         print(L_LINE);
-        L_LINE := '<TD ALIGN="right">'||R_SQL.last_active||'</TD><TD>'||R_SQL.modul||'</TD></TR>'||
+        L_LINE := '<TD ALIGN="right" TITLE="Last Seen">'||R_SQL.last_active||'</TD><TD TITLE="Modul">'||R_SQL.modul||'</TD></TR>'||
                   CHR(10)||' <TR'||WARN||'><TD>&nbsp;</TD><TD COLSPAN="8" CLASS="icode">';
         print(L_LINE);
         print_tsql(R_SQL.sql_id);

@@ -10,6 +10,7 @@ v0.4.6
 + Top-N SQL statements now can be fetched in "AWR mode"
 + config option to cut off overlong SQL statements (as they unnecessarily blow
   up the report; 10g+)
++ added some "Hints" (HTML Title Attributes) to the columns in Top-SQL (10g+)
 
 v0.4.5 (09.05.2011)
 -------------------
