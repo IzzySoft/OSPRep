@@ -33,7 +33,7 @@
     END;
 
   -- Get and print the Execution Plan
-  PROCEDURE get_plan (hash_val IN NUMBER) IS
+  PROCEDURE get_plan (sqlid IN VARCHAR2, hash_val IN NUMBER) IS
     HASHID NUMBER; CI NUMBER; SI NUMBER; OSIZE VARCHAR2(50); IND VARCHAR2(255);
     CW NUMBER; TDI VARCHAR2(20);
     CURSOR C_PGet IS
@@ -42,6 +42,7 @@
              bytes,cpu_cost,io_cost,depth
         FROM dba_hist_sql_plan
        WHERE plan_hash_value = hash_val
+         AND sql_id = sqlid
        ORDER BY id;
     BEGIN
       SELECT COUNT(id) INTO CI
@@ -220,7 +221,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.plan_hash_value);
+          get_plan(R_SQL.sql_id,R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -297,7 +298,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.plan_hash_value);
+          get_plan(R_SQL.sql_id,R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -368,7 +369,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.plan_hash_value);
+          get_plan(R_SQL.sql_id,R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -430,7 +431,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.plan_hash_value);
+          get_plan(R_SQL.sql_id,R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -497,7 +498,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.plan_hash_value);
+          get_plan(R_SQL.sql_id,R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -569,7 +570,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.plan_hash_value);
+          get_plan(R_SQL.sql_id,R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -637,7 +638,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.plan_hash_value);
+          get_plan(R_SQL.sql_id,R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
