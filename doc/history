@@ -7,7 +7,7 @@ v0.4.6
 -------------------
 * updated documentation
 + added stats$bg_event_summary to AWR compatibility layer (now MK_BGWAITS works)
-+ Top-N SQL statements now can be fetched in "AWR mode" (no execution plans yet)
++ Top-N SQL statements now can be fetched in "AWR mode"
 + config option to cut off overlong SQL statements (as they unnecessarily blow
   up the report; 10g+)
 

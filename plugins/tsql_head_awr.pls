@@ -33,38 +33,20 @@
     END;
 
   -- Get and print the Execution Plan
-  PROCEDURE get_plan (sqlid IN VARCHAR2) IS
+  PROCEDURE get_plan (hash_val IN NUMBER) IS
     HASHID NUMBER; CI NUMBER; SI NUMBER; OSIZE VARCHAR2(50); IND VARCHAR2(255);
     CW NUMBER; TDI VARCHAR2(20);
-    CURSOR C_PGet (hash_val IN VARCHAR2) IS
+    CURSOR C_PGet IS
       SELECT operation,options,object_owner,object_name,optimizer,cost,
              NVL(TO_CHAR(cost,'999,999,990'),'&nbsp;') vcost,
              bytes,cpu_cost,io_cost,depth
-        FROM stats$sql_plan,
-             ( SELECT MAX(snap_id) maxid FROM stats$sql_plan
-                WHERE snap_id BETWEEN BID AND EID
-                  AND plan_hash_value = hash_val ) id
+        FROM dba_hist_sql_plan
        WHERE plan_hash_value = hash_val
        ORDER BY id;
     BEGIN
-      SELECT MAX(snap_id) INTO SI
-        FROM ( SELECT plan_hash_value,snap_id
-                 FROM stats$sql_plan_usage
-                WHERE sql_id = sqlid
-                  AND snap_id BETWEEN BID AND EID );
-      SELECT MAX(plan_hash_value) INTO HASHID
-        FROM ( SELECT plan_hash_value,snap_id
-                 FROM stats$sql_plan_usage
-                WHERE sql_id = sqlid
-                  AND snap_id=SI );
-      IF HASHID > 0 THEN
-      IND := 'SELECT COUNT(snap_id) FROM stats$sql_plan'||
-             ' WHERE plan_hash_value = :HASHID'||
-             '   AND rownum = 1'||
-             '   AND object_owner NOT IN ('||EXCLUDE_OWNERS||')';
-      EXECUTE IMMEDIATE IND INTO CI USING HASHID;
-      ELSE CI := 0;
-      END IF;
+      SELECT COUNT(id) INTO CI
+        FROM dba_hist_sql_plan
+       WHERE plan_hash_value = hash_val;
       IF CI > 0
       THEN
         CW := 20;
@@ -74,7 +56,7 @@
         print('Optimizer</TH><TH CLASS="th_sub2">Cost</TH><TH CLASS="th_sub2">'||
               'CPUCost</TH><TH CLASS="th_sub2">IOCost</TH><TH CLASS="th_sub2">'||
               'Size</TH></TR>');
-        FOR rplan IN C_PGet(HASHID) LOOP
+        FOR rplan IN C_PGet LOOP
           IF NVL(rplan.bytes,0) < 1024
           THEN
             OSIZE := TO_CHAR(rplan.bytes,'9,990');
@@ -169,7 +151,7 @@
     WARN VARCHAR2(50);
     last_active VARCHAR2(20);
     CURSOR C_SQLByGets (gets IN NUMBER) IS
-      SELECT bufgets, execs, getsperexec, pcttotal, cputime, elapsed, exe, ela, sql_id, schema_name, modul
+      SELECT bufgets, execs, getsperexec, pcttotal, cputime, elapsed, exe, ela, sql_id, schema_name, modul, plan_hash_value
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.buffer_gets_total - nvl(b.buffer_gets_total,0)),'99,999,999,990') bufgets,
                   to_char((e.executions_total - nvl(b.executions_total,0)),'999,999,999') execs,
@@ -185,7 +167,8 @@
                   NVL((e.elapsed_time_total - nvl(b.elapsed_time_total,0))/1000000,0) ela,
                   e.parsing_schema_name schema_name,
                   NVL ( e.sql_id,0 ) sql_id,
-                  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul,
+                  e.plan_hash_value
               FROM dba_hist_sqlstat e, dba_hist_sqlstat b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -237,7 +220,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.sql_id);
+          get_plan(R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -250,7 +233,7 @@
     WARN VARCHAR2(50);
     last_active VARCHAR2(20);
     CURSOR C_SQLByReads IS
-      SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,exe,ela,schema_name,sql_id,modul
+      SELECT phyreads,execs,readsperexec,pcttotal,cputime,elapsed,exe,ela,schema_name,sql_id,modul,plan_hash_value
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.disk_reads_total - nvl(b.disk_reads_total,0)),'99,999,999,990') phyreads,
                   to_char((e.executions_total - nvl(b.executions_total,0)),'999,999,999') execs,
@@ -266,7 +249,8 @@
                   NVL((e.elapsed_time_total - nvl(b.elapsed_time_total,0))/1000000,0) ela,
                   e.parsing_schema_name schema_name,
                   NVL ( e.sql_id,0 ) sql_id,
-                  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul,
+                  e.plan_hash_value
               FROM dba_hist_sqlstat e, dba_hist_sqlstat b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -313,7 +297,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.sql_id);
+          get_plan(R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -326,7 +310,7 @@
     WARN VARCHAR2(50);
     last_active VARCHAR2(20);
     CURSOR C_SQLByExec IS
-      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,schema_name,ela,sql_id,modul
+      SELECT execs,rowsproc,rowsperexec,cputime,elapsed,schema_name,ela,sql_id,modul,plan_hash_value
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.executions_total - nvl(b.executions_total,0)),'999,999,999') execs,
                   to_char((nvl(e.rows_processed_total,0) - nvl(b.rows_processed_total,0)),
@@ -339,7 +323,8 @@
                   (e.elapsed_time_total - nvl(b.elapsed_time_total,0)) / (e.executions_total - nvl(b.executions_total,0)) / 1000 elapsed,
                   NVL ( e.parsing_schema_name,'-unknown-' ) schema_name,
                   NVL ( e.sql_id,0 ) sql_id,
-                  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul,
+                  e.plan_hash_value
               FROM dba_hist_sqlstat e, dba_hist_sqlstat b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -383,19 +368,22 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.sql_id);
+          get_plan(R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN
+        print(TABLE_CLOSE||'<HR>');
+        print('OOOPS: '||SQLERRM);
     END;
 
   -- SQL by Parse
   PROCEDURE sqlbyparse IS
     last_active VARCHAR2(20);
     CURSOR C_SQLByParse IS
-      SELECT parses,execs,CASE parsenum WHEN 0 THEN '&nbsp;' ELSE to_char(execnum/parsenum,'999,990.0') END execsperparse,pctparses,schema_name,sql_id,modul
+      SELECT parses,execs,CASE parsenum WHEN 0 THEN '&nbsp;' ELSE to_char(execnum/parsenum,'999,990.0') END execsperparse,
+             pctparses,schema_name,sql_id,modul,plan_hash_value
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.parse_calls_total - nvl(b.parse_calls_total,0)),'999,999,990') parses,
                   to_char((e.executions_total - nvl(b.executions_total,0)),'999,999,990') execs,
@@ -404,7 +392,8 @@
                   to_char((nvl(e.parse_calls_total,0) - nvl(b.parse_calls_total,0))/PRSE, '990.00') pctparses,
                   NVL ( e.parsing_schema_name,'-unknown-' ) schema_name,
                   NVL ( e.sql_id,0 ) sql_id,
-                  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul,
+                  e.plan_hash_value
               FROM dba_hist_sqlstat e, dba_hist_sqlstat b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -441,12 +430,14 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.sql_id);
+          get_plan(R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN
+        print(TABLE_CLOSE||'<HR>');
+        print('OOOPS: '||SQLERRM);
     END;
 
 
@@ -455,7 +446,7 @@
     WARN VARCHAR2(50);
     last_active VARCHAR2(20);
     CURSOR C_SQLByCPU IS
-      SELECT execs,pctparses,rowsperexec,cputime,elapsed,schema_name,ela,sql_id,modul
+      SELECT execs,pctparses,rowsperexec,cputime,elapsed,schema_name,ela,sql_id,modul,plan_hash_value
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.executions_total - nvl(b.executions_total,0)),'999,999,999') execs,
                   to_char((nvl(e.parse_calls_total,0) - nvl(b.parse_calls_total,0))/PRSE, '990.00') pctparses,
@@ -467,7 +458,8 @@
                   (e.elapsed_time_total - nvl(b.elapsed_time_total,0)) / (e.executions_total - nvl(b.executions_total,0)) / 1000 elapsed,
                   NVL ( e.parsing_schema_name,'-unknown-' ) schema_name,
                   NVL ( e.sql_id,0 ) sql_id,
-                  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul,
+                  e.plan_hash_value
               FROM dba_hist_sqlstat e, dba_hist_sqlstat b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -505,12 +497,14 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.sql_id);
+          get_plan(R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
     EXCEPTION
-      WHEN OTHERS THEN NULL;
+      WHEN OTHERS THEN
+        print(TABLE_CLOSE||'<HR>');
+        print('OOOPS: '||SQLERRM);
     END;
 
 
@@ -519,7 +513,7 @@
     WARN VARCHAR2(50);
     last_active VARCHAR2(20);
     CURSOR C_SQLByEla IS
-      SELECT execs,readsperexec,rowsperexec,cputime,elapsed,schema_name,ela,sql_id,modul
+      SELECT execs,readsperexec,rowsperexec,cputime,elapsed,schema_name,ela,sql_id,modul,plan_hash_value
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.executions_total - nvl(b.executions_total,0)),'999,999,999') execs,
                   to_char(decode(e.executions_total - nvl(b.executions_total,0),
@@ -534,7 +528,8 @@
                   (e.elapsed_time_total - nvl(b.elapsed_time_total,0)) / (e.executions_total - nvl(b.executions_total,0)) / 1000 elapsed,
                   NVL ( e.parsing_schema_name,'-unknown-' ) schema_name,
                   NVL ( e.sql_id,0 ) sql_id,
-                  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul,
+                  e.plan_hash_value
               FROM dba_hist_sqlstat e, dba_hist_sqlstat b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -574,7 +569,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.sql_id);
+          get_plan(R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
@@ -588,7 +583,7 @@
     WARN VARCHAR2(50);
     last_active VARCHAR2(20);
     CURSOR C_SQLByInv IS
-      SELECT execs,invals,rowsperexec,cputime,elapsed,schema_name,ela,sql_id,modul
+      SELECT execs,invals,rowsperexec,cputime,elapsed,schema_name,ela,sql_id,modul,plan_hash_value
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.executions_total - nvl(b.executions_total,0)),'999,999,999') execs,
                   to_char((nvl(e.invalidations_total,0) - nvl(b.invalidations_total,0)),
@@ -601,7 +596,8 @@
                   (e.elapsed_time_total - nvl(b.elapsed_time_total,0)) / (e.executions_total - nvl(b.executions_total,0)) / 1000 elapsed,
                   NVL ( e.parsing_schema_name,'-unknown-' ) schema_name,
                   NVL ( e.sql_id,0 ) sql_id,
-                  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul,
+                  e.plan_hash_value
               FROM dba_hist_sqlstat e, dba_hist_sqlstat b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -641,7 +637,7 @@
         print_tsql(R_SQL.sql_id);
         print('</TD></TR>');
         IF MK_EP = 1 THEN
-          get_plan(R_SQL.sql_id);
+          get_plan(R_SQL.plan_hash_value);
         END IF;
       END LOOP;
       print(TABLE_CLOSE||'<HR>');
