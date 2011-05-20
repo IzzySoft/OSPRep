@@ -125,7 +125,9 @@ CREATE OR REPLACE VIEW stats$latch AS
 
 PROMPT ... stats$idle_event (dummy, as we have no corresponding dba_hist_* table)
 CREATE OR REPLACE VIEW stats$idle_event AS
-  SELECT NULL event FROM DUAL;
+  SELECT NULL event
+    FROM DUAL
+   WHERE 0=1;
 
 PROMPT ... stats$sgastat
 CREATE OR REPLACE VIEW stats$sgastat AS
