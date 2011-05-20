@@ -123,11 +123,11 @@ CREATE OR REPLACE VIEW stats$latch AS
          l.sleep1, l.sleep2, l.sleep3, l.sleep4, l.wait_time
     FROM dba_hist_latch l;
 
-PROMPT ... stats$idle_event (dummy, as we have no corresponding dba_hist_* table)
+PROMPT ... stats$idle_event
 CREATE OR REPLACE VIEW stats$idle_event AS
-  SELECT NULL event
-    FROM DUAL
-   WHERE 0=1;
+  SELECT event
+    FROM v$system_event
+   WHERE wait_class='Idle';
 
 PROMPT ... stats$sgastat
 CREATE OR REPLACE VIEW stats$sgastat AS
