@@ -237,7 +237,7 @@
     BEGIN
       print(TABLE_OPEN||'<TR><TH COLSPAN="5">Top '||TOP_N_SEGSTAT||' ITL Waits per Segment&nbsp;<A '||
                 'HREF="JavaScript:popup('||CHR(39)||'itlwaits'||CHR(39)||')"><IMG SRC="help/help.gif" '||
-                'BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>';
+                'BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></A></TH></TR>');
       L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Object</TH>'||
                 '<TH CLASS="th_sub">Type</TH>';
       print(L_LINE);
