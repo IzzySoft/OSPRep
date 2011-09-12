@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD>
- <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-15">
+ <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
  <LINK REL='stylesheet' TYPE='text/css' HREF='../{css}'>
  <TITLE>OraHelp</TITLE>
 </HEAD><BODY>
@@ -26,6 +26,8 @@
  <LI><B>Index Block:</B> Reduce the number of rows per block (see above).
      Consider reverse-key indexes. Rebuild indexes. Increase <CODE>INITTRANS</CODE>
      (see above). Check for unselective indexes (bad code / bad indexes).</LI>
+ </UL>
+ <P>Hint: the <I>nth level bmb</I> classes are related to ASSM.</P>
 </TD></TR></TABLE>
 
 <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
