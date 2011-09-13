@@ -28,6 +28,10 @@
      (see above). Check for unselective indexes (bad code / bad indexes).</LI>
  </UL>
  <P>Hint: the <I>nth level bmb</I> classes are related to ASSM.</P>
+ <P>You may also want to refer to the help on
+    <A HREF='buffbusy.html'>Buffer Busy Waits</A>. To figure out which
+    segments are affected, the report contains a separate <I>Segment
+    Statistics</I> section (if enabled in the configuration).</P>
 </TD></TR></TABLE>
 
 <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
