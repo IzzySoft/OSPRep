@@ -71,6 +71,59 @@
   One situation where objects are invalidated is when executing DDL operations
   frequently. The effects of invalidations can be reduced by executing DDL
   statements during off peak periods.</P>
+ <P>So what do the columns in this table stand for?</P>
+ <TABLE BORDER="1" WIDTH="95%" STYLE="margin:5px">
+   <TR><TH CLASS="th_sub">Column</TH><TH CLASS="th_sub">Explanation</TH></TR>
+   <TR><TD CLASS="td_name">NameSpace</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        Type of the object being cached
+       </TD></TR>
+   <TR><TD CLASS="td_name">Get Requests</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        A get is an attempt to locate an object in the library cache. If it is
+        not found, it will be loaded. Once it is loaded, it will be pinned
+        for use (see below).
+       </TD></TR>
+   <TR><TD CLASS="td_name">Pct Miss</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        The first <I>Pct Miss</I> column refers to the <I>Get Requests</I>,
+        and thus indicates the percentage of failed get requests. These
+        failed requests result either in an initial load or a reload (see
+        below) of the requested object.
+       </TD></TR>
+   <TR><TD CLASS="td_name">Pin Reqs</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        Once an object was located in the cache (whether it was already
+        there or just loaded due to a get miss), and before it can be used,
+        the requesting process needs to request a pin for it.
+       </TD></TR>
+   <TR><TD CLASS="td_name">Pct Miss</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        This second <I>Pct Miss</I> column refers to the <I>Pin Requests</I>.
+        A Pin Request will fail if either the corresponding object has been
+        aged out of the cache, or became invalid. See below for details.
+       </TD></TR>
+   <TR><TD CLASS="td_name">Reloads</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        After instance startup, every "first" cache request will result in a
+        miss &ndash; logically, as the cache is empty and just fills over time.
+        But if an object already had been pinned to the cache, but was aged
+        out later, the next request will result in a "re-load" (as it has been
+        there previously). For SQL statements this means they have to be
+        hard-parsed again.<BR>
+        So this column should best show only zeroes. If the number of reloads
+        is getting high, one should consider increasing the shared pool.
+       </TD></TR>
+   <TR><TD CLASS="td_name">Invalidations</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        An invalidation means: though the requested object was found in the
+        cache, it could not be used. This e.g. is the case for a stored
+        procedure referring to a table which had been altered meanwhile (i.e.
+        depending objects had been changed), so it is no longer valid but
+        needs to be recompiled.<BR>
+        To minimize invalidations, avoid DDL during peak processing periods.
+       </TD></TR>
+  </TABLE>
 </TD></TR></TABLE>
 
 <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--
