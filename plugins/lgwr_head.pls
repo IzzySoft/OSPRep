@@ -110,6 +110,8 @@
       END IF;
       S1 := to_char(I1,'9,990.00');
       writerow('redo log space wait time / redo log space requests',S1,'ms/request. Should be as low as possible.');
+      pcomment := 'Total (cumulative) time LGWR was waiting for flushing data from Log Buffer to Redo Log Files';
+      swrite('redo writer latching time',pcomment);
       pcomment := 'Percentage of redo bytes written "unnecessarily". Naturally, this should be very low.';
       I2 := dbstat('redo wastage');
       I1 := round( I2 * 100 / (dbstat('redo size') + I2),2);

@@ -14,6 +14,8 @@
         10MB, depending on the Oracle version, are not even nearly enough
         for most production databases). Good sizes to start with are, depending
         on your session activity, at least 50..100M.</LI>
+    <LI>Avoid placing the log files on a slow file system. A RAID-5 system
+        is not the best choice for them.</LI>
     <LI>Configure enough log groups. Two groups (which is the minimum allowed
         by Oracle) is only enough for very small databases with almost no activity.
         You should at least have three, better five groups.</LI>
@@ -27,10 +29,13 @@
     SQL Tuning: Your transactions should of course not be too long (so they possibly
     cause a "snapshot too old" error or run into one), but also not too small (i.e.
     don't follow each single <CODE>INSERT</CODE> / <CODE>UPDATE</CODE> /
-    <CODE>DELETE</CODE> statement by a <CODE>COMMIT</CODE>).</P>
+    <CODE>DELETE</CODE> statement by a <CODE>COMMIT</CODE>). You might also
+    think of utilizing the <CODE>NOLOGGING</CODE> clause for e.g. direct loads,
+    index creation, <CODE>ALTER TABLE .. MOVE|SPLIT</P>, <CODE>ALTER INDEX
+    SPLIT|REBUILD</CODE>, to minimize unnecessary redo generation.</P>
  <P>The following table gives you additional information to some of the lines in
     the "LogWriter Statistics" block of the report:</P>
-  <TABLE ALIGN="center" BORDER="1" WIDTH="99%" STYLE="margin:5px">
+ <TABLE ALIGN="center" BORDER="1" WIDTH="99%" STYLE="margin:5px">
    <TR><TH CLASS="th_sub">Statistic</TH><TH CLASS="th_sub">Details</TH></TR>
    <TR><TD CLASS="td_name">redo log space requests / h</TD>
        <TD CLASS="inner" STYLE="text-align:justify">This number should be as low as
@@ -52,6 +57,12 @@
              <LI>Increase the size of redolog files and/or add new redolog groups</LI>
              <LI>Ensure that log switches occurring not more frequent than around all 20-30 minutes</LI>
            </UL></TD></TR>
+   <TR><TD CLASS="td_name">redo writer latching time</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+           This is the total (cumulative) time LGWR was waiting for flushing
+           data from Log Buffer to Redo Log Files. It includes "redo allocation"
+           as well as "redo writing" latches.
+       </TD></TR>
    <TR><TD CLASS="td_name">redo wastage percentage</TD>
        <TD CLASS="inner" STYLE="text-align:justify" COLSPAN="2">Percentage of redo bytes written
            "unnecessarily" (<I>redo wastage</I> describes the log buffer blocks had been needed to
@@ -79,6 +90,60 @@
            values indicate that the LGWR is not keeping up. If this happens, tuning the values for
            <CODE>LOG_CHECKPOINT_INTERVAL</CODE> and <CODE>LOG_CHECKPOINT_TIMEOUT</CODE> (or, with
            Oracle 9i, <CODE>FAST_START_MTTR_TARGET</CODE>) can help to improve the situation.</TD></TR>
+  </TABLE>
+  <P>Below the main table, you find another one containing <I>Related
+     Information</I>, which should help you to find causes for possible
+     bottle necks. First, they reflect your current configuration, such as
+     available redo log groups (including their log file size and number
+     of members), and configuration parameters. Here you will further be
+     informed of the average number of log file switches per hour (good
+     numbers are around 3 to 4).</P>
+  <P>Last but not least there is a list of related wait events:</P>
+ <TABLE ALIGN="center" BORDER="1" WIDTH="99%" STYLE="margin:5px">
+   <TR><TH CLASS="th_sub">WaitEvent</TH><TH CLASS="th_sub">Details</TH></TR>
+   <TR><TD CLASS="td_name">log file parallel write</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        These occur when waiting for writes of REDO records to the REDO
+        log files to complete. Even though the writes may be issued in
+        parallel, LGWR needs to wait for the last I/O to be on disk before
+        the parallel write is considered complete. Log file parallel write
+        waits can be reduced by moving log files to the faster disks and/or
+        separate disks where there will be less contention.
+       </TD></TR>
+   <TR><TD CLASS="td_name">log file sync</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        These are part of the <CODE>COMMIT</CODE> and <CODE>ROLLBACK</CODE>
+        procedure. The user session will post the log writer (LGWR) to
+        write all REDO information required from the log buffer to the
+        REDO log file. When the LGWR has finished, it posts the user
+        session. The user session waits on this wait event while waiting
+        for LGWR to post it back to confirm all the REDO changes are safely
+        on disk.<BR>
+        Log file Sync Waits can be reduced by moving log files to the
+        faster disks or by reducing <CODE>COMMIT</CODE> frequency by
+        performing batch transactions. Do not exaggerate the latter: A too
+        low <CODE>COMMIT</CODE> frequency would lead to other problems,
+        as it involves locks held and <CODE>UNDO</CODE> space used.
+       </TD></TR>
+   <TR><TD CLASS="td_name">LGWR wait for redo copy</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        This usually happens when LGWR was called to flush the log buffers
+        to disk, but hit a buffer currently written by another session (i.e.
+        the other session holds a <I>redo copy latch</I>). In this case,
+        LGWR sleeps for a short time before re-checking whether the buffer
+        can be safely accessed (i.e. is no longer occupied by some other
+        process).<BR>
+        As all this is happening in the background, it should have no negative
+        effect on your foreground sessions &ndash; as long as it does not lead
+        to <I>log file sync</I> waits (see above).
+       </TD></TR>
+   <TR><TD CLASS="td_name">log file single write</TD>
+       <TD CLASS="inner" STYLE="text-align:justify">
+        A wait event occuring while updating the header of the redo log
+        files. While contents of each copy of redo log files in the same
+        group are identical, the header has differences and thus needs
+        a separate update.
+       </TD></TR>
   </TABLE>
 </TD></TR></TABLE>
 
