@@ -101,7 +101,7 @@ TMPOUT=$TMPDIR/osprep_tmpout_$ORACLE_SID.$$
 GWDUMMY=$TMPDIR/osprep_gwdummy_$ORACLE_SID.$$
 DFDUMMY=$TMPDIR/osprep_dfdummy_$ORACLE_SID.$$
 
-SQLPLUSRELEASE=`echo "prompt &_SQLPLUS_RELEASE" | $ORACLE_HOME/bin/sqlplus -s $user/$password@$ORACLE_CONNECT |tail -n 1`
+SQLPLUSRELEASE=`echo "prompt &_SQLPLUS_RELEASE" | $ORACLE_HOME/bin/sqlplus -s $user/$password@$ORACLE_CONNECT |tail -1`
 
 # Serveroutput: 10g+ supports unlimited
 if [ "${SQLPLUSRELEASE:0:13}" = "where <logon>" ]; then

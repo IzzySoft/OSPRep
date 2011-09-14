@@ -13,6 +13,7 @@ v0.4.6
 + added some "Hints" (HTML Title Attributes) to the columns in Top-SQL (10g+)
 ! Top 10 wait where not working with AWR due to error in compatibility layer
 + updated context-help with more details
+! some Solaris versions didn't like the syntax of tail used
 
 v0.4.5 (09.05.2011)
 -------------------
