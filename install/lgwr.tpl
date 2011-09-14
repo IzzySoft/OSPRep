@@ -31,7 +31,7 @@
     don't follow each single <CODE>INSERT</CODE> / <CODE>UPDATE</CODE> /
     <CODE>DELETE</CODE> statement by a <CODE>COMMIT</CODE>). You might also
     think of utilizing the <CODE>NOLOGGING</CODE> clause for e.g. direct loads,
-    index creation, <CODE>ALTER TABLE .. MOVE|SPLIT</P>, <CODE>ALTER INDEX
+    index creation, <CODE>ALTER TABLE .. MOVE|SPLIT</CODE>, <CODE>ALTER INDEX
     SPLIT|REBUILD</CODE>, to minimize unnecessary redo generation.</P>
  <P>The following table gives you additional information to some of the lines in
     the "LogWriter Statistics" block of the report:</P>

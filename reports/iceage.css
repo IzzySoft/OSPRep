@@ -56,6 +56,9 @@ TABLE {
  background-color:#ffffea;
  border: 1px ridge #0080c0;
 }
+TR, TD {
+ font-family: sans-serif;
+}
 
 /* -------------------------------------------------------[ Table Rows ]--- */
 tr.alert {
