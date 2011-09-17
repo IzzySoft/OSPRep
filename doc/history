@@ -3,7 +3,7 @@ $Id$
 History for OSPRep
 ==================
 
-v0.4.6
+v0.4.6 (17.09.2011)
 -------------------
 * updated documentation
 + added stats$bg_event_summary to AWR compatibility layer (now MK_BGWAITS works)
