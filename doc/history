@@ -8,6 +8,7 @@ v0.4.7
 * though segment stats contained the correct TOP_N elements, display order
   was somehow messed up
 * fixed the "empty execution plan tables" on TOP_N SQL with AWR-layer used
+* some formatting correction for large values in TOP_N by exec
 
 v0.4.6 (17.09.2011)
 -------------------

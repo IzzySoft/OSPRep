@@ -161,7 +161,7 @@
                   to_char(decode(e.executions_total - nvl(b.executions_total,0),
                                  0, '&nbsp;',
                                  (e.buffer_gets_total - nvl(b.buffer_gets_total,0)) / (e.executions_total - nvl(b.executions_total,0))),
-                                 '999,999,990.0') getsperexec,
+                                 '99,999,999,990.0') getsperexec,
                   to_char(100*(e.buffer_gets_total - nvl(b.buffer_gets_total,0))/gets,
                           '999,999,990.0') pcttotal,
                   (e.cpu_time_total - nvl(b.cpu_time_total,0))/1000 cputime,

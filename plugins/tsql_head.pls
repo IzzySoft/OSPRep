@@ -143,14 +143,14 @@
                                    0, '&nbsp;',
                                   (e.buffer_gets - nvl(b.buffer_gets,0)) / (e.executions - nvl(b.executions,0))
                                 ),
-                          '999,999,990.0') getsperexec,
+                          '99,999,999,990.0') getsperexec,
                   to_char(100*(e.buffer_gets - nvl(b.buffer_gets,0))/gets,
                           '999,999,990.0') pcttotal,
                   (e.cpu_time - nvl(b.cpu_time,0))/1000 cputime,
                   (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
                   NVL((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
                   NVL ( e.hash_value,0 ) hashval,
-				  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -227,7 +227,7 @@
               (e.elapsed_time - nvl(b.elapsed_time,0))/1000 elapsed,
               NVL((e.elapsed_time - nvl(b.elapsed_time,0))/1000000,0) ela,
               NVL ( e.hash_value,0 ) hashval,
-			  NVL(e.module,'&nbsp;') modul
+              NVL(e.module,'&nbsp;') modul
           FROM stats$sql_summary e, stats$sql_summary b
          WHERE b.snap_id(+)  = BID
            AND b.dbid(+)     = e.dbid
@@ -300,7 +300,7 @@
                   (e.elapsed_time - nvl(b.elapsed_time,0)) /
                      (e.executions - nvl(b.executions,0)) / 1000 elapsed,
                   NVL ( e.hash_value,0 ) hashval,
-				  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -358,12 +358,12 @@
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.parse_calls - nvl(b.parse_calls,0)),'999,999,990') parses,
                   to_char((e.executions - nvl(b.executions,0)),'999,999,990') execs,
-				  nvl(e.executions,0) - nvl(b.executions,0) execnum,
-				  nvl(e.parse_calls,0) - nvl(b.parse_calls,0) parsenum,
+                  nvl(e.executions,0) - nvl(b.executions,0) execnum,
+                  nvl(e.parse_calls,0) - nvl(b.parse_calls,0) parsenum,
                   to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/PRSE,
                          '990.00') pctparses,
                   NVL ( e.hash_value,0 ) hashval,
-				  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -406,7 +406,7 @@
     EXCEPTION
       WHEN OTHERS THEN
         print(TABLE_CLOSE||'<HR>');
-		print(SQLERRM);
+        print(SQLERRM);
     END;
 
 
@@ -429,7 +429,7 @@
                   (e.elapsed_time - nvl(b.elapsed_time,0)) /
                      (e.executions - nvl(b.executions,0)) / 1000 elapsed,
                   NVL ( e.hash_value,0 ) hashval,
-				  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -496,7 +496,7 @@
                   (e.elapsed_time - nvl(b.elapsed_time,0)) /
                      (e.executions - nvl(b.executions,0)) / 1000 elapsed,
                   NVL ( e.hash_value,0 ) hashval,
-				  NVL(e.module,'&nbsp;') modul
+                  NVL(e.module,'&nbsp;') modul
               FROM stats$sql_summary e, stats$sql_summary b
              WHERE b.snap_id(+)  = BID
                AND b.dbid(+)     = e.dbid
@@ -546,5 +546,5 @@
   -- SQL by Invalidations (dummy for compatibility)
   PROCEDURE sqlbyinv IS
     BEGIN
-	  NULL;
-	END;
+      NULL;
+    END;
