@@ -3,6 +3,12 @@ $Id$
 History for OSPRep
 ==================
 
+v0.4.7
+-------------------
+* though segment stats contained the correct TOP_N elements, display order
+  was somehow messed up
+* fixed the "empty execution plan tables" on TOP_N SQL with AWR-layer used
+
 v0.4.6 (17.09.2011)
 -------------------
 * updated documentation

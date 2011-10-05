@@ -47,7 +47,8 @@
     BEGIN
       SELECT COUNT(id) INTO CI
         FROM dba_hist_sql_plan
-       WHERE plan_hash_value = hash_val;
+       WHERE plan_hash_value = hash_val
+         AND plan_hash_value != 0;
       IF CI > 0
       THEN
         CW := 20;

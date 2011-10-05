@@ -26,7 +26,8 @@
                  WHERE rownum <= TOP_N_SEGSTAT) r
        WHERE n.dataobj# = r.dataobj#
          AND n.obj#     = r.obj#
-         AND n.dbid     = r.dbid;
+         AND n.dbid     = r.dbid
+       ORDER BY logical_reads DESC;
     BEGIN
       print(TABLE_OPEN||'<TR><TH COLSPAN="5">Top '||TOP_N_SEGSTAT||' Logical Reads per Segment</TH></TR>');
       L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Object</TH>'||
@@ -77,7 +78,8 @@
                  WHERE rownum <= TOP_N_SEGSTAT) r
        WHERE n.dataobj# = r.dataobj#
          AND n.obj#     = r.obj#
-         AND n.dbid     = r.dbid;
+         AND n.dbid     = r.dbid
+       ORDER BY physical_reads DESC;
     BEGIN
       print(TABLE_OPEN||'<TR><TH COLSPAN="5">Top '||TOP_N_SEGSTAT||' Physical Reads per Segment</TH></TR>');
       L_LINE := ' <TR><TH CLASS="th_sub">TableSpace</TH><TH CLASS="th_sub">Object</TH>'||
@@ -129,7 +131,8 @@
                  WHERE rownum <= TOP_N_SEGSTAT) r
        WHERE n.dataobj# = r.dataobj#
          AND n.obj#     = r.obj#
-         AND n.dbid     = r.dbid;
+         AND n.dbid     = r.dbid
+       ORDER BY waits DESC;
     BEGIN
       print(TABLE_OPEN||'<TR><TH COLSPAN="5">Top '||TOP_N_SEGSTAT||' Buffer Busy Waits per Segment&nbsp;<A '||
                 'HREF="JavaScript:popup('||CHR(39)||'buffbusy'||CHR(39)||')"><IMG SRC="help/help.gif" '||
@@ -183,7 +186,8 @@
                  WHERE rownum <= TOP_N_SEGSTAT) r
        WHERE n.dataobj# = r.dataobj#
          AND n.obj#     = r.obj#
-         AND n.dbid     = r.dbid;
+         AND n.dbid     = r.dbid
+       ORDER BY waits DESC;
     BEGIN
       print(TABLE_OPEN||'<TR><TH COLSPAN="5">Top '||TOP_N_SEGSTAT||' Row Lock Waits per Segment&nbsp;<A '||
                 'HREF="JavaScript:popup('||CHR(39)||'rowlock'||CHR(39)||')"><IMG SRC="help/help.gif" '||
@@ -237,7 +241,8 @@
                  WHERE rownum <= TOP_N_SEGSTAT) r
        WHERE n.dataobj# = r.dataobj#
          AND n.obj#     = r.obj#
-         AND n.dbid     = r.dbid;
+         AND n.dbid     = r.dbid
+       ORDER BY waits DESC;
     BEGIN
       print(TABLE_OPEN||'<TR><TH COLSPAN="5">Top '||TOP_N_SEGSTAT||' ITL Waits per Segment&nbsp;<A '||
                 'HREF="JavaScript:popup('||CHR(39)||'itlwaits'||CHR(39)||')"><IMG SRC="help/help.gif" '||
