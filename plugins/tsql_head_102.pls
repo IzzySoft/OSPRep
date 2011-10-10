@@ -414,7 +414,7 @@
        WHERE rownum <= TOP_N_SQL;
     BEGIN
       get_parsecpupct(S1);
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A>&nbsp;<A HREF="JavaScript:popup('parse')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></TH></TR>'||CHR(10)||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A>&nbsp;<A HREF="JavaScript:popup('||CHR(39)||'parse'||CHR(39)||')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></TH></TR>'||CHR(10)||
                 ' <TR><TD COLSPAN="8" ALIGN="center">End Parse Calls Treshold: '||EPC||
                 '<BR>Consider tuning these ';
       print(L_LINE);
@@ -584,6 +584,7 @@
   -- SQL by Invalidations
   PROCEDURE sqlbyinv IS
     WARN VARCHAR2(50);
+    SI NUMBER;
     CURSOR C_SQLByInv IS
       SELECT execs,invals,rowsperexec,cputime,elapsed,hashval,ela,sql_id,last_active,modul
         FROM ( SELECT /*+ ordered use_nl (b st) */
@@ -611,6 +612,7 @@
                AND e.dbid        = DB_ID
                AND e.instance_number    = INST_NUM
                AND e.executions  > nvl(b.executions,0)
+               AND e.invalidations > nvl(b.invalidations,0)
                AND phyr          > 0
              ORDER BY (nvl(e.invalidations,0) - nvl(b.invalidations,0)) desc,
                       e.hash_value
@@ -643,7 +645,12 @@
         IF MK_EP = 1 THEN
           get_plan(R_SQL.sql_id);
         END IF;
+        SI := SI +1;
       END LOOP;
+      IF SI = 0 THEN
+        L_LINE := ' <TR><TD ALIGN="center" COLSPAN="9">No matching statements found.</TD></TR>';
+        print(L_LINE);
+      END IF;
       print(TABLE_CLOSE||'<HR>');
     EXCEPTION
       WHEN OTHERS THEN NULL;
