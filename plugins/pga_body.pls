@@ -3,6 +3,7 @@
     print('<A NAME="pga"></A>');
     IF MK_PGAA = 1 THEN
       pgaa;
+      pgat;
     END IF;
     IF MK_PGAM = 1 THEN
       pgam;

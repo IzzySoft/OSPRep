@@ -113,11 +113,39 @@
     END;
 
   PROCEDURE pgat IS
-    /** PGA Target Advice -- AWR only*/
-      NULL;
+    /** PGA Target Advice */
+    TARGUM VARCHAR2(30); EXTRABYTE VARCHAR2(30); FACTOR VARCHAR2(20);
+    CURSOR C_PGAT IS
+      SELECT pga_target_for_estimate target,
+             pga_target_factor factor,
+             estd_extra_bytes_rw extra_rw,
+             estd_pga_cache_hit_percentage hits,
+             estd_overalloc_count overalloc
+        FROM dba_hist_pga_target_advice
+       WHERE snap_id = EID
+         AND dbid = DB_ID
+         AND instance_number = INST_NUM
+       ORDER BY pga_target_factor;
+    BEGIN
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="5">PGA Aggreg Target Advice</TH></TR>'||
+                ' <TR><TD COLSPAN="9" ALIGN="center">At the end of the reports interval (SnapShot '||EID||')</TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TH CLASS="th_sub" TITLE="Value used for this estimation">Estimate Target</TH><TH CLASS="th_sub" TITLE="Size factor based on current setting">Factor</TH>'||
+                '<TH CLASS="th_sub" TITLE="Estimated extra bytes to process">Extra Bytes</TH><TH CLASS="th_sub" TITLE="Estimated Cache-Hit Ratio">Cache-Hit%</TH>';
+      print(L_LINE);
+      L_LINE := '<TH CLASS="th_sub" TITLE="Estimated Over-Allocation Count">OverAlloc</TH></TR>';
+      print(L_LINE);
+      FOR rec IN C_PGAT LOOP
+        TARGUM := format_fsize(rec.target);
+        EXTRABYTE := format_fsize(rec.extra_rw);
+        FACTOR := TO_CHAR(rec.factor,'99.999');
+        L_LINE := ' <TR><TD ALIGN="right">'||TARGUM||'</TD><TD ALIGN="right">'||FACTOR||'</TD><TD ALIGN="right">'||EXTRABYTE||'</TD><TD ALIGN="right">'||rec.hits||'</TD><TD ALIGN="right">'||rec.overalloc||'</TD></TR>';
+        print(L_LINE);
+      END LOOP;
+      print(TABLE_CLOSE);
     EXCEPTION
       WHEN OTHERS THEN
-        NULL;
+        print(TABLE_CLOSE);
     END;
 
   PROCEDURE pgam IS

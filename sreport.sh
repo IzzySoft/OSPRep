@@ -220,7 +220,11 @@ if [ "${MK_SPSTAT}${MK_BUFFP}${MK_BUFFW}" != "000" ]; then
 fi
 if [ "${MK_PGAA}${MK_PGAM}" != "00" ]; then
   [ $DBVER -gt 81 ] && {
-    PGAHEAD=$PLUGINDIR/pga_head.pls
+    if [ $IS_AWR -eq 1 ]; then
+      PGAHEAD=$PLUGINDIR/pga_head_awr.pls
+    else
+      PGAHEAD=$PLUGINDIR/pga_head.pls
+    fi
     PGABODY=$PLUGINDIR/pga_body.pls
   }
 fi
