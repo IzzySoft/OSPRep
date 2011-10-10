@@ -114,6 +114,7 @@
 
   PROCEDURE pgat IS
     /** PGA Target Advice -- AWR only*/
+    BEGIN
       NULL;
     EXCEPTION
       WHEN OTHERS THEN

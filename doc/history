@@ -12,6 +12,8 @@ v0.4.7
 + some more context help
 + added pga target advice for end_snapshot to AWR stats (created depending
   on MK_PGAA)
++ added sga target advice for end_snapshot to AWR stats (created depending
+  on MK_SGASUM)
 
 v0.4.6 (17.09.2011)
 -------------------

@@ -34,8 +34,37 @@
 
   PROCEDURE sga_advice IS
     /** SGA Target Advice -- AWR only */
+    FSI NUMBER; SIZ VARCHAR2(20); FAC VARCHAR2(10); TIM VARCHAR2(15); EPR VARCHAR2(15);
+    CURSOR C_Ad IS
+      SELECT sga_size,
+             sga_size_factor factor,
+             estd_db_time dbtime,
+             estd_physical_reads phyreads
+        FROM dba_hist_sga_target_advice
+       WHERE snap_id = EID
+         AND dbid = DB_ID
+         AND instance_number = INST_NUM
+       ORDER BY factor;
     BEGIN
-      NULL;
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="4"><A NAME="sga">SGA Target Advice</A></TH></TR>'||
+                ' <TR><TD COLSPAN="4" ALIGN="center">Values at the time of the End SnapShot ('||EID||')</TD></TR>';
+      print(L_LINE);
+      L_LINE := ' <TR><TH CLASS="th_sub" TITLE="Value used for this estimation">SGA Size</TH>'||
+                '<TH CLASS="th_sub" TITLE="Size factor based on current setting">Factor</TH>';
+      print(L_LINE);
+      L_LINE := '<TH CLASS="th_sub" TITLE="Estimated DB Time">DBTime</TH>'||
+                '<TH CLASS="th_sub" TITLE="Estimated Physical Reads">PhyReads</TH></TR>';
+      print(L_LINE);
+      FOR rec IN C_Ad LOOP
+        FSI := rec.sga_size*1.024*1024*1024; -- values are in "false MB"
+        SIZ := format_fsize(FSI);
+        FAC := TO_CHAR(rec.factor,'99.999');
+        TIM := numformat(rec.dbtime);
+        EPR := numformat(rec.phyreads);
+        L_LINE := ' <TR><TD ALIGN="right">'||SIZ||'</TD><TD ALIGN="right">'||FAC||'</TD><TD ALIGN="right">'||TIM||'</TD><TD ALIGN="right">'||EPR||'</TD></TR>';
+        print(L_LINE);
+      END LOOP;
+      print(TABLE_CLOSE);
     EXCEPTION
       WHEN OTHERS THEN NULL;
     END;

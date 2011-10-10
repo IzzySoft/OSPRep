@@ -245,7 +245,11 @@ if [ "${MK_CACHSIZ}${MK_LC}${MK_DC}" != "000" ]; then
   CACHEBODY=$PLUGINDIR/cache_body.pls
 fi
 if [ $MK_SGASUM -eq 1 ]; then
-  SGAHEAD=$PLUGINDIR/sga_head.pls
+  if [ $IS_AWR -eq 1 ]; then
+    SGAHEAD=$PLUGINDIR/sga_head_awr.pls
+  else
+    SGAHEAD=$PLUGINDIR/sga_head.pls
+  fi
   SGABODY=$PLUGINDIR/sga_body.pls
 fi
 if [ $MK_IORA -eq 1 ]; then
