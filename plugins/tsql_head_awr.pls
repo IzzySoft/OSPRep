@@ -546,8 +546,8 @@
            )
        WHERE rownum <= TOP_N_SQL;
     BEGIN
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbyela">Top '||TOP_N_SQL||' SQL ordered by Time Elapsed</A></TH></TR>'||CHR(10)||
-                ' <TR><TD COLSPAN="9" ALIGN="center">Statements may consume much time either waiting for resources or waisting them - check the Reads and CPU to find out which applies.</TD></TR>';
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="9"><A NAME="sqlbyela">Top '||TOP_N_SQL||' SQL ordered by Time Elapsed</A>&nbsp;<a href="JavaScript:popup('||CHR(39)||'longrunners'||CHR(39)||')"><img src="help/help.gif" alt="Help" align="top" border="0" height="16"></a></TH></TR>'||CHR(10)||
+                ' <TR><TD COLSPAN="9" ALIGN="center">Statements may consume much time either waiting for resources or wasting them - check the Reads and CPU to find out which applies.</TD></TR>';
       print(L_LINE);
       L_LINE := ' <TR><TH CLASS="th_sub">Elap per Exec</TH><TH CLASS="th_sub">Executions</TH>'||
                 '<TH CLASS="th_sub">Reads per Exec</TH><TH CLASS="th_sub">Rows per Exec</TH>';

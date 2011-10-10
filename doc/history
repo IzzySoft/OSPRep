@@ -9,6 +9,7 @@ v0.4.7
   was somehow messed up
 * fixed the "empty execution plan tables" on TOP_N SQL with AWR-layer used
 * some formatting correction for large values in TOP_N by exec
++ some more context help
 
 v0.4.6 (17.09.2011)
 -------------------
