@@ -65,6 +65,8 @@
  ORDER BY "Ratio" DESC, "Executions" ASC, "Parses" DESC;</PRE>
  <P>This should list up the candidates, starting with the worst ones - so the
  result set ot that query should really help you to identify the evildoers.</P>
+ <P>For more details, please also see the explanations on <A HREF='parse.html'>Parsing</A>
+ for the <I>Top SQL by Parse Count</I> statistics.</P>
 </TD></TR></TABLE>
 
 <SCRIPT TYPE="text/javascript" LANGUAGE="JavaScript">//<!--

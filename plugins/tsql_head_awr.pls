@@ -389,8 +389,8 @@
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.parse_calls_total - nvl(b.parse_calls_total,0)),'999,999,990') parses,
                   to_char((e.executions_total - nvl(b.executions_total,0)),'999,999,990') execs,
-				  NVL(e.executions_total,0) - NVL(b.executions_total,0) execnum,
-				  NVL(e.parse_calls_total,0) - NVL(b.parse_calls_total,0) parsenum,
+                  NVL(e.executions_total,0) - NVL(b.executions_total,0) execnum,
+                  NVL(e.parse_calls_total,0) - NVL(b.parse_calls_total,0) parsenum,
                   to_char((nvl(e.parse_calls_total,0) - nvl(b.parse_calls_total,0))/PRSE, '990.00') pctparses,
                   NVL ( e.parsing_schema_name,'-unknown-' ) schema_name,
                   NVL ( e.sql_id,0 ) sql_id,
@@ -409,7 +409,7 @@
        WHERE rownum <= TOP_N_SQL;
     BEGIN
       get_parsecpupct(S1);
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A>&nbsp;<A HREF="JavaScript:popup('parse')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></TH></TR>'||CHR(10)||
                 ' <TR><TD COLSPAN="8" ALIGN="center">End Parse Calls Treshold: '||EPC||
                 '<BR>Consider tuning these ';
       print(L_LINE);

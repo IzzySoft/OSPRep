@@ -392,8 +392,8 @@
         FROM ( SELECT /*+ ordered use_nl (b st) */
                   to_char((e.parse_calls - nvl(b.parse_calls,0)),'999,999,990') parses,
                   to_char((e.executions - nvl(b.executions,0)),'999,999,990') execs,
-				  NVL(e.executions,0) - NVL(b.executions,0) execnum,
-				  NVL(e.parse_calls,0) - NVL(b.parse_calls,0) parsenum,
+                  NVL(e.executions,0) - NVL(b.executions,0) execnum,
+                  NVL(e.parse_calls,0) - NVL(b.parse_calls,0) parsenum,
                   to_char((nvl(e.parse_calls,0) - nvl(b.parse_calls,0))/PRSE, '990.00') pctparses,
                   NVL ( e.hash_value,0 ) hashval,
                   NVL ( e.sql_id,0 ) sql_id,
@@ -414,7 +414,7 @@
        WHERE rownum <= TOP_N_SQL;
     BEGIN
       get_parsecpupct(S1);
-      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A></TH></TR>'||CHR(10)||
+      L_LINE := TABLE_OPEN||'<TR><TH COLSPAN="8"><A NAME="sqlbyparse">Top '||TOP_N_SQL||' SQL ordered by Parse Calls</A>&nbsp;<A HREF="JavaScript:popup('parse')"><IMG SRC="help/help.gif" BORDER="0" HEIGHT="16" ALIGN="top" ALT="Help"></TH></TR>'||CHR(10)||
                 ' <TR><TD COLSPAN="8" ALIGN="center">End Parse Calls Treshold: '||EPC||
                 '<BR>Consider tuning these ';
       print(L_LINE);
