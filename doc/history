@@ -3,7 +3,7 @@ $Id$
 History for OSPRep
 ==================
 
-v0.4.7
+v0.4.7 (16.10.2011)
 -------------------
 * though segment stats contained the correct TOP_N elements, display order
   was somehow messed up
