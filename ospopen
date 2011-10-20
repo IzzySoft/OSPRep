@@ -414,7 +414,7 @@ if [ -n "$IORAHEAD" ]; then
 fi
 EXCLUDE_OWN=`echo $EXCLUDE_OWNERS|sed "s/'/''/g"`
 
-if [ $DBVER -gt 92 ]; then
+if [ $DBVER -lt 92 ]; then
   DBMS_LIMIT=1000000
 else
   DBMS_LIMIT="NULL"

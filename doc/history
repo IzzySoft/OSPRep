@@ -3,6 +3,12 @@ $Id$
 History for OSPRep
 ==================
 
+v0.4.8
+-------------------
+! Limit for DBMS_OUTPUT buffer was inversed: Instead of being limited
+  for 9iR2 and below (and unlimited for 10g and up, as they support
+  this), it was set the other way round. (Why didn't anyone notice?)
+
 v0.4.7 (16.10.2011)
 -------------------
 * though segment stats contained the correct TOP_N elements, display order
